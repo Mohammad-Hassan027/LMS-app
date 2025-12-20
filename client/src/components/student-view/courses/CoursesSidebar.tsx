@@ -13,57 +13,101 @@ import { filterOptions } from "../../../config";
 import { Button } from "../../ui/button";
 import { Checkbox } from "../../ui/checkbox";
 import { Label } from "../../ui/label";
-import type { ReactNode } from "react";
 
-function RenderSidebarGroup() {
-  const group: Array<ReactNode> = [];
+export type FilterState = {
+  category: string[] | null;
+  level: string[] | null;
+  primaryLanguage: string[] | null;
+};
 
-  for (const key in filterOptions) {
-    if (!Object.hasOwn(filterOptions, key)) continue;
+type CoursesSidebarProps = {
+  filters: FilterState;
+  setFilters: (
+    update:
+      | Partial<FilterState>
+      | ((old: FilterState) => Partial<FilterState> | null)
+  ) => Promise<URLSearchParams>;
+};
 
-    const element = filterOptions[key as keyof typeof filterOptions];
-    group.push(
-      <SidebarGroup key={`filter-group-${key}`}>
-        <SidebarGroupLabel className="text-base font-bold text-foreground">
-          {key
-            .split(/(?=[A-Z])/)
-            .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-            .join(" ")}
-        </SidebarGroupLabel>
-        {element.map((option) => (
-          <SidebarGroupContent
-            className="pt-2"
-            key={`filter-${key}-${option.id}`}
-          >
-            <div className="flex items-center space-x-2 px-2">
-              <Checkbox id={`filter-${key}-${option.id}-checkbox`} />
-              <Label
-                htmlFor={`filter-${key}-${option.id}-checkbox`}
-                className="text-sm font-normal leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-              >
-                {option.label}
-              </Label>
-            </div>
-          </SidebarGroupContent>
-        ))}
-      </SidebarGroup>
-    );
+export default function CoursesSidebar({
+  filters,
+  setFilters,
+}: CoursesSidebarProps) {
+  function handleFilterOnChange(
+    sectionId: keyof FilterState,
+    option: { id: string; label: string }
+  ) {
+    setFilters((prev) => {
+      const currentSection = prev[sectionId] || [];
+      const index = currentSection.indexOf(option.id);
+
+      let newSection;
+      if (index === -1) {
+        newSection = [...currentSection, option.id];
+      } else {
+        newSection = currentSection.filter((id) => id !== option.id);
+      }
+
+      return {
+        [sectionId]: newSection.length > 0 ? newSection : null,
+      };
+    });
   }
 
-  return group;
-}
-
-export default function CoursesSidebar() {
   return (
     <Sidebar className="mt-16 h-[calc(100vh-4rem)] border-r bg-background">
       <SidebarHeader className="border-b px-4 flex justify-center font-bold">
         <span>Filters</span>
-        <Button variant={"outline"}>
-          <FilterIcon /> Clear filter
+        <Button
+          variant={"outline"}
+          size="sm"
+          onClick={() =>
+            setFilters({ category: null, level: null, primaryLanguage: null })
+          }
+        >
+          <FilterIcon /> Clear
         </Button>
       </SidebarHeader>
       <SidebarContent>
-        {RenderSidebarGroup().map((group) => group)}
+        {Object.keys(filterOptions).map((keyItem) => {
+          const sectionId = keyItem as keyof FilterState;
+          return (
+            <SidebarGroup key={`filter-group-${keyItem}`}>
+              <SidebarGroupLabel className="text-base font-bold text-foreground">
+                {keyItem
+                  .split(/(?=[A-Z])/)
+                  .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                  .join(" ")}
+              </SidebarGroupLabel>
+              {filterOptions[keyItem as keyof typeof filterOptions].map(
+                (option) => (
+                  <SidebarGroupContent
+                    className="pt-2"
+                    key={`filter-${keyItem}-${option.id}`}
+                  >
+                    <div className="flex items-center space-x-2 px-2">
+                      <Checkbox
+                        id={`filter-${keyItem}-${option.id}-checkbox`}
+                        checked={
+                          filters[sectionId]?.includes(option.id) ?? false
+                        }
+                        onCheckedChange={() =>
+                          handleFilterOnChange(sectionId, option)
+                        }
+                      />
+                      <Label
+                        htmlFor={`filter-${keyItem}-${option.id}-checkbox`}
+                        className="text-sm font-normal leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                      >
+                        {option.label}
+                      </Label>
+                    </div>
+                  </SidebarGroupContent>
+                )
+              )}
+            </SidebarGroup>
+          );
+        })}
       </SidebarContent>
       <SidebarRail />
       <SidebarFooter />

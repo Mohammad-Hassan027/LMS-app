@@ -21,7 +21,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   children,
   allowedRoles,
   authPath = "/login",
-  homePath = "/home",
+  homePath = "/",
   instructorPath = "/instructor",
 }) => {
   const { isLoaded: authLoaded, isSignedIn } = useAuth();

@@ -1,3 +1,4 @@
+import type { FilterState } from "../components/student-view/courses/CoursesSidebar";
 import type { ApiResponse, MediaData, Course } from "../types/types";
 import axiosInstance, { BASE_URL } from "./apiInstance";
 import type { AxiosProgressEvent } from "axios";
@@ -178,11 +179,43 @@ export async function deleteCourse(id: string): Promise<Course[] | undefined> {
 // STUDENT COURSE SERVICES
 // ==========================================
 
-export async function getAllCourses(): Promise<Course[] | undefined> {
+export async function getAllCourses(
+  sort?: string,
+  filters?: FilterState
+): Promise<Course[] | undefined> {
   try {
+    if (!filters) {
+      filters = {
+        category: null,
+        level: null,
+        primaryLanguage: null,
+      };
+    }
+
+    if (!sort) {
+      sort = "";
+    }
+
+    const queryParams = new URLSearchParams({
+      sort,
+    });
+
+    Object?.keys(filters).forEach((key) => {
+      const value = filters?.[key as keyof FilterState];
+      if (value && value.length > 0) {
+        queryParams.append(key, value.join(","));
+      }
+    });
+
     const { data: response } = await axiosInstance.get<ApiResponse<Course[]>>(
-      `${BASE_URL}/student/course/get`
+      `${BASE_URL}/student/course/get?${queryParams.toString()}`,
+      {
+        withCredentials: true,
+        // Note: We are passing the query string directly in the URL above
+        // instead of using the 'params' object to have full control over formatting.
+      }
     );
+
     return response.data;
   } catch (error) {
     console.error("getAllCourses Error:", error);

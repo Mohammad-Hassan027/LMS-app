@@ -1,3 +1,4 @@
+import Loader from "../../components/Loader";
 import { Button } from "../../components/ui/button";
 import { courseCategories } from "../../config";
 import { useStudentAllCourses } from "../../service/studentQueries";
@@ -6,7 +7,7 @@ function HomePage() {
   const { data: studentViewCoursesList, isLoading } = useStudentAllCourses();
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <Loader height="h-screen" />;
   }
 
   return (

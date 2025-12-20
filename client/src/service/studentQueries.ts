@@ -1,15 +1,17 @@
 import { useQuery } from "@tanstack/react-query";
 import { getAllCourses, getCourseDetails } from ".";
+import type { FilterState } from "../components/student-view/courses/CoursesSidebar";
 
 export const STUDENT_COURSE_KEYS = {
-  all: ["studentCourses"] as const,
+  all: (sort?: string, filters?: FilterState) =>
+    ["studentCourses", sort, filters] as const,
   details: (id: string) => ["studentCourseDetails", id] as const,
 };
 
-export function useStudentAllCourses() {
+export function useStudentAllCourses(sort?: string, filters?: FilterState) {
   return useQuery({
-    queryKey: STUDENT_COURSE_KEYS.all,
-    queryFn: () => getAllCourses(),
+    queryKey: STUDENT_COURSE_KEYS.all(sort, filters),
+    queryFn: () => getAllCourses(sort, filters),
     staleTime: 1000 * 60 * 1,
   });
 }

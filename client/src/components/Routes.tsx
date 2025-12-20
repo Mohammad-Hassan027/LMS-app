@@ -1,0 +1,111 @@
+import { SignedOut } from "@clerk/clerk-react";
+import ProtectedRoute from "./protected-route";
+import { Outlet, useRoutes } from "react-router-dom";
+import { lazy } from "react";
+
+const SignInPage = lazy(() => import("../pages/auth/SignInPage"));
+const SignUpPage = lazy(() => import("../pages/auth/SignUpPage"));
+const HomePage = lazy(() => import("../pages/student/HomePage"));
+const InstructorDashboardPage = lazy(() => import("../pages/instructor"));
+const StudentViewLayout = lazy(
+  () => import("./student-view/StudentViewLayout")
+);
+const InstructorViewLayout = lazy(
+  () => import("./instructor-view/InstructorViewLayout")
+);
+const AddNewCoursePage = lazy(() => import("../pages/instructor/addNewCourse"));
+const CoursesPage = lazy(() => import("../pages/student/CoursesPage"));
+const CourseDetailsPage = lazy(
+  () => import("../pages/student/CourseDetailsPage")
+);
+const MyCoursesPage = lazy(() => import("../pages/student/MyCoursesPage"));
+
+export default function Routes() {
+  const element = useRoutes([
+    //auth
+    {
+      path: "/",
+      element: (
+        <SignedOut treatPendingAsSignedOut={true}>
+          <Outlet />
+        </SignedOut>
+      ),
+      children: [
+        {
+          path: "login",
+          element: <SignInPage />,
+        },
+        {
+          path: "register",
+          element: <SignUpPage />,
+        },
+      ],
+    },
+    //free
+    {
+      path: "/",
+      element: <StudentViewLayout />,
+      children: [
+        {
+          index: true,
+          element: <HomePage />,
+        },
+        {
+          path: "courses",
+          element: <CoursesPage />,
+        },
+        {
+          path: "course/:courseId",
+          element: <CourseDetailsPage />,
+        },
+      ],
+    },
+    // loggedIn student
+    {
+      path: "/",
+      element: (
+        <ProtectedRoute>
+          <StudentViewLayout />
+        </ProtectedRoute>
+      ),
+      children: [
+        {
+          path: "cart",
+          element: <div>Cart</div>,
+        },
+        {
+          path: "checkout",
+          element: <div>Checkout page</div>,
+        },
+        {
+          path: "my-courses",
+          element: <MyCoursesPage />,
+        },
+      ],
+    },
+    // instructor
+    {
+      path: "/instructor",
+      element: (
+        <ProtectedRoute allowedRoles={["instructor"]}>
+          <InstructorViewLayout />
+        </ProtectedRoute>
+      ),
+      children: [
+        {
+          index: true,
+          element: <InstructorDashboardPage />,
+        },
+        {
+          path: "add-new-course",
+          element: <AddNewCoursePage />,
+        },
+        {
+          path: "edit-course/:courseId",
+          element: <AddNewCoursePage />,
+        },
+      ],
+    },
+  ]);
+  return element;
+}
