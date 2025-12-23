@@ -13,7 +13,13 @@ import ReactPlayer from "react-player";
 //   MediaFullscreenButton,
 // } from "media-chrome/react";
 
-export default function Player({ url }: { url: string }) {
+export default function Player({
+  url,
+  className,
+}: {
+  url: string;
+  className?: string;
+}) {
   return (
     // // <MediaController
     // //   style={{
@@ -26,7 +32,7 @@ export default function Player({ url }: { url: string }) {
       slot="media"
       src={url}
       controls
-      className="mb-4 max-w-md"
+      className={`mb-4 ${className ? className : "max-w-md"}`}
     ></ReactPlayer>
     //   {/* <MediaControlBar className="px-4">
     //     <MediaPlayButton />

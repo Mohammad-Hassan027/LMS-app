@@ -54,9 +54,9 @@ export const getStudentViewAllCourses = asyncHandler(async (req, res) => {
 });
 
 export const getStudentViewCourseDetails = asyncHandler(async (req, res) => {
-  const { id } = req.params;
+  const { courseId } = req.params;
 
-  const courseDetails = await Course.findById(id);
+  const courseDetails = await Course.findById(courseId);
 
   if (!courseDetails) {
     throw new ApiError(404, 'Course not found!');

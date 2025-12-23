@@ -55,7 +55,7 @@ export default function Routes() {
           element: <CoursesPage />,
         },
         {
-          path: "course/:courseId",
+          path: "course/details/:courseId",
           element: <CourseDetailsPage />,
         },
       ],

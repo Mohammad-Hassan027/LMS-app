@@ -208,12 +208,7 @@ export async function getAllCourses(
     });
 
     const { data: response } = await axiosInstance.get<ApiResponse<Course[]>>(
-      `${BASE_URL}/student/course/get?${queryParams.toString()}`,
-      {
-        withCredentials: true,
-        // Note: We are passing the query string directly in the URL above
-        // instead of using the 'params' object to have full control over formatting.
-      }
+      `${BASE_URL}/student/course/get?${queryParams.toString()}`
     );
 
     return response.data;

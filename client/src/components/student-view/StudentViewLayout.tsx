@@ -5,9 +5,9 @@ function StudentViewLayout() {
   return (
     <div>
       <StudentViewHeader />
-      <div className="">
+      <main className="">
         <Outlet />
-      </div>
+      </main>
     </div>
   );
 }

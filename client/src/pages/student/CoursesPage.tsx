@@ -23,28 +23,23 @@ import {
   useQueryState,
   useQueryStates,
 } from "nuqs";
+import { useNavigate } from "react-router-dom";
 
 export default function CoursesPage() {
+  const navigate = useNavigate();
   const [sort, setSort] = useQueryState("sort", {
     defaultValue: "price-lowtohigh",
   });
-  const [filters, setFilters] = useQueryStates(
-    {
-      category: parseAsArrayOf(parseAsString),
-      level: parseAsArrayOf(parseAsString),
-      primaryLanguage: parseAsArrayOf(parseAsString),
-    },
-    {
-      history: "push",
-    }
-  );
+  const [filters, setFilters] = useQueryStates({
+    category: parseAsArrayOf(parseAsString),
+    level: parseAsArrayOf(parseAsString),
+    primaryLanguage: parseAsArrayOf(parseAsString),
+  });
   const { data: studentViewCoursesList, isLoading } = useStudentAllCourses(
     sort,
     filters
   );
-  if (isLoading) {
-    return <Loader height="h-screen" />;
-  }
+  if (isLoading) return <Loader height="h-screen" />;
 
   return (
     <div className="flex min-h-screen w-full">
@@ -84,7 +79,7 @@ export default function CoursesPage() {
                 </DropdownMenuContent>
               </DropdownMenu>
               <span className="text-sm font-semibold text-gray-900">
-                10 Results
+                {studentViewCoursesList?.length || 0} Results
               </span>
             </div>
           </header>
@@ -95,6 +90,7 @@ export default function CoursesPage() {
                   <Card
                     className="cursor-pointer hover:shadow-lg transition-shadow"
                     key={`course-id-${course._id}`}
+                    onClick={() => navigate(`/course/details/${course._id}`)}
                   >
                     <CardContent className="flex gap-4 p-4">
                       <picture className="w-56 h-40 shrink-0">
