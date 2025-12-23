@@ -2,8 +2,12 @@ import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import { clerkMiddleware } from '@clerk/express';
+import helmet from 'helmet';
+import morgan from 'morgan';0
 
 export function middleware(app) {
+app.use(helmet());
+app.use(morgan('combined'));
   app.use(
     cors({
       origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
