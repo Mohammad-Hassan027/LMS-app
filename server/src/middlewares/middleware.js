@@ -3,9 +3,12 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import { clerkMiddleware } from '@clerk/express';
 import helmet from 'helmet';
-import morgan from 'morgan';0
+import morgan from 'morgan';
+import bodyParser from 'body-parser';
+
 
 export function middleware(app) {
+app.use(bodyParser.json());
 app.use(helmet());
 app.use(morgan('combined'));
   app.use(

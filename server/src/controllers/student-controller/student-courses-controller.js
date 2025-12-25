@@ -1,0 +1,18 @@
+import { ApiError } from '../../utils/ApiError.js';
+import { ApiResponse } from '../../utils/ApiResponse.js';
+import { asyncHandler } from '../../utils/asyncHandler.js';
+import StudentCourses from '../../models/StudentCourses.js';
+
+export const getStudentCourses = asyncHandler(async (req, res) => {
+  const { studentId } = req.params;
+
+  const StudentCourse = await StudentCourses.find({ userId: studentId });
+
+  // if (StudentCourse.length) {
+  //   throw new ApiError(404, 'No Course Found.');
+  // }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, StudentCourse, 'Successful'));
+});

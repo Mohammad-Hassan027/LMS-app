@@ -41,3 +41,18 @@ export interface MediaData {
   url: string;
   public_id: string;
 }
+
+export interface StudentCourses {
+  _id: string;
+  userId: string;
+  courses: [
+    {
+      courseId: string;
+      title: string;
+      instructorId: string;
+      instructorName: string;
+      dateOfPurchase: Date;
+      courseImage: string;
+    }
+  ];
+}

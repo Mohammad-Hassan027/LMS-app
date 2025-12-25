@@ -7,7 +7,9 @@ middleware(app);
 
 import mediaRoutes from './routes/instructor-routes/media-routes.js';
 import instructorCourseRoutes from './routes/instructor-routes/course-routes.js';
-import studentCourseRoutes from './routes/student-routes/course-routes.js';
+import studentViewCourseRoutes from './routes/student-routes/course-routes.js';
+import studentViewOrderRoutes from './routes/student-routes/order-routes.js';
+import studentViewMyCourseRoutes from './routes/student-routes/student-courses-routes.js';
 import { limiter } from './middlewares/rate-limter.js';
 
 app.get('/api/v1/health', (req, res) => res.status(200).json({ status: 'ok' }));
@@ -18,7 +20,9 @@ app.use(
   requireAuth(),
   instructorCourseRoutes
 );
-app.use('/api/v1/student/course', studentCourseRoutes);
+app.use('/api/v1/student/course', studentViewCourseRoutes);
+app.use('/api/v1/student/order', studentViewOrderRoutes);
+app.use('/api/v1/student/my-courses', studentViewMyCourseRoutes);
 
 // If user isn't authenticated, requireAuth() will redirect back to the homepage
 app.get('/api/v1/protected', limiter, requireAuth(), async (req, res) => {

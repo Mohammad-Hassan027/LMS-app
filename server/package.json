@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@clerk/express": "^1.7.48",
+    "@paypal/paypal-server-sdk": "^2.1.0",
     "cloudinary": "^2.8.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",

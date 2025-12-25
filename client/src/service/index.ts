@@ -1,5 +1,10 @@
 import type { FilterState } from "../components/student-view/courses/CoursesSidebar";
-import type { ApiResponse, MediaData, Course } from "../types/types";
+import type {
+  ApiResponse,
+  MediaData,
+  Course,
+  StudentCourses,
+} from "../types/types";
 import axiosInstance, { BASE_URL } from "./apiInstance";
 import type { AxiosProgressEvent } from "axios";
 
@@ -176,7 +181,7 @@ export async function deleteCourse(id: string): Promise<Course[] | undefined> {
 }
 
 // ==========================================
-// STUDENT COURSE SERVICES
+// STUDENT VIEW COURSE SERVICES
 // ==========================================
 
 export async function getAllCourses(
@@ -228,6 +233,83 @@ export async function getCourseDetails(
     return response.data;
   } catch (error) {
     console.error("getCourseDetails Error:", error);
+    throw error;
+  }
+}
+
+// ==========================================
+// STUDENT COURSE ORDER SERVICES
+// ==========================================
+
+export async function createOrderService(
+  userId: string,
+  userName: string,
+  userEmail: string,
+  orderStatus: string,
+  paymentMethod: string,
+  paymentStatus: string,
+  orderDate: Date,
+  instructorId: string,
+  instructorName: string,
+  courseImage: string,
+  courseTitle: string,
+  courseId: string,
+  coursePricing: string
+) {
+  try {
+    const { data: response } = await axiosInstance.post(
+      `${BASE_URL}/student/order/create`,
+      {
+        userId,
+        userName,
+        userEmail,
+        orderStatus,
+        paymentMethod,
+        paymentStatus,
+        orderDate,
+        instructorId,
+        instructorName,
+        courseImage,
+        courseTitle,
+        courseId,
+        coursePricing,
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    console.error("createOrderService Error:", error);
+    throw error;
+  }
+}
+
+export async function capturePaymentAndFinalizeOrderService(
+  paymentId: string
+) {
+  try {
+    const { data: response } = await axiosInstance.post(
+      `${BASE_URL}/student/order/capture/${paymentId}`
+    );
+    return response.data;
+  } catch (error) {
+    console.error("capturePaymentAndFinalizeOrderService Error:", error);
+    throw error;
+  }
+}
+
+// ==========================================
+// STUDENT COURSES SERVICES
+// ==========================================
+
+export async function getMyCoursesService(studentId: string) {
+  try {
+    const { data: response } = await axiosInstance.get<
+      ApiResponse<StudentCourses[]>
+    >(`${BASE_URL}/student/my-courses/get/${studentId}`);
+
+    return response.data?.[0];
+  } catch (error) {
+    console.error("getMyCoursesService Error:", error);
     throw error;
   }
 }

@@ -1,5 +1,11 @@
-import { useQuery } from "@tanstack/react-query";
-import { getAllCourses, getCourseDetails } from ".";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  capturePaymentAndFinalizeOrderService,
+  createOrderService,
+  getAllCourses,
+  getCourseDetails,
+  getMyCoursesService,
+} from ".";
 import type { FilterState } from "../components/student-view/courses/CoursesSidebar";
 
 export const STUDENT_COURSE_KEYS = {
@@ -21,6 +27,91 @@ export function useStudentCourseDetails(courseId: string) {
     queryKey: STUDENT_COURSE_KEYS.details(courseId),
     queryFn: () => getCourseDetails(courseId),
     enabled: !!courseId && courseId !== "",
+    staleTime: 1000 * 60 * 5,
+  });
+}
+
+export function useCreateOrderService() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      userId,
+      userName,
+      userEmail,
+      orderStatus,
+      paymentMethod,
+      paymentStatus,
+      orderDate,
+      instructorId,
+      instructorName,
+      courseImage,
+      courseTitle,
+      courseId,
+      coursePricing,
+    }: {
+      userId: string;
+      userName: string;
+      userEmail: string;
+      orderStatus: string;
+      paymentMethod: string;
+      paymentStatus: string;
+      orderDate: Date;
+      instructorId: string;
+      instructorName: string;
+      courseImage: string;
+      courseTitle: string;
+      courseId: string;
+      coursePricing: string;
+    }) =>
+      createOrderService(
+        userId,
+        userName,
+        userEmail,
+        orderStatus,
+        paymentMethod,
+        paymentStatus,
+        orderDate,
+        instructorId,
+        instructorName,
+        courseImage,
+        courseTitle,
+        courseId,
+        coursePricing
+      ),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [],
+      });
+    },
+  });
+}
+
+export function useCapturePaymentAndFinalizeOrderService() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ paymentId }: { paymentId: string }) =>
+      capturePaymentAndFinalizeOrderService(paymentId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [],
+      });
+    },
+  });
+}
+
+export function useGetMyCoursesService(studentId: string) {
+  return useQuery({
+    queryKey: [studentId],
+    queryFn: () => getMyCoursesService(studentId),
+    enabled: !!studentId && studentId !== "",
     staleTime: 1000 * 60 * 5,
   });
 }

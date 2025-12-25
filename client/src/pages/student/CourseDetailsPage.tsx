@@ -8,7 +8,6 @@ import {
   CardHeader,
   CardTitle,
 } from "../../components/ui/card";
-import { Button } from "../../components/ui/button";
 import Player from "../../components/video-player";
 import {
   Dialog,
@@ -18,12 +17,16 @@ import {
   DialogDescription,
 } from "../../components/ui/dialog";
 import { useState } from "react";
+import PaypalPayment from "../../components/PaypalPayment";
+import { useUser } from "@clerk/clerk-react";
 
 function CourseDetails() {
   const { courseId } = useParams();
   const [showFreePreviewDialog, setShowFreePreviewDialog] = useState(false);
   const [freePreviewLectureVideoUrl, setFreePreviewLectureVideoUrl] =
     useState("");
+
+  const { user } = useUser();
 
   const { data: studentViewCourseDetails, isLoading } = useStudentCourseDetails(
     courseId || ""
@@ -175,7 +178,12 @@ function CourseDetails() {
                 <div className="text-3xl font-bold mb-4">
                   ${studentViewCourseDetails?.pricing}
                 </div>
-                <Button className="w-full text-lg h-12 mb-4">Enroll Now</Button>
+                <div className="w-full">
+                  <PaypalPayment
+                    user={user}
+                    course={studentViewCourseDetails}
+                  />
+                </div>
                 <p className="text-xs text-center text-muted-foreground">
                   30-Day Money-Back Guarantee
                 </p>
