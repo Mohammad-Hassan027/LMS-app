@@ -17,8 +17,8 @@ import {
 } from "../../../config";
 import { useUser } from "@clerk/clerk-react";
 import {
-  useDeleteCourse,
-  useInstructorCourses,
+  useDeleteCourseService,
+  useInstructorCoursesService,
 } from "../../../service/instructorQueries";
 import Loader from "../../Loader";
 
@@ -30,10 +30,10 @@ function InstructorCourses() {
     setCurrentEditedCourseId,
   } = useInstructorContext();
   const { user } = useUser();
-  const { data: listOfCourses, isLoading } = useInstructorCourses(
+  const { data: listOfCourses, isLoading } = useInstructorCoursesService(
     user?.id as string
   );
-  const { mutateAsync: deleteCourse } = useDeleteCourse();
+  const { mutateAsync: deleteCourse } = useDeleteCourseService();
 
   return (
     <Card>

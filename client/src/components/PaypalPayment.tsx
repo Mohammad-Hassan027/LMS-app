@@ -65,7 +65,7 @@ const PaypalPayment = ({
 
       toast.success("You have successfully enrolled in the course.");
 
-      // window.location.href = '/my-courses';
+      window.location.href = "/my-courses";
     } catch (error) {
       console.error("Payment Capture Failed:", error);
       toast.error("Payment was authorized but could not be captured.");

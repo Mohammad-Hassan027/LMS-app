@@ -2,8 +2,8 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   capturePaymentAndFinalizeOrderService,
   createOrderService,
-  getAllCourses,
-  getCourseDetails,
+  getAllCoursesService,
+  getCourseDetailsService,
   getMyCoursesService,
 } from ".";
 import type { FilterState } from "../components/student-view/courses/CoursesSidebar";
@@ -14,18 +14,18 @@ export const STUDENT_COURSE_KEYS = {
   details: (id: string) => ["studentCourseDetails", id] as const,
 };
 
-export function useStudentAllCourses(sort?: string, filters?: FilterState) {
+export function useStudentAllCoursesService(sort?: string, filters?: FilterState) {
   return useQuery({
     queryKey: STUDENT_COURSE_KEYS.all(sort, filters),
-    queryFn: () => getAllCourses(sort, filters),
+    queryFn: () => getAllCoursesService(sort, filters),
     staleTime: 1000 * 60 * 1,
   });
 }
 
-export function useStudentCourseDetails(courseId: string) {
+export function useStudentCourseDetailsService(courseId: string) {
   return useQuery({
     queryKey: STUDENT_COURSE_KEYS.details(courseId),
-    queryFn: () => getCourseDetails(courseId),
+    queryFn: () => getCourseDetailsService(courseId),
     enabled: !!courseId && courseId !== "",
     staleTime: 1000 * 60 * 5,
   });

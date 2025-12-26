@@ -56,3 +56,17 @@ export interface StudentCourses {
     }
   ];
 }
+
+export interface LectureProgress {
+  lectureId: string;
+  viewed: boolean;
+  dateViewed: Date;
+}
+
+export interface CourseProgress {
+  userId: string;
+  courseId: string;
+  completed: boolean;
+  completionDate: Date;
+  lecturesProgress: [LectureProgress];
+}

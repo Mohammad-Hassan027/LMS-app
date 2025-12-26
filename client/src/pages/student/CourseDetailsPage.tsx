@@ -1,5 +1,5 @@
-import { useParams } from "react-router-dom";
-import { useStudentCourseDetails } from "../../service/studentQueries";
+import { useNavigate, useParams } from "react-router-dom";
+import { useStudentCourseDetailsService } from "../../service/studentQueries";
 import Loader from "../../components/Loader";
 import { CheckCircle, Globe, Lock, PlayCircle, Video } from "lucide-react";
 import {
@@ -16,21 +16,42 @@ import {
   DialogTitle,
   DialogDescription,
 } from "../../components/ui/dialog";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PaypalPayment from "../../components/PaypalPayment";
 import { useUser } from "@clerk/clerk-react";
+import { checkIsStudentEnrolledService } from "../../service";
 
 function CourseDetails() {
   const { courseId } = useParams();
+  const { user } = useUser();
+  const navigate = useNavigate();
+
   const [showFreePreviewDialog, setShowFreePreviewDialog] = useState(false);
   const [freePreviewLectureVideoUrl, setFreePreviewLectureVideoUrl] =
     useState("");
 
-  const { user } = useUser();
+  useEffect(() => {
+    if (!courseId || !user?.id) return;
+    let canceled = false;
+    (async () => {
+      try {
+        const isEnrolled = await checkIsStudentEnrolledService(
+          courseId,
+          user.id
+        );
+        if (!canceled && isEnrolled) navigate(`/course-progress/${courseId}`);
+      } catch (e) {
+        console.log(e);
+      }
+    })();
 
-  const { data: studentViewCourseDetails, isLoading } = useStudentCourseDetails(
-    courseId || ""
-  );
+    return () => {
+      canceled = true;
+    };
+  }, [courseId, user, navigate]);
+
+  const { data: studentViewCourseDetails, isLoading } =
+    useStudentCourseDetailsService(courseId || "");
 
   const handleFreePreviewDialog = (videoUrl: string, isFree: boolean) => {
     if (isFree) {

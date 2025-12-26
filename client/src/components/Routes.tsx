@@ -2,6 +2,7 @@ import { SignedOut } from "@clerk/clerk-react";
 import ProtectedRoute from "./protected-route";
 import { Outlet, useRoutes } from "react-router-dom";
 import { lazy } from "react";
+import CourseProgressPage from "../pages/student/CourseProgressPage";
 
 const SignInPage = lazy(() => import("../pages/auth/SignInPage"));
 const SignUpPage = lazy(() => import("../pages/auth/SignUpPage"));
@@ -80,6 +81,10 @@ export default function Routes() {
         {
           path: "my-courses",
           element: <MyCoursesPage />,
+        },
+        {
+          path: "course-progress/:courseId",
+          element: <CourseProgressPage />,
         },
       ],
     },

@@ -4,14 +4,15 @@ import type {
   MediaData,
   Course,
   StudentCourses,
+  // CourseProgress,
 } from "../types/types";
-import axiosInstance, { BASE_URL } from "./apiInstance";
+import axiosInstance from "./apiInstance";
 import type { AxiosProgressEvent } from "axios";
 
 // export async function ProtectedService() {
 //   try {
 //     const { data: response } = await axiosInstance.get<ApiResponse<any>>(
-//       `${BASE_URL}/protected`
+//       `/protected`
 //     );
 //     return response.data;
 //   } catch (error) {
@@ -29,7 +30,7 @@ export async function UploadMediaService(
 ): Promise<MediaData | undefined> {
   try {
     const { data: response } = await axiosInstance.post<ApiResponse<MediaData>>(
-      `${BASE_URL}/media/upload`,
+      `/media/upload`,
       formData,
       {
         headers: {
@@ -58,7 +59,7 @@ export async function UploadBulkMediaService(
   try {
     const { data: response } = await axiosInstance.post<
       ApiResponse<MediaData[]>
-    >(`${BASE_URL}/media/bulk-upload`, formData, {
+    >(`/media/bulk-upload`, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
@@ -93,7 +94,7 @@ export async function DeleteMediaService(
   try {
     const { data: response } = await axiosInstance.delete<
       ApiResponse<MediaData>
-    >(`${BASE_URL}/media/delete/${encodedId}?type=${resourceType}`);
+    >(`/media/delete/${encodedId}?type=${resourceType}`);
 
     return response.data;
   } catch (error) {
@@ -106,12 +107,12 @@ export async function DeleteMediaService(
 // INSTRUCTOR COURSE SERVICES
 // ==========================================
 
-export async function addNewCourse(
+export async function addNewCourseService(
   formData: Omit<Course, "_id">
 ): Promise<Course | undefined> {
   try {
     const { data: response } = await axiosInstance.post<ApiResponse<Course>>(
-      `${BASE_URL}/instructor/course/add`,
+      `/instructor/course/add`,
       formData
     );
     return response.data;
@@ -121,7 +122,7 @@ export async function addNewCourse(
   }
 }
 
-export async function updateCourse(
+export async function updateCourseService(
   formData: Omit<
     Course,
     "_id" | "instructorId" | "instructorName" | "students"
@@ -130,7 +131,7 @@ export async function updateCourse(
 ): Promise<Course | undefined> {
   try {
     const { data: response } = await axiosInstance.put<ApiResponse<Course>>(
-      `${BASE_URL}/instructor/course/update/${id}`,
+      `/instructor/course/update/${id}`,
       formData
     );
     return response.data;
@@ -140,12 +141,12 @@ export async function updateCourse(
   }
 }
 
-export async function getCourseDetailsForInstructor(
+export async function getCourseDetailsForInstructorService(
   id: string
 ): Promise<Course | undefined> {
   try {
     const { data: response } = await axiosInstance.get<ApiResponse<Course>>(
-      `${BASE_URL}/instructor/course/get/details/${id}`
+      `/instructor/course/get/details/${id}`
     );
     return response.data;
   } catch (error) {
@@ -154,12 +155,12 @@ export async function getCourseDetailsForInstructor(
   }
 }
 
-export async function getAllCoursesOfInstructor(
+export async function getAllCoursesOfInstructorService(
   id: string
 ): Promise<Course[] | undefined> {
   try {
     const { data: response } = await axiosInstance.get<ApiResponse<Course[]>>(
-      `${BASE_URL}/instructor/course/get/${id}`
+      `/instructor/course/get/${id}`
     );
     return response.data;
   } catch (error) {
@@ -168,11 +169,13 @@ export async function getAllCoursesOfInstructor(
   }
 }
 
-export async function deleteCourse(id: string): Promise<Course[] | undefined> {
+export async function deleteCourseService(
+  id: string
+): Promise<Course[] | undefined> {
   try {
     const { data: response } = await axiosInstance.delete<
       ApiResponse<Course[]>
-    >(`${BASE_URL}/instructor/course/delete/${id}`);
+    >(`/instructor/course/delete/${id}`);
     return response.data;
   } catch (error) {
     console.error("deleteCourse Error:", error);
@@ -184,7 +187,7 @@ export async function deleteCourse(id: string): Promise<Course[] | undefined> {
 // STUDENT VIEW COURSE SERVICES
 // ==========================================
 
-export async function getAllCourses(
+export async function getAllCoursesService(
   sort?: string,
   filters?: FilterState
 ): Promise<Course[] | undefined> {
@@ -213,7 +216,7 @@ export async function getAllCourses(
     });
 
     const { data: response } = await axiosInstance.get<ApiResponse<Course[]>>(
-      `${BASE_URL}/student/course/get?${queryParams.toString()}`
+      `/student/course/get?${queryParams.toString()}`
     );
 
     return response.data;
@@ -223,18 +226,29 @@ export async function getAllCourses(
   }
 }
 
-export async function getCourseDetails(
+export async function getCourseDetailsService(
   courseId: string
 ): Promise<Course | undefined> {
   try {
     const { data: response } = await axiosInstance.get<ApiResponse<Course>>(
-      `${BASE_URL}/student/course/get/${courseId}`
+      `/student/course/get/${courseId}`
     );
     return response.data;
   } catch (error) {
     console.error("getCourseDetails Error:", error);
     throw error;
   }
+}
+
+export async function checkIsStudentEnrolledService(
+  courseId: string,
+  studentId: string
+) {
+  const { data: response } = await axiosInstance.get<ApiResponse<boolean>>(
+    `/student/course/check-is-enrolled/${studentId}/${courseId}`
+  );
+
+  return response.data;
 }
 
 // ==========================================
@@ -258,7 +272,7 @@ export async function createOrderService(
 ) {
   try {
     const { data: response } = await axiosInstance.post(
-      `${BASE_URL}/student/order/create`,
+      `/student/order/create`,
       {
         userId,
         userName,
@@ -283,12 +297,10 @@ export async function createOrderService(
   }
 }
 
-export async function capturePaymentAndFinalizeOrderService(
-  paymentId: string
-) {
+export async function capturePaymentAndFinalizeOrderService(paymentId: string) {
   try {
     const { data: response } = await axiosInstance.post(
-      `${BASE_URL}/student/order/capture/${paymentId}`
+      `/student/order/capture/${paymentId}`
     );
     return response.data;
   } catch (error) {
@@ -305,7 +317,7 @@ export async function getMyCoursesService(studentId: string) {
   try {
     const { data: response } = await axiosInstance.get<
       ApiResponse<StudentCourses[]>
-    >(`${BASE_URL}/student/my-courses/get/${studentId}`);
+    >(`/student/my-courses/get/${studentId}`);
 
     return response.data?.[0];
   } catch (error) {
@@ -313,3 +325,32 @@ export async function getMyCoursesService(studentId: string) {
     throw error;
   }
 }
+
+// ==========================================
+// STUDENT COURSE PROGRESS SERVICES
+// ==========================================
+
+// export async function getStudentCourseProgressService(
+//   courseId: string,
+//   userId: string
+// ) {
+//   const { data: response } = await axiosInstance.get<
+//     ApiResponse<CourseProgress>
+//   >(`/student/course-progress/get/${courseId}/${userId}`);
+
+//   return response.data;
+// }
+
+// export async function UpdateStudentCourseProgressService(
+//   courseId: string,
+//   userId: string,
+//   progress: {}
+// ) {
+//   const { data: response } = await axiosInstance.post<
+//     ApiResponse<CourseProgress>
+//   >(`/student/course-progress/get/${courseId}/${userId}`, {
+//     ...progress,
+//   });
+
+//   return response.data;
+// }

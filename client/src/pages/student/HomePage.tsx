@@ -1,10 +1,11 @@
 import Loader from "../../components/Loader";
 import { Button } from "../../components/ui/button";
 import { courseCategories } from "../../config";
-import { useStudentAllCourses } from "../../service/studentQueries";
+import { useStudentAllCoursesService } from "../../service/studentQueries";
 
 function HomePage() {
-  const { data: studentViewCoursesList, isLoading } = useStudentAllCourses();
+  const { data: studentViewCoursesList, isLoading } =
+    useStudentAllCoursesService();
 
   if (isLoading) {
     return <Loader height="h-screen" />;

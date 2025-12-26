@@ -13,7 +13,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "../../components/ui/sidebar";
-import { useStudentAllCourses } from "../../service/studentQueries";
+import { useStudentAllCoursesService } from "../../service/studentQueries";
 import { sortOptions } from "../../config";
 import { Card, CardContent, CardTitle } from "../../components/ui/card";
 import Loader from "../../components/Loader";
@@ -35,10 +35,8 @@ export default function CoursesPage() {
     level: parseAsArrayOf(parseAsString),
     primaryLanguage: parseAsArrayOf(parseAsString),
   });
-  const { data: studentViewCoursesList, isLoading } = useStudentAllCourses(
-    sort,
-    filters
-  );
+  const { data: studentViewCoursesList, isLoading } =
+    useStudentAllCoursesService(sort, filters);
   if (isLoading) return <Loader height="h-screen" />;
 
   return (

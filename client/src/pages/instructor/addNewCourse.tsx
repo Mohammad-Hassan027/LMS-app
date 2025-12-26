@@ -13,9 +13,9 @@ import { useInstructorContext } from "../../contexts/Instructor/hook";
 import { useUser } from "@clerk/clerk-react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
-  useAddNewCourse,
-  useCourseDetailsForInstructor,
-  useUpdateCourse,
+  useAddNewCourseService,
+  useCourseDetailsForInstructorService,
+  useUpdateCourseService,
 } from "../../service/instructorQueries";
 import { isEmpty } from "../../utils";
 import { useCallback, useEffect } from "react";
@@ -37,9 +37,11 @@ function AddNewCoursePage() {
   const navigate = useNavigate();
   const params = useParams<{ courseId: string }>();
 
-  const { mutateAsync: addNewCourse } = useAddNewCourse();
-  const { mutateAsync: updateCourse } = useUpdateCourse(currentEditedCourseId);
-  const { data } = useCourseDetailsForInstructor(currentEditedCourseId);
+  const { mutateAsync: addNewCourse } = useAddNewCourseService();
+  const { mutateAsync: updateCourse } = useUpdateCourseService(
+    currentEditedCourseId
+  );
+  const { data } = useCourseDetailsForInstructorService(currentEditedCourseId);
 
   const initializeEditedCourseId = useCallback(() => {
     if (params.courseId) {

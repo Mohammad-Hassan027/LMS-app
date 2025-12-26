@@ -14,5 +14,11 @@ export const getStudentCourses = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(200, StudentCourse, 'Successful'));
+    .json(
+      new ApiResponse(
+        200,
+        StudentCourse,
+        'Student Courses fetched successfully'
+      )
+    );
 });

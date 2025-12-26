@@ -1,4 +1,5 @@
 import Course from '../../models/Course.js';
+import StudentCourses from '../../models/StudentCourses.js';
 import { ApiError } from '../../utils/ApiError.js';
 import { ApiResponse } from '../../utils/ApiResponse.js';
 import { asyncHandler } from '../../utils/asyncHandler.js';
@@ -66,5 +67,25 @@ export const getStudentViewCourseDetails = asyncHandler(async (req, res) => {
     .status(200)
     .json(
       new ApiResponse(200, courseDetails, 'Course details fetched successfully')
+    );
+});
+
+export const checkIsStudentEnrolled = asyncHandler(async (req, res) => {
+  const { studentId, courseId } = req.params;
+
+  const studentCourses = await StudentCourses.findOne({
+    userId: studentId,
+  });
+
+  const ifStudentAlreadyBoughtCurrentCourse =
+    studentCourses.courses.findIndex((item) => item.courseId === courseId) > -1;
+  res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        ifStudentAlreadyBoughtCurrentCourse,
+        'Successfully checked is student enrolled'
+      )
     );
 });

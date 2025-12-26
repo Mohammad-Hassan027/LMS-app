@@ -1,10 +1,10 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
-  getAllCoursesOfInstructor,
-  getCourseDetailsForInstructor,
-  updateCourse,
-  deleteCourse,
-  addNewCourse,
+  getAllCoursesOfInstructorService,
+  getCourseDetailsForInstructorService,
+  updateCourseService,
+  deleteCourseService,
+  addNewCourseService,
 } from "./index";
 import type { Course } from "../types/types";
 
@@ -14,35 +14,36 @@ export const COURSE_KEYS = {
     ["instructorCourseDetails", { courseId: id }] as const,
 };
 
-export function useAddNewCourse() {
+export function useAddNewCourseService() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (formData: Omit<Course, "_id">) => addNewCourse(formData),
+    mutationFn: (formData: Omit<Course, "_id">) =>
+      addNewCourseService(formData),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: COURSE_KEYS.all });
     },
   });
 }
 
-export function useInstructorCourses(instructorId: string) {
+export function useInstructorCoursesService(instructorId: string) {
   return useQuery({
     queryKey: [...COURSE_KEYS.all, instructorId],
-    queryFn: () => getAllCoursesOfInstructor(instructorId),
+    queryFn: () => getAllCoursesOfInstructorService(instructorId),
     enabled: !!instructorId,
   });
 }
 
-export function useCourseDetailsForInstructor(courseId: string) {
+export function useCourseDetailsForInstructorService(courseId: string) {
   return useQuery({
     queryKey: COURSE_KEYS.details(courseId),
-    queryFn: () => getCourseDetailsForInstructor(courseId),
+    queryFn: () => getCourseDetailsForInstructorService(courseId),
     enabled: !!courseId,
     staleTime: 1000 * 60 * 5,
   });
 }
 
-export function useUpdateCourse(courseId: string) {
+export function useUpdateCourseService(courseId: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -51,7 +52,7 @@ export function useUpdateCourse(courseId: string) {
         Course,
         "_id" | "instructorId" | "instructorName" | "students"
       >
-    ) => updateCourse(formData, courseId),
+    ) => updateCourseService(formData, courseId),
 
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -64,11 +65,11 @@ export function useUpdateCourse(courseId: string) {
   });
 }
 
-export function useDeleteCourse() {
+export function useDeleteCourseService() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: deleteCourse,
+    mutationFn: deleteCourseService,
 
     // 'variables' here IS the 'id' you passed to mutate(id)
     onSuccess: (_data, variables) => {
