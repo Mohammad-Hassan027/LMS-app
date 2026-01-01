@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from "react-router-dom";
-import { useStudentCourseDetailsService } from "../../service/studentQueries";
+import { useStudentViewCourseDetailsService } from "../../service/studentQueries";
 import Loader from "../../components/Loader";
 import { CheckCircle, Globe, Lock, PlayCircle, Video } from "lucide-react";
 import {
@@ -51,7 +51,7 @@ function CourseDetails() {
   }, [courseId, user, navigate]);
 
   const { data: studentViewCourseDetails, isLoading } =
-    useStudentCourseDetailsService(courseId || "");
+    useStudentViewCourseDetailsService(courseId || "");
 
   const handleFreePreviewDialog = (videoUrl: string, isFree: boolean) => {
     if (isFree) {

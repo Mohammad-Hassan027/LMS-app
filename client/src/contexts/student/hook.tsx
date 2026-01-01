@@ -1,14 +1,6 @@
-import {
-  createContext,
-  useContext,
-  type Dispatch,
-  type SetStateAction,
-} from "react";
+import { createContext, useContext } from "react";
 
-type StudentContextType = {
-  studentViewCoursesList: models.Course[];
-  setStudentViewCoursesList: Dispatch<SetStateAction<models.Course[]>>;
-};
+type StudentContextType = {};
 
 export const StudentContext = createContext<StudentContextType | null>(null);
 

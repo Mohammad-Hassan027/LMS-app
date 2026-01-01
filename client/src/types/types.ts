@@ -70,3 +70,21 @@ export interface CourseProgress {
   completionDate: Date;
   lecturesProgress: [LectureProgress];
 }
+
+export interface Order {
+  userId: string;
+  userName: string;
+  userEmail: string;
+  orderStatus: string;
+  paymentMethod: string;
+  paymentStatus: string;
+  orderDate: Date;
+  paymentId: string;
+  payerId: string;
+  instructorId: string;
+  instructorName: string;
+  courseImage: string;
+  courseTitle: string;
+  courseId: string;
+  coursePricing: string;
+}
