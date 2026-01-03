@@ -21,19 +21,18 @@ import {
   useInstructorCoursesService,
 } from "../../../service/instructorQueries";
 import Loader from "../../Loader";
+import { Suspense } from "react";
 
-function InstructorCourses() {
+function InstructorCoursesList({ instructorId }: { instructorId: string }) {
   const navigate = useNavigate();
   const {
     setCourseCurriculumFormData,
     setCourseLandingFormData,
     setCurrentEditedCourseId,
   } = useInstructorContext();
-  const { user } = useUser();
-  const { data: listOfCourses, isLoading } = useInstructorCoursesService(
-    user?.id as string
-  );
   const { mutateAsync: deleteCourse } = useDeleteCourseService();
+
+  const { data: listOfCourses } = useInstructorCoursesService(instructorId);
 
   return (
     <Card>
@@ -54,8 +53,7 @@ function InstructorCourses() {
         </Button>
       </CardHeader>
       <CardContent>
-        {isLoading && <Loader height="h-15 ml-5" />}
-        <div>
+        <div className="overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>
@@ -66,42 +64,65 @@ function InstructorCourses() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {listOfCourses && listOfCourses.length > 0
-                ? listOfCourses.map((course) => (
-                    <TableRow key={course?._id}>
-                      <TableCell className="font-medium">
-                        {course?.title}
-                      </TableCell>
-                      <TableCell>{course?.students?.length}</TableCell>
-                      <TableCell>
-                        {course?.students?.length * Number(course?.pricing)}
-                      </TableCell>
-                      <TableCell className="text-center flex gap-1 justify-center">
-                        <Button
-                          onClick={() => {
-                            navigate(`/instructor/edit-course/${course?._id}`);
-                          }}
-                          variant="ghost"
-                          size={"sm"}
-                        >
-                          <Edit />
-                        </Button>
-                        <Button
-                          onClick={() => deleteCourse(course?._id)}
-                          variant="ghost"
-                          size={"sm"}
-                        >
-                          <Delete />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                : null}
+              {listOfCourses && listOfCourses.length > 0 ? (
+                listOfCourses.map((course) => (
+                  <TableRow key={course?._id}>
+                    <TableCell className="font-medium">
+                      {course?.title}
+                    </TableCell>
+                    <TableCell>{course?.students?.length}</TableCell>
+                    <TableCell>
+                      $
+                      {(course?.students?.length || 0) *
+                        (Number(course?.pricing) || 0)}
+                    </TableCell>
+                    <TableCell className="text-center flex gap-1 justify-center">
+                      <Button
+                        onClick={() => {
+                          navigate(`/instructor/edit-course/${course?._id}`);
+                        }}
+                        variant="ghost"
+                        size={"sm"}
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        onClick={() => deleteCourse(course?._id)}
+                        variant="ghost"
+                        size={"sm"}
+                      >
+                        <Delete className="h-4 w-4" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={4} className="text-center py-10">
+                    No courses found. Start creating one!
+                  </TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
         </div>
       </CardContent>
     </Card>
+  );
+}
+
+function InstructorCourses() {
+  const { user, isLoaded } = useUser();
+
+  if (!isLoaded) return <Loader height="h-15 ml-5" />;
+
+  // Guard against missing user (should normally be handled by protected route)
+  if (!user?.id) return null;
+
+  return (
+    <Suspense fallback={<Loader height="h-15 ml-5" />}>
+      <InstructorCoursesList instructorId={user.id} />
+    </Suspense>
   );
 }
 

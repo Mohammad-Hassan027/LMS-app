@@ -197,13 +197,13 @@ export default function CourseProgressPage() {
             <DialogTitle>Congratulations!</DialogTitle>
             <DialogDescription className="flex flex-col gap-3">
               <Label>You have completed the course</Label>
-              <div className="flex flex-row gap-3">
-                <Button onClick={() => navigate("/my-courses")}>
-                  My Courses Page
-                </Button>
-                <Button onClick={handleRewatchCourse}>Rewatch Course</Button>
-              </div>
             </DialogDescription>
+            <div className="flex flex-row gap-3">
+              <Button onClick={() => navigate("/my-courses")}>
+                My Courses Page
+              </Button>
+              <Button onClick={handleRewatchCourse}>Rewatch Course</Button>
+            </div>
           </DialogHeader>
         </DialogContent>
       </Dialog>

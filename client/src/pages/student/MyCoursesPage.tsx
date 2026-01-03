@@ -9,7 +9,6 @@ import { useNavigate } from "react-router-dom";
 function MyCourses() {
   const navigate = useNavigate();
   const { user } = useUser();
-  // if (!user) return;
   const { data, isLoading } = useGetMyCoursesService(user?.id || "");
 
   if (isLoading) return <Loader height="h-screen" />;

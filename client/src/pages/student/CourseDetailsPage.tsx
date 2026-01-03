@@ -16,22 +16,37 @@ import {
   DialogTitle,
   DialogDescription,
 } from "../../components/ui/dialog";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import PaypalPayment from "../../components/PaypalPayment";
 import { useUser } from "@clerk/clerk-react";
 import { checkIsStudentEnrolledService } from "../../service";
+import type { UserResource } from "@clerk/shared/types";
 
-function CourseDetails() {
-  const { courseId } = useParams();
-  const { user } = useUser();
+function CourseDetailsContent({
+  courseId,
+  user,
+}: {
+  courseId: string;
+  user: UserResource | null;
+}) {
   const navigate = useNavigate();
-
   const [showFreePreviewDialog, setShowFreePreviewDialog] = useState(false);
   const [freePreviewLectureVideoUrl, setFreePreviewLectureVideoUrl] =
     useState("");
+  const [isEnrollmentChecking, setIsEnrollmentChecking] = useState(true);
+
+  const { data: studentViewCourseDetails } =
+    useStudentViewCourseDetailsService(courseId);
 
   useEffect(() => {
-    if (!courseId || !user?.id) return;
+    if (!courseId) return;
+
+    // If there is no user (guest), stop checking and show the page
+    if (!user?.id) {
+      setIsEnrollmentChecking(false);
+      return;
+    }
+
     let canceled = false;
     (async () => {
       try {
@@ -39,8 +54,13 @@ function CourseDetails() {
           courseId,
           user.id
         );
-        if (!canceled && isEnrolled) navigate(`/course-progress/${courseId}`);
+        if (!canceled && isEnrolled) {
+          navigate(`/course-progress/${courseId}`);
+        } else {
+          if (!canceled) setIsEnrollmentChecking(false);
+        }
       } catch (e) {
+        if (!canceled) setIsEnrollmentChecking(false);
         console.log(e);
       }
     })();
@@ -50,14 +70,12 @@ function CourseDetails() {
     };
   }, [courseId, user, navigate]);
 
-  const { data: studentViewCourseDetails, isLoading } =
-    useStudentViewCourseDetailsService(courseId || "");
-
   const handleFreePreviewDialog = (videoUrl: string, isFree: boolean) => {
     if (isFree) {
       setFreePreviewLectureVideoUrl(videoUrl);
       setShowFreePreviewDialog(true);
     }
+
     // Optional: Add an else block to show a toast like "Buy the course to watch this"
   };
 
@@ -66,7 +84,8 @@ function CourseDetails() {
     return str.charAt(0).toUpperCase() + str.slice(1);
   };
 
-  if (isLoading) return <Loader height="h-screen" />;
+  if (isEnrollmentChecking) return <Loader height="h-screen" />;
+
   if (!studentViewCourseDetails)
     return <div className="p-10">No Course Found</div>;
 
@@ -231,6 +250,21 @@ function CourseDetails() {
         </DialogContent>
       </Dialog>
     </div>
+  );
+}
+
+function CourseDetails() {
+  const { courseId } = useParams();
+  const { user, isLoaded } = useUser();
+
+  if (!courseId) return <div>Invalid Course ID</div>;
+
+  if (!isLoaded) return <Loader height="h-screen" />;
+
+  return (
+    <Suspense fallback={<Loader height="h-screen" />}>
+      <CourseDetailsContent courseId={courseId} user={user} />
+    </Suspense>
   );
 }
 

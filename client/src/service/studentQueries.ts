@@ -1,4 +1,9 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQuery,
+  useSuspenseQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import {
   capturePaymentAndFinalizeOrderService,
   createOrderService,
@@ -15,7 +20,7 @@ export const STUDENT_COURSE_KEYS = {
   all: (sort?: string, filters?: FilterState) =>
     ["studentCourses", sort, filters] as const,
   details: (id: string) => ["studentCourseDetails", id] as const,
-  myCourse: (userId?: string) => ["my-courses", userId],
+  myCourse: (userId?: string) => ["my-courses", userId] as const,
   progress: (courseId: string, userId: string) =>
     ["course-progress", courseId, userId] as const,
 };
@@ -24,7 +29,7 @@ export function useStudentAllCoursesService(
   sort?: string,
   filters?: FilterState
 ) {
-  return useQuery({
+  return useSuspenseQuery({
     queryKey: STUDENT_COURSE_KEYS.all(sort, filters),
     queryFn: () => getAllStudentViewCoursesService(sort, filters),
     staleTime: 1000 * 60 * 1,
@@ -32,33 +37,16 @@ export function useStudentAllCoursesService(
 }
 
 export function useStudentViewCourseDetailsService(courseId: string) {
-  return useQuery({
+  return useSuspenseQuery({
     queryKey: STUDENT_COURSE_KEYS.details(courseId),
     queryFn: () => getStudentViewCourseDetailsService(courseId),
-    enabled: !!courseId && courseId !== "",
     staleTime: 1000 * 60 * 5,
   });
 }
 
 export function useCreateOrderService() {
-  const queryClient = useQueryClient();
-
   return useMutation({
-    mutationFn: ({
-      userId,
-      userName,
-      userEmail,
-      orderStatus,
-      paymentMethod,
-      paymentStatus,
-      orderDate,
-      instructorId,
-      instructorName,
-      courseImage,
-      courseTitle,
-      courseId,
-      coursePricing,
-    }: {
+    mutationFn: (data: {
       userId: string;
       userName: string;
       userEmail: string;
@@ -74,25 +62,20 @@ export function useCreateOrderService() {
       coursePricing: string;
     }) =>
       createOrderService(
-        userId,
-        userName,
-        userEmail,
-        orderStatus,
-        paymentMethod,
-        paymentStatus,
-        orderDate,
-        instructorId,
-        instructorName,
-        courseImage,
-        courseTitle,
-        courseId,
-        coursePricing
+        data.userId,
+        data.userName,
+        data.userEmail,
+        data.orderStatus,
+        data.paymentMethod,
+        data.paymentStatus,
+        data.orderDate,
+        data.instructorId,
+        data.instructorName,
+        data.courseImage,
+        data.courseTitle,
+        data.courseId,
+        data.coursePricing
       ),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: STUDENT_COURSE_KEYS.myCourse(),
-      });
-    },
   });
 }
 
@@ -104,7 +87,11 @@ export function useCapturePaymentAndFinalizeOrderService() {
       capturePaymentAndFinalizeOrderService(paymentId),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: STUDENT_COURSE_KEYS.myCourse(),
+        queryKey: ["my-courses"],
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: ["studentCourseDetails"],
       });
     },
   });

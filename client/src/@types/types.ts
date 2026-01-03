@@ -24,7 +24,6 @@ export interface Course {
 }
 
 export interface Student {
-  _id: string;
   studentId: string;
   studentName: string;
   studentEmail: string;
@@ -32,7 +31,6 @@ export interface Student {
 }
 
 export interface Lecture {
-  _id: string;
   title: string;
   videoUrl: string;
   public_id: string;

@@ -20,7 +20,7 @@ type Props = {
   courseDetails: Course | undefined;
   activeTab: string;
   setActiveTab: Dispatch<SetStateAction<string>>;
-  currentLecture: Lecture | null; // Added this to highlight active video
+  currentLecture: Lecture | null;
   setCurrentLecture: (lecture: Lecture) => void;
 };
 
@@ -32,9 +32,6 @@ export default function CourseProgressSidebar({
   currentLecture,
   setCurrentLecture,
 }: Props) {
-  // Debugging: Check what the data actually looks like
-  console.log("Progress Array:", progress);
-  console.log("First Curriculum Item ID:", courseDetails?.curriculum?.[0]?._id);
 
   return (
     <Sidebar
@@ -72,7 +69,6 @@ export default function CourseProgressSidebar({
               <ScrollArea className="h-[calc(100vh-12rem)]">
                 <SidebarMenu>
                   {courseDetails?.curriculum?.map((item) => {
-                    // ROBUST CHECK: Ensure we are comparing strings
                     const isCompleted = progress?.some(
                       (p) =>
                         p.lectureId?.toString() === item._id?.toString() &&
@@ -85,7 +81,7 @@ export default function CourseProgressSidebar({
                     return (
                       <SidebarMenuItem key={item._id}>
                         <SidebarMenuButton
-                          isActive={isActive} // Highlights the active row
+                          isActive={isActive}
                           onClick={() => setCurrentLecture(item)}
                           className="h-auto py-3"
                         >
@@ -105,7 +101,6 @@ export default function CourseProgressSidebar({
                               )}
                             </div>
 
-                            {/* Title Logic */}
                             <span
                               className={`text-sm leading-tight line-clamp-2 ${
                                 isCompleted
