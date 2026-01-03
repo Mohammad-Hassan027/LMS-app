@@ -1,13 +1,29 @@
 import rateLimit from 'express-rate-limit';
 
-export const limiter = rateLimit({
+const createRateLimiter = (options) => {
+  return rateLimit({
+    windowMs: options.windowMs,
+    max: options.max,
+    message: options.message,
+    standardHeaders: true,
+    legacyHeaders: false,
+  });
+};
+
+export const globalRateLimiter = createRateLimiter({
   windowMs: 15 * 60 * 1000,
   max: 100,
   message: {
     error: 'Too many requests from this IP address',
     retryAfter: '15 minutes',
   },
-  standardHeaders: true,
-  legacyHeaders: false,
-  // skipSuccessfulRequests: true,
+});
+
+export const paymentRateLimiter = createRateLimiter({
+  windowMs: 1 * 60 * 60 * 1000,
+  max: 5,
+  message: {
+    error: 'Too many requests from this IP address',
+    retryAfter: '1 hour',
+  },
 });

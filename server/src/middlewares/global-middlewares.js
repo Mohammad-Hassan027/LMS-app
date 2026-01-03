@@ -6,11 +6,10 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import bodyParser from 'body-parser';
 
-
 export function middleware(app) {
-app.use(bodyParser.json());
-app.use(helmet());
-app.use(morgan('combined'));
+  app.use(bodyParser.json());
+  app.use(helmet());
+  app.use(morgan('combined'));
   app.use(
     cors({
       origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
@@ -28,9 +27,4 @@ app.use(morgan('combined'));
       publishableKey: process.env.CLERK_PUBLISHABLE_KEY,
     })
   );
-
-  app.use((err, req, res, next) => {
-    console.log(err.stack);
-    res.status(500).send('Something went wrong!');
-  });
 }
