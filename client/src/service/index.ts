@@ -6,7 +6,7 @@ import type {
   StudentCourses,
   LectureProgress,
   CourseProgress,
-} from "../types/types";
+} from "../@types/types";
 import axiosInstance from "./apiInstance";
 import type { AxiosProgressEvent } from "axios";
 
@@ -241,11 +241,11 @@ export async function getStudentViewCourseDetailsService(
 
 export async function checkIsStudentEnrolledService(
   courseId: string,
-  studentId: string
+  userId: string
 ) {
   try {
     const { data: response } = await axiosInstance.get<ApiResponse<boolean>>(
-      `/student/course/check-is-enrolled/${studentId}/${courseId}`
+      `/student/course/check-is-enrolled/${userId}/${courseId}`
     );
 
     return response.data;
@@ -317,11 +317,11 @@ export async function capturePaymentAndFinalizeOrderService(paymentId: string) {
 // STUDENT COURSES SERVICES
 // ==========================================
 
-export async function getMyCoursesService(studentId: string) {
+export async function getMyCoursesService(userId: string) {
   try {
     const { data: response } = await axiosInstance.get<
       ApiResponse<StudentCourses[]>
-    >(`/student/my-courses/get/${studentId}`);
+    >(`/student/my-courses/get/${userId}`);
 
     return response.data?.[0];
   } catch (error) {
@@ -336,17 +336,17 @@ export async function getMyCoursesService(studentId: string) {
 
 export async function getStudentCourseProgressService(
   courseId: string,
-  studentId: string
+  userId: string
 ): Promise<{
   isPurchased: boolean;
-  progress?: LectureProgress;
+  progress?: LectureProgress[];
   courseDetails?: Course;
   completed?: boolean;
   completionDate?: Date;
 }> {
   try {
     const { data: response } = await axiosInstance.get(
-      `/student/course-progess/get/${courseId}/${studentId}`
+      `/student/course-progess/get/${courseId}/${userId}`
     );
 
     return response.data;
@@ -358,16 +358,16 @@ export async function getStudentCourseProgressService(
 
 export async function markCurrentLectureAsViewedService(
   courseId: string,
-  studentId: string,
+  userId: string,
   lectureId: string
 ): Promise<CourseProgress> {
   try {
     const { data: response } = await axiosInstance.post(
-      `/student/course-progress/mark-lecture-viewed`,
+      `/student/course-progess/mark-lecture-viewed`,
       {
         lectureId,
         courseId,
-        studentId,
+        userId,
       }
     );
 
@@ -384,7 +384,7 @@ export async function resetCurrentCourseProgressService(
 ): Promise<CourseProgress> {
   try {
     const { data: response } = await axiosInstance.post(
-      `/student/course-progress/reset-progress`,
+      `/student/course-progess/reset-progress`,
       { userId, courseId }
     );
 

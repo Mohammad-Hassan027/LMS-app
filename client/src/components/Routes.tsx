@@ -2,7 +2,6 @@ import { SignedOut } from "@clerk/clerk-react";
 import ProtectedRoute from "./protected-route";
 import { Outlet, useRoutes } from "react-router-dom";
 import { lazy } from "react";
-import CourseProgressPage from "../pages/student/CourseProgressPage";
 
 const SignInPage = lazy(() => import("../pages/auth/SignInPage"));
 const SignUpPage = lazy(() => import("../pages/auth/SignUpPage"));
@@ -20,6 +19,9 @@ const CourseDetailsPage = lazy(
   () => import("../pages/student/CourseDetailsPage")
 );
 const MyCoursesPage = lazy(() => import("../pages/student/MyCoursesPage"));
+const CourseProgressPage = lazy(
+  () => import("../pages/student/CourseProgressPage")
+);
 
 export default function Routes() {
   const element = useRoutes([

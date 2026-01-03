@@ -15,10 +15,16 @@ import ReactPlayer from "react-player";
 
 export default function Player({
   url,
-  className,
+  width = 320,
+  height = 180,
+  onStart,
+  onEnded,
 }: {
   url: string;
-  className?: string;
+  width?: number;
+  height?: number;
+  onStart?: () => void;
+  onEnded?: () => void;
 }) {
   return (
     // // <MediaController
@@ -29,10 +35,13 @@ export default function Player({
     // // >
     //   {/* https://stream.mux.com/maVbJv2GSYNRgS02kPXOOGdJMWGU1mkA019ZUjYE7VU7k */}
     <ReactPlayer
+      width={width}
+      height={height}
       slot="media"
       src={url}
       controls
-      className={`mb-4 ${className ? className : "max-w-md"}`}
+      onStart={onStart}
+      onEnded={onEnded}
     ></ReactPlayer>
     //   {/* <MediaControlBar className="px-4">
     //     <MediaPlayButton />

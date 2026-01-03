@@ -71,10 +71,10 @@ export const getStudentViewCourseDetails = asyncHandler(async (req, res) => {
 });
 
 export const checkIsStudentEnrolled = asyncHandler(async (req, res) => {
-  const { studentId, courseId } = req.params;
+  const { userId, courseId } = req.params;
 
   const studentCourses = await StudentCourses.findOne({
-    userId: studentId,
+    userId: userId,
   });
 
   const ifStudentAlreadyBoughtCurrentCourse =

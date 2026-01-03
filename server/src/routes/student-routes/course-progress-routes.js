@@ -7,7 +7,7 @@ import {
 
 const router = Router();
 
-router.get('/get/:courseId/:studentId', getStudentCourseProgress);
+router.get('/get/:courseId/:userId', getStudentCourseProgress);
 router.post('/mark-lecture-viewed', markCurrentLectureAsViewed);
 router.post('/reset-progress', resetCurrentCourseProgress);
 

@@ -4,7 +4,7 @@ import {
   useCreateOrderService,
 } from "../service/studentQueries";
 import { toast } from "sonner";
-import type { Course } from "../types/types";
+import type { Course } from "../@types/types";
 import type { UserResource } from "@clerk/shared/types";
 
 const PaypalPayment = ({

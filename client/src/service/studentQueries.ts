@@ -15,7 +15,7 @@ export const STUDENT_COURSE_KEYS = {
   all: (sort?: string, filters?: FilterState) =>
     ["studentCourses", sort, filters] as const,
   details: (id: string) => ["studentCourseDetails", id] as const,
-  myCourse: (studentId?: string) => ["my-courses", studentId],
+  myCourse: (userId?: string) => ["my-courses", userId],
   progress: (courseId: string, userId: string) =>
     ["course-progress", courseId, userId] as const,
 };
@@ -110,11 +110,11 @@ export function useCapturePaymentAndFinalizeOrderService() {
   });
 }
 
-export function useGetMyCoursesService(studentId: string) {
+export function useGetMyCoursesService(userId: string) {
   return useQuery({
-    queryKey: STUDENT_COURSE_KEYS.myCourse(studentId),
-    queryFn: () => getMyCoursesService(studentId),
-    enabled: !!studentId && studentId !== "",
+    queryKey: STUDENT_COURSE_KEYS.myCourse(userId),
+    queryFn: () => getMyCoursesService(userId),
+    enabled: !!userId && userId !== "",
     staleTime: 1000 * 60 * 5,
   });
 }

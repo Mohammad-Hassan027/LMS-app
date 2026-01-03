@@ -4,9 +4,9 @@ import { asyncHandler } from '../../utils/asyncHandler.js';
 import StudentCourses from '../../models/StudentCourses.js';
 
 export const getStudentCourses = asyncHandler(async (req, res) => {
-  const { studentId } = req.params;
+  const { userId } = req.params;
 
-  const StudentCourse = await StudentCourses.find({ userId: studentId });
+  const StudentCourse = await StudentCourses.find({ userId: userId });
 
   // if (StudentCourse.length) {
   //   throw new ApiError(404, 'No Course Found.');

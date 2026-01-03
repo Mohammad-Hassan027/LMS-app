@@ -6,10 +6,10 @@ import StudentCourses from '../../models/StudentCourses.js';
 import Course from '../../models/Course.js';
 
 export const getStudentCourseProgress = asyncHandler(async (req, res) => {
-  const { courseId, studentId } = req.params;
+  const { courseId, userId } = req.params;
 
   const studentPurchasedCourses = await StudentCourses.findOne({
-    userId: studentId,
+    userId: userId,
   });
 
   const isCurrentCoursePurchasedByCurrentUserOrNot =
@@ -30,7 +30,7 @@ export const getStudentCourseProgress = asyncHandler(async (req, res) => {
   }
 
   const currentUserCourseProgress = await CourseProgress.findOne({
-    userId: studentId,
+    userId: userId,
     courseId,
   });
 

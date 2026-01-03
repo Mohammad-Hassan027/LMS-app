@@ -8,6 +8,6 @@ const router = Router();
 
 router.get('/get', getStudentViewAllCourses);
 router.get('/get/:courseId', getStudentViewCourseDetails);
-router.get('/check-is-enrolled/:studentId/:courseId', checkIsStudentEnrolled);
+router.get('/check-is-enrolled/:userId/:courseId', checkIsStudentEnrolled);
 
 export default router;
