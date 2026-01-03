@@ -6,6 +6,8 @@ import type {
   StudentCourses,
   LectureProgress,
   CourseProgress,
+  CreateCourse,
+  UpdateCourse,
 } from "../@types/types";
 import axiosInstance from "./apiInstance";
 import type { AxiosProgressEvent } from "axios";
@@ -109,7 +111,7 @@ export async function DeleteMediaService(
 // ==========================================
 
 export async function addNewCourseService(
-  formData: Omit<Course, "_id">
+  formData: CreateCourse
 ): Promise<Course> {
   try {
     const { data: response } = await axiosInstance.post<ApiResponse<Course>>(
@@ -124,10 +126,7 @@ export async function addNewCourseService(
 }
 
 export async function updateCourseService(
-  formData: Omit<
-    Course,
-    "_id" | "instructorId" | "instructorName" | "students"
-  >,
+  formData: UpdateCourse,
   id: string
 ): Promise<Course> {
   try {
