@@ -22,10 +22,23 @@ import studentViewCourseProgressRoutes from './routes/student-routes/course-prog
 app.get('/api/v1/health', (req, res) => res.status(200).json({ status: 'ok' }));
 app.use('/api/v1/media', requireAuth(), mediaRoutes);
 app.use('/api/v1/instructor/course', requireAuth(), instructorCourseRoutes);
+
+// Public Routes
 app.use('/api/v1/student/course', studentViewCourseRoutes);
-app.use('/api/v1/student/order', paymentRateLimiter, studentViewOrderRoutes);
-app.use('/api/v1/student/my-courses', studentViewMyCourseRoutes);
-app.use('/api/v1/student/course-progess', studentViewCourseProgressRoutes);
+
+// Protected Student Routes
+app.use(
+  '/api/v1/student/order',
+  requireAuth(),
+  paymentRateLimiter,
+  studentViewOrderRoutes
+);
+app.use('/api/v1/student/my-courses', requireAuth(), studentViewMyCourseRoutes);
+app.use(
+  '/api/v1/student/course-progress',
+  requireAuth(),
+  studentViewCourseProgressRoutes
+);
 
 // If user isn't authenticated, requireAuth() will redirect back to the homepage
 app.get('/api/v1/protected', requireAuth(), async (req, res) => {

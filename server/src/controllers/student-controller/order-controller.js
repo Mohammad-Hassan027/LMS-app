@@ -13,6 +13,8 @@ import StudentCourses from '../../models/StudentCourses.js';
 import { ApiError } from '../../utils/ApiError.js';
 import { ApiResponse } from '../../utils/ApiResponse.js';
 import { asyncHandler } from '../../utils/asyncHandler.js';
+import { validateId } from '../../utils/validateId.js';
+import { getAuth } from '@clerk/express';
 
 const { PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET } = process.env;
 
@@ -93,6 +95,7 @@ const capturePayPalOrder = async (orderID) => {
 };
 
 export const createOrder = asyncHandler(async (req, res) => {
+  const { userId: authUserId } = getAuth(req);
   const {
     userId,
     userName,
@@ -108,6 +111,13 @@ export const createOrder = asyncHandler(async (req, res) => {
     courseId,
     coursePricing,
   } = req.body;
+
+  validateId(userId, 'User ID');
+  validateId(courseId, 'Course ID');
+
+  if (authUserId !== userId) {
+    throw new ApiError(403, 'You are not authorized to view these courses.');
+  }
 
   // 1. Call PayPal
   const { jsonResponse, httpStatusCode } = await createPayPalOrder({
@@ -155,7 +165,7 @@ export const createOrder = asyncHandler(async (req, res) => {
 });
 
 export const captureOrder = asyncHandler(async (req, res) => {
-  const { orderID } = req.params; // This is the PayPal Order ID
+  const orderID = validateId(req.params.orderID, 'PayPal Order ID'); // This is the PayPal Order ID
 
   // 1. Capture Payment
   const { jsonResponse, httpStatusCode } = await capturePayPalOrder(orderID);

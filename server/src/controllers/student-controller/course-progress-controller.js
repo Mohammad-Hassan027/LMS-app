@@ -4,9 +4,19 @@ import { asyncHandler } from '../../utils/asyncHandler.js';
 import CourseProgress from '../../models/CourseProgress.js';
 import StudentCourses from '../../models/StudentCourses.js';
 import Course from '../../models/Course.js';
+import { validateId } from '../../utils/validateId.js';
+import { getAuth } from '@clerk/express';
 
 export const getStudentCourseProgress = asyncHandler(async (req, res) => {
+  const { userId: authUserId } = getAuth(req);
   const { courseId, userId } = req.params;
+
+  validateId(courseId, 'Course ID');
+  validateId(userId, 'User ID');
+
+  if (authUserId !== userId) {
+    throw new ApiError(403, 'You are not authorized to view these courses.');
+  }
 
   const studentPurchasedCourses = await StudentCourses.findOne({
     userId: userId,
@@ -30,7 +40,7 @@ export const getStudentCourseProgress = asyncHandler(async (req, res) => {
   }
 
   const currentUserCourseProgress = await CourseProgress.findOne({
-    userId: userId,
+    userId,
     courseId,
   });
 
@@ -70,7 +80,16 @@ export const getStudentCourseProgress = asyncHandler(async (req, res) => {
 });
 
 export const markCurrentLectureAsViewed = asyncHandler(async (req, res) => {
+  const { userId: authUserId } = getAuth(req);
   const { courseId, userId, lectureId } = req.body;
+
+  validateId(courseId, 'Course ID');
+  validateId(userId, 'User ID');
+  validateId(lectureId, 'Lecture ID');
+
+  if (authUserId !== userId) {
+    throw new ApiError(403, 'You are not authorized to view these courses.');
+  }
 
   let courseProgress = await CourseProgress.findOne({ courseId, userId });
 
@@ -132,9 +151,20 @@ export const markCurrentLectureAsViewed = asyncHandler(async (req, res) => {
 });
 
 export const resetCurrentCourseProgress = asyncHandler(async (req, res) => {
+  const { userId: authUserId } = getAuth(req);
   const { userId, courseId } = req.body;
 
-  const progress = await CourseProgress.findOne({ userId, courseId });
+  validateId(userId, 'User ID');
+  validateId(courseId, 'Course ID');
+
+  if (authUserId !== userId) {
+    throw new ApiError(403, 'You are not authorized to view these courses.');
+  }
+
+  const progress = await CourseProgress.findOne({
+    userId: { $eq: userId },
+    courseId: { $eq: courseId },
+  });
 
   if (!progress) {
     throw new ApiError(404, 'Course progress not found');

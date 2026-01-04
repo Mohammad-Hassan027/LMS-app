@@ -8,6 +8,10 @@ cloudinary.config({
 });
 
 const uploadMediaToCloudinary = async (filePath, options = {}) => {
+  if (typeof filePath !== 'string' || filePath.includes('..')) {
+    throw new Error('Invalid file path');
+  }
+
   if (!filePath || !fs.existsSync(filePath)) {
     throw new Error('File path is invalid or file does not exist');
   }
@@ -24,7 +28,9 @@ const uploadMediaToCloudinary = async (filePath, options = {}) => {
     };
     return data;
   } catch (error) {
-    fs.unlinkSync(filePath);
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
+    }
     console.log('Error inside uploadMediaToCloudinary:', error);
     throw new Error(`Cloudinary upload failed: ${error.message}`);
   }

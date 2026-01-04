@@ -1,8 +1,10 @@
+import { getAuth } from '@clerk/express';
 import Course from '../../models/Course.js';
 import StudentCourses from '../../models/StudentCourses.js';
 import { ApiError } from '../../utils/ApiError.js';
 import { ApiResponse } from '../../utils/ApiResponse.js';
 import { asyncHandler } from '../../utils/asyncHandler.js';
+import { validateId } from '../../utils/validateId.js';
 
 export const getStudentViewAllCourses = asyncHandler(async (req, res) => {
   const {
@@ -55,7 +57,7 @@ export const getStudentViewAllCourses = asyncHandler(async (req, res) => {
 });
 
 export const getStudentViewCourseDetails = asyncHandler(async (req, res) => {
-  const { courseId } = req.params;
+  const courseId = validateId(req.params.courseId, 'Course ID');
 
   const courseDetails = await Course.findById(courseId);
 
@@ -71,20 +73,28 @@ export const getStudentViewCourseDetails = asyncHandler(async (req, res) => {
 });
 
 export const checkIsStudentEnrolled = asyncHandler(async (req, res) => {
-  const { userId, courseId } = req.params;
+  const { userId: authUserId } = getAuth(req);
+  const courseId = validateId(req.params.courseId, 'Course ID');
+  const paramUserId = validateId(req.params.userId, 'Student ID');
+
+  if (authUserId !== paramUserId) {
+    throw new ApiError(403, 'You are not authorized to view these courses.');
+  }
 
   const studentCourses = await StudentCourses.findOne({
-    userId: userId,
+    userId: paramUserId,
   });
 
-  const ifStudentAlreadyBoughtCurrentCourse =
-    studentCourses.courses.findIndex((item) => item.courseId === courseId) > -1;
+  const isEnrolled = studentCourses
+    ? studentCourses.courses.some((item) => item.courseId === courseId)
+    : false;
+
   res
     .status(200)
     .json(
       new ApiResponse(
         200,
-        ifStudentAlreadyBoughtCurrentCourse,
+        isEnrolled,
         'Successfully checked is student enrolled'
       )
     );

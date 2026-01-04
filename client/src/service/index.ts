@@ -319,10 +319,10 @@ export async function capturePaymentAndFinalizeOrderService(paymentId: string) {
 export async function getMyCoursesService(userId: string) {
   try {
     const { data: response } = await axiosInstance.get<
-      ApiResponse<StudentCourses[]>
+      ApiResponse<StudentCourses>
     >(`/student/my-courses/get/${userId}`);
 
-    return response.data?.[0];
+    return response.data;
   } catch (error) {
     console.error("getMyCoursesService Error:", error);
     throw error;
@@ -345,7 +345,7 @@ export async function getStudentCourseProgressService(
 }> {
   try {
     const { data: response } = await axiosInstance.get(
-      `/student/course-progess/get/${courseId}/${userId}`
+      `/student/course-progress/get/${courseId}/${userId}`
     );
 
     return response.data;
@@ -362,7 +362,7 @@ export async function markCurrentLectureAsViewedService(
 ): Promise<CourseProgress> {
   try {
     const { data: response } = await axiosInstance.post(
-      `/student/course-progess/mark-lecture-viewed`,
+      `/student/course-progress/mark-lecture-viewed`,
       {
         lectureId,
         courseId,
@@ -383,7 +383,7 @@ export async function resetCurrentCourseProgressService(
 ): Promise<CourseProgress> {
   try {
     const { data: response } = await axiosInstance.post(
-      `/student/course-progess/reset-progress`,
+      `/student/course-progress/reset-progress`,
       { userId, courseId }
     );
 
