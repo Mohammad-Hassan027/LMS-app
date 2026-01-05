@@ -6,73 +6,41 @@ import Loader from "../Loader";
 interface ProtectedRouteProps {
   children: ReactNode;
   allowedRoles?: string[];
-  authPath?: string;
-  homePath?: string;
-  instructorPath?: string;
-}
-
-// Define the expected shape of publicMetadata
-interface PublicMetadata {
-  role?: string;
-  roles?: string[];
+  redirectPath?: string;
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   children,
   allowedRoles,
-  authPath = "/login",
-  homePath = "/",
-  instructorPath = "/instructor",
+  redirectPath = "/login",
 }) => {
-  const { isLoaded: authLoaded, isSignedIn } = useAuth();
-  const { isLoaded: userLoaded, user } = useUser();
+  const { isLoaded, isSignedIn } = useAuth();
+  const { user } = useUser();
   const location = useLocation();
 
-  if (!authLoaded || !userLoaded) {
+  if (!isLoaded) {
     return <Loader height={"h-screen"} />;
   }
 
-  if (!isSignedIn || !user) {
-    return <Navigate to={authPath} />;
+  if (!isSignedIn) {
+    // Redirect them to login, but save where they were trying to go
+    return <Navigate to={redirectPath} state={{ from: location }} replace />;
   }
 
-  // Type-safe role extraction
-  const metadata = user.publicMetadata as PublicMetadata;
-  const rawRoles = metadata.roles ?? metadata.role;
+  if (allowedRoles && allowedRoles.length > 0) {
+    const metadata = user?.publicMetadata;
+    const rawRoles = metadata?.roles || metadata?.role;
 
-  const userRoles: string[] = Array.isArray(rawRoles)
-    ? rawRoles
-    : typeof rawRoles === "string"
-    ? rawRoles
-        .split(",")
-        .map((r) => r.trim())
-        .filter(Boolean)
-    : [];
+    const userRoles = Array.isArray(rawRoles)
+      ? rawRoles
+      : typeof rawRoles === "string"
+      ? [rawRoles]
+      : [];
 
-  const isOnAuthPath =
-    location.pathname.includes(authPath.replace(/^\//, "")) ||
-    location.pathname.includes("/auth");
-  const isOnInstructorPath = location.pathname.includes("instructor");
-  const isInstructor = userRoles.includes("instructor");
+    const hasPermission = allowedRoles.some((role) => userRoles.includes(role));
 
-  if (!isSignedIn && !isOnAuthPath) {
-    return <Navigate to={authPath} />;
-  }
-
-  if (isSignedIn && !isInstructor && (isOnInstructorPath || isOnAuthPath)) {
-    return <Navigate to={homePath} />;
-  }
-
-  if (isSignedIn && isInstructor && !isOnInstructorPath) {
-    return <Navigate to={instructorPath} />;
-  }
-
-  if (allowedRoles) {
-    const hasRequiredRole = allowedRoles.some((role) =>
-      userRoles.includes(role)
-    );
-    if (!hasRequiredRole) {
-      return <Navigate to="/unauthorized" />;
+    if (!hasPermission) {
+      return <Navigate to="/unauthorized" replace />;
     }
   }
 

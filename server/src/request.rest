@@ -1,5 +1,35 @@
-@hostname = localhost:5000
-#r
-GET https://{{hostname}}/health
+### Variables
+@hostname = http://localhost:5000/api/v1
+@instructorID = user_35KrOENaArVbYTctGD6FA53LrWv
+@userID = user_37KgIjVrK2jXkwmYpcT7o5LZ3qe
 
-## Media Upload
+# Open Console (F12) and type: await window.Clerk.session.getToken()
+@token = eyJhbGciOiJSUzI1NiIsImNhdCI6ImNsX0I3ZDRQRDExMUFBQSIsImtpZCI6Imluc18zM2diUFEzUzV6TUJwNXkxamxkTU9VRURzVHAiLCJ0eXAiOiJKV1QifQ.eyJhenAiOiJodHRwOi8vbG9jYWxob3N0OjUxNzMiLCJleHAiOjE3Njc2MTE1NzgsImZ2YSI6WzIzNTksLTFdLCJpYXQiOjE3Njc2MTE1MTgsImlzcyI6Imh0dHBzOi8vZW5hYmxlZC1zY3VscGluLTQ2LmNsZXJrLmFjY291bnRzLmRldiIsIm5iZiI6MTc2NzYxMTUwOCwic2lkIjoic2Vzc18zN2xGczZGRVJQUmFwbmRsOW9senZGdUNXdFgiLCJzdHMiOiJhY3RpdmUiLCJzdWIiOiJ1c2VyXzM1S3JPRU5hQXJWYllUY3RHRDZGQTUzTHJXdiIsInYiOjJ9.S6QbbIK0NiL_GnWVsaiM_cAxmP86R3PAAkxpEjoazs4BAzXpfpniKI_cqOmb6ebsRTouK7KmZ-ylCOUnrJ72uyoOzHMwIkrTm4oYUuXaukeJOyANA1G1MkCeiRIvNVaAjxEPMrjBOQXODUMsIVlUG2Kc9RKsKB3a6bwxzU3Y-nw1ROQ8gGi15mKBZD4WehN8Y5cxDClhDSUUN0BV_bwEdoAbQxSHhHp5lWhU3I87j9aHn5p5QUXHvsPnOHcqqGmB8IEHxbmZy6qv6PdsWQp7FrqsJdnLqrrM_DH19UZUjXbUH8lEtUlkpci9VCFc25df_v5jCvTGPVEFo8LZxCfRZQ
+
+###
+
+### 1. Health Check
+GET {{hostname}}/health
+
+###
+
+### 2. Test Protected Route
+GET {{hostname}}/protected
+Authorization: Bearer {{token}}
+
+###
+
+### 3. Upload Media (Protected)
+POST {{hostname}}/media/upload
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "file": "imagelink.png"
+}
+
+###
+
+### 4. Get Instructor Courses (Protected)
+GET {{hostname}}/instructor/course/get/{{instructorID}}
+Authorization: Bearer {{token}}

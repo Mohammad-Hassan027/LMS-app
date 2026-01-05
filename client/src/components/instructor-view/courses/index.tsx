@@ -73,8 +73,12 @@ function InstructorCoursesList({ instructorId }: { instructorId: string }) {
                     <TableCell>{course?.students?.length}</TableCell>
                     <TableCell>
                       $
-                      {(course?.students?.length || 0) *
-                        (Number(course?.pricing) || 0)}
+                      {course.students
+                        .reduce(
+                          (total, s) => total + Number(s.paidAmount || 0),
+                          0
+                        )
+                        .toLocaleString()}
                     </TableCell>
                     <TableCell className="text-center flex gap-1 justify-center">
                       <Button

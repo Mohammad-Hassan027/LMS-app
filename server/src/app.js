@@ -1,5 +1,5 @@
 import express from 'express';
-import { requireAuth, getAuth, clerkClient } from '@clerk/express';
+import { clerkClient, getAuth, requireAuth } from '@clerk/express';
 import { middleware } from './middlewares/global-middlewares.js';
 import {
   globalRateLimiter,
@@ -12,6 +12,7 @@ const app = express();
 middleware(app);
 app.use(globalRateLimiter);
 
+import { requireRole } from './middlewares/auth-middleware.js';
 import mediaRoutes from './routes/instructor-routes/media-routes.js';
 import instructorCourseRoutes from './routes/instructor-routes/course-routes.js';
 import studentViewCourseRoutes from './routes/student-routes/course-routes.js';
@@ -21,7 +22,12 @@ import studentViewCourseProgressRoutes from './routes/student-routes/course-prog
 
 app.get('/api/v1/health', (req, res) => res.status(200).json({ status: 'ok' }));
 app.use('/api/v1/media', requireAuth(), mediaRoutes);
-app.use('/api/v1/instructor/course', requireAuth(), instructorCourseRoutes);
+app.use(
+  '/api/v1/instructor/course',
+  requireAuth(),
+  requireRole('instructor'),
+  instructorCourseRoutes
+);
 
 // Public Routes
 app.use('/api/v1/student/course', studentViewCourseRoutes);
