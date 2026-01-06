@@ -9,6 +9,7 @@ import { globalErrorHandler } from './middlewares/error-handler.js';
 
 const app = express();
 
+app.set('trust proxy', 1);
 middleware(app);
 app.use(globalRateLimiter);
 
@@ -35,7 +36,7 @@ app.use('/api/v1/student/course', studentViewCourseRoutes);
 // Protected Student Routes
 app.use(
   '/api/v1/student/order',
-  requireAuth(),
+  // requireAuth(),
   paymentRateLimiter,
   studentViewOrderRoutes
 );

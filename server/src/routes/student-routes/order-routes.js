@@ -3,12 +3,15 @@ import {
   createOrder,
   captureOrder,
 } from '../../controllers/student-controller/order-controller.js';
+import { handlePayPalWebhook } from '../../controllers/student-controller/webhook-controller.js';
+import { requireAuth } from '@clerk/express';
 
 const router = Router();
 
-router.post('/create', createOrder);
+router.post('/create', requireAuth(), createOrder);
 
-// Updated: We now pass the PayPal Order ID in the URL
-router.post('/capture/:orderID', captureOrder);
+router.post('/capture/:paymentId', requireAuth(), captureOrder);
+
+router.post('/webhook', handlePayPalWebhook);
 
 export default router;

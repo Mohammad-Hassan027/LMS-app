@@ -15,6 +15,7 @@ import { ApiResponse } from '../../utils/ApiResponse.js';
 import { asyncHandler } from '../../utils/asyncHandler.js';
 import { validateId } from '../../utils/validateId.js';
 import { getAuth } from '@clerk/express';
+import mongoose from 'mongoose';
 
 const { PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET } = process.env;
 
@@ -165,80 +166,128 @@ export const createOrder = asyncHandler(async (req, res) => {
 });
 
 export const captureOrder = asyncHandler(async (req, res) => {
-  const orderID = validateId(req.params.orderID, 'PayPal Order ID'); // This is the PayPal Order ID
+  const { paymentId } = req.params;
 
-  // 1. Capture Payment
-  const { jsonResponse, httpStatusCode } = await capturePayPalOrder(orderID);
+  if (!paymentId) {
+    throw new ApiError(400, 'Payment ID is required');
+  }
 
-  // 2. Check if the payment was actually completed
-  if (jsonResponse.status === 'COMPLETED') {
-    // 3. Find the pending order in your DB
-    const order = await Order.findOne({ paymentId: orderID });
+  // 1. Idempotency Check: Prevent double-processing
+  const existingOrder = await Order.findOne({ paymentId });
+  if (existingOrder && existingOrder.paymentStatus === 'paid') {
+    return res
+      .status(200)
+      .json(new ApiResponse(200, existingOrder, 'Order already confirmed'));
+  }
 
+  // 2. Call PayPal to capture the payment
+  const { jsonResponse, httpStatusCode } = await capturePayPalOrder(paymentId);
+
+  if (!jsonResponse) {
+    throw new ApiError(500, 'Empty response from PayPal');
+  }
+
+  const { status } = jsonResponse;
+
+  // 3. Start Transaction
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
+    const order = await Order.findOne({ paymentId }).session(session);
     if (!order) {
       throw new ApiError(404, 'Order not found');
     }
 
-    // 4. Update Order Status
-    order.paymentStatus = 'paid';
-    order.orderStatus = 'confirmed';
-    order.payerId = jsonResponse.payer?.payer_id || 'N/A';
+    // --- CASE A: PAYMENT COMPLETED (Money Received) ---
+    if (status === 'COMPLETED') {
+      // 1. Update Order
+      order.paymentStatus = 'paid';
+      order.orderStatus = 'confirmed';
+      order.payerId = jsonResponse?.payer?.payer_id || 'Guest_User';
+      await order.save({ session });
 
-    await order.save();
+      // 2. Update Student Courses (Enrollment)
+      await StudentCourses.findOneAndUpdate(
+        { userId: order.userId },
+        {
+          $addToSet: {
+            courses: {
+              courseId: order.courseId,
+              title: order.courseTitle,
+              instructorId: order.instructorId,
+              instructorName: order.instructorName,
+              dateOfPurchase: order.orderDate,
+              courseImage: order.courseImage,
+            },
+          },
+        },
+        { upsert: true, new: true, session }
+      );
 
-    // 5. Update Student Courses
-    const studentCourses = await StudentCourses.findOne({
-      userId: order.userId,
-    });
+      // 3. Update Course Schema (Add Student)
+      await Course.findByIdAndUpdate(
+        order.courseId,
+        {
+          $addToSet: {
+            students: {
+              studentId: order.userId,
+              studentName: order.userName,
+              studentEmail: order.userEmail,
+              paidAmount: order.coursePricing,
+            },
+          },
+        },
+        { session }
+      );
 
-    const courseData = {
-      courseId: order.courseId,
-      title: order.courseTitle,
-      instructorId: order.instructorId,
-      instructorName: order.instructorName,
-      dateOfPurchase: order.orderDate,
-      courseImage: order.courseImage,
-    };
+      await session.commitTransaction();
 
-    if (studentCourses) {
-      studentCourses.courses.push(courseData);
-      await studentCourses.save();
-    } else {
-      const newStudentCourses = new StudentCourses({
-        userId: order.userId,
-        courses: [courseData],
-      });
-      await newStudentCourses.save();
+      return res
+        .status(200)
+        .json(
+          new ApiResponse(200, order, 'Order confirmed and payment captured')
+        );
     }
 
-    // 6. Update Course Schema
-    await Course.findByIdAndUpdate(order.courseId, {
-      $addToSet: {
-        students: {
-          studentId: order.userId,
-          studentName: order.userName,
-          studentEmail: order.userEmail,
-          paidAmount: order.coursePricing,
-        },
-      },
-    });
+    // --- CASE B: PAYMENT PENDING (Money Processing) ---
+    else if (status === 'PENDING') {
+      // We do NOT enroll the student yet. We just note that payment is processing.
+      order.paymentStatus = 'pending_approval';
+      order.orderStatus = 'pending';
+      order.payerId = jsonResponse?.payer?.payer_id || 'Guest_User';
 
-    // 7. Success Response
-    res
-      .status(200)
-      .json(
-        new ApiResponse(200, order, 'Order confirmed and payment captured')
-      );
-  } else {
-    // Payment not completed
-    res
-      .status(httpStatusCode)
-      .json(
-        new ApiResponse(
-          httpStatusCode,
-          jsonResponse,
-          'Payment was not completed'
-        )
-      );
+      await order.save({ session });
+      await session.commitTransaction();
+
+      return res
+        .status(200)
+        .json(
+          new ApiResponse(
+            200,
+            order,
+            'Payment is pending approval. You will be enrolled once the payment clears.'
+          )
+        );
+    }
+
+    // --- CASE C: FAILED OR OTHER ---
+    else {
+      await session.abortTransaction();
+      return res
+        .status(httpStatusCode)
+        .json(
+          new ApiResponse(
+            httpStatusCode,
+            jsonResponse,
+            'Payment failed or was cancelled'
+          )
+        );
+    }
+  } catch (error) {
+    await session.abortTransaction();
+    throw error;
+  } finally {
+    session.endSession();
   }
 });

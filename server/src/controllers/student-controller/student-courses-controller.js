@@ -17,7 +17,7 @@ export const getStudentCourses = asyncHandler(async (req, res) => {
 
   const StudentCourse = await StudentCourses.findOne({ userId: paramUserId });
 
-  if (StudentCourse.length) {
+  if (StudentCourse) {
     throw new ApiError(404, 'No Course Found.');
   }
 

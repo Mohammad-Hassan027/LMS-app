@@ -5,6 +5,7 @@ import { ApiError } from '../../utils/ApiError.js';
 import { ApiResponse } from '../../utils/ApiResponse.js';
 import { asyncHandler } from '../../utils/asyncHandler.js';
 import { validateId } from '../../utils/validateId.js';
+import { log } from 'console';
 
 export const getStudentViewAllCourses = asyncHandler(async (req, res) => {
   const {
@@ -62,6 +63,8 @@ export const getStudentViewCourseDetails = asyncHandler(async (req, res) => {
   const courseDetails = await Course.findById(courseId);
 
   if (!courseDetails) {
+    console.log(courseDetails);
+
     throw new ApiError(404, 'Course not found!');
   }
 

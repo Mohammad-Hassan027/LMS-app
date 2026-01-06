@@ -36,7 +36,7 @@ export const getCourseDetailsById = asyncHandler(async (req, res) => {
 
 export const getAllCoursesByInstructorId = asyncHandler(async (req, res) => {
   const { userId: authUserId } = getAuth(req);
-  const id = validateId(req.params.id, 'Instructor ID');
+  const id = req.params.id;
 
   if (authUserId !== id) {
     throw new ApiError(403, 'You are not authorized to view these courses.');
@@ -44,14 +44,18 @@ export const getAllCoursesByInstructorId = asyncHandler(async (req, res) => {
 
   const coursesByInstructorId = await Course.find({ instructorId: id });
 
-  if (!coursesByInstructorId || coursesByInstructorId.length === 0) {
-    throw new ApiError(404, 'No courses available for this instructor');
-  }
+  // if (!coursesByInstructorId || coursesByInstructorId.length === 0) {
+  //   throw new ApiError(404, 'No courses available for this instructor');
+  // }
 
   res
     .status(200)
     .json(
-      new ApiResponse(200, coursesByInstructorId, 'Instructor courses fetched')
+      new ApiResponse(
+        200,
+        coursesByInstructorId || [],
+        'Instructor courses fetched'
+      )
     );
 });
 
