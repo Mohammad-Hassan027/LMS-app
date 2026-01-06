@@ -1,7 +1,7 @@
 import { createRoot } from "react-dom/client";
-import "./index.css";
-import App from "./App.tsx";
-import AppWrapper from "./components/AppWrapper.tsx";
+import "@/index.css";
+import App from "@/App.tsx";
+import AppWrapper from "@/components/AppWrapper.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <AppWrapper>

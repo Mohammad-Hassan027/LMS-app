@@ -1,10 +1,10 @@
 import { BarChart, Book, LogOut } from "lucide-react";
-import InstructorDashboard from "../../components/instructor-view/dashboard";
-import InstructorCourses from "../../components/instructor-view/courses";
-import { Button } from "../../components/ui/button";
-import { Tabs, TabsContent } from "../../components/ui/tabs";
+import InstructorDashboard from "@/components/instructor-view/dashboard";
+import InstructorCourses from "@/components/instructor-view/courses";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { useClerk } from "@clerk/clerk-react";
-import { useInstructorContext } from "../../contexts/Instructor/hook";
+import { useInstructorContext } from "@/contexts/Instructor/hook";
 
 function InstructorDashboardPage() {
   const { activeTab, setActiveTab } = useInstructorContext();

@@ -1,6 +1,6 @@
 import { Delete, Edit } from "lucide-react";
-import { Button } from "../../ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "../../ui/card";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -8,19 +8,19 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "../../ui/table";
+} from "@/components/ui/table";
 import { useNavigate } from "react-router-dom";
-import { useInstructorContext } from "../../../contexts/Instructor/hook";
+import { useInstructorContext } from "@/contexts/Instructor/hook";
 import {
   courseCurriculumInitialFormData,
   courseLandingInitialFormData,
-} from "../../../config";
+} from "@/config";
 import { useUser } from "@clerk/clerk-react";
 import {
   useDeleteCourseService,
   useInstructorCoursesService,
-} from "../../../service/instructorQueries";
-import Loader from "../../Loader";
+} from "@/service/instructorQueries";
+import Loader from "@/components/Loader";
 import { Suspense } from "react";
 
 function InstructorCoursesList({ instructorId }: { instructorId: string }) {

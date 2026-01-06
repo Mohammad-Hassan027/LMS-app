@@ -2,34 +2,34 @@ import { Suspense } from "react";
 import { ArrowUpDownIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import {
-  parseAsArrayOf,
-  parseAsString,
+  // parseAsArrayOf,
+  // parseAsString,
   useQueryState,
-  useQueryStates,
+  // useQueryStates,
 } from "nuqs";
 
-import CoursesSidebar, {
-  type FilterState,
-} from "../../components/student-view/courses/CoursesSidebar";
-import Loader from "../../components/Loader";
-import { Button } from "../../components/ui/button";
-import { Card, CardContent, CardTitle } from "../../components/ui/card";
+import Loader from "@/components/Loader";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
-} from "../../components/ui/dropdown-menu";
+} from "@/components/ui/dropdown-menu";
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
-} from "../../components/ui/sidebar";
-import { sortOptions } from "../../config";
-import { useStudentAllCoursesService } from "../../service/studentQueries";
+} from "@/components/ui/sidebar";
+import { sortOptions } from "@/config";
+import { useStudentAllCoursesService } from "@/service/studentQueries";
+import CoursesSidebar from "@/components/student-view/courses/CoursesSidebar";
+import { useFilters } from "@/hooks/use-filters";
 
-function CoursesContent({ filters }: { filters: FilterState }) {
+function CoursesContent() {
+  const { filters } = useFilters();
   const navigate = useNavigate();
 
   const [sort, setSort] = useQueryState("sort", {
@@ -123,20 +123,14 @@ function CoursesContent({ filters }: { filters: FilterState }) {
 }
 
 export default function CoursesPage() {
-  const [filters, setFilters] = useQueryStates({
-    category: parseAsArrayOf(parseAsString),
-    level: parseAsArrayOf(parseAsString),
-    primaryLanguage: parseAsArrayOf(parseAsString),
-  });
-
   return (
     <div className="flex min-h-screen w-full">
-      <SidebarProvider>
-        <CoursesSidebar filters={filters} setFilters={setFilters} />
+      <SidebarProvider defaultOpen={true}>
+        <CoursesSidebar />
 
         <SidebarInset className="flex flex-col">
           <Suspense fallback={<Loader height="h-screen" />}>
-            <CoursesContent filters={filters} />
+            <CoursesContent />
           </Suspense>
         </SidebarInset>
       </SidebarProvider>

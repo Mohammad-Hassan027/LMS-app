@@ -13,8 +13,8 @@ import {
   getStudentCourseProgressService,
   resetCurrentCourseProgressService,
   markCurrentLectureAsViewedService,
-} from ".";
-import type { FilterState } from "../components/student-view/courses/CoursesSidebar";
+} from "@/service";
+import type { FilterState } from "@/hooks/use-filters";
 
 export const STUDENT_COURSE_KEYS = {
   all: (sort?: string, filters?: FilterState) =>

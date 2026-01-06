@@ -1,5 +1,5 @@
 import { Outlet } from "react-router-dom";
-import StudentViewHeader from "./StudentViewHeader";
+import StudentViewHeader from "@/components/student-view/StudentViewHeader";
 
 function StudentViewLayout() {
   return (

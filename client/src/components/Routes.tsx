@@ -1,26 +1,26 @@
 import { SignedOut } from "@clerk/clerk-react";
-import ProtectedRoute from "./protected-route";
+import ProtectedRoute from "@/components/protected-route";
 import { Outlet, useRoutes } from "react-router-dom";
 import { lazy } from "react";
 
-const SignInPage = lazy(() => import("../pages/auth/SignInPage"));
-const SignUpPage = lazy(() => import("../pages/auth/SignUpPage"));
-const HomePage = lazy(() => import("../pages/student/HomePage"));
-const InstructorDashboardPage = lazy(() => import("../pages/instructor"));
+const SignInPage = lazy(() => import("@/pages/auth/SignInPage"));
+const SignUpPage = lazy(() => import("@/pages/auth/SignUpPage"));
+const HomePage = lazy(() => import("@/pages/student/HomePage"));
+const InstructorDashboardPage = lazy(() => import("@/pages/instructor"));
 const StudentViewLayout = lazy(
-  () => import("./student-view/StudentViewLayout")
+  () => import("@/components/student-view/StudentViewLayout")
 );
 const InstructorViewLayout = lazy(
-  () => import("./instructor-view/InstructorViewLayout")
+  () => import("@/components/instructor-view/InstructorViewLayout")
 );
-const AddNewCoursePage = lazy(() => import("../pages/instructor/addNewCourse"));
-const CoursesPage = lazy(() => import("../pages/student/CoursesPage"));
+const AddNewCoursePage = lazy(() => import("@/pages/instructor/addNewCourse"));
+const CoursesPage = lazy(() => import("@/pages/student/CoursesPage"));
 const CourseDetailsPage = lazy(
-  () => import("../pages/student/CourseDetailsPage")
+  () => import("@/pages/student/CourseDetailsPage")
 );
-const MyCoursesPage = lazy(() => import("../pages/student/MyCoursesPage"));
+const MyCoursesPage = lazy(() => import("@/pages/student/MyCoursesPage"));
 const CourseProgressPage = lazy(
-  () => import("../pages/student/CourseProgressPage")
+  () => import("@/pages/student/CourseProgressPage")
 );
 
 export default function Routes() {

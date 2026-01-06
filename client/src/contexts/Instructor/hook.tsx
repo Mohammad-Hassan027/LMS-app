@@ -7,7 +7,7 @@ import {
 import type {
   courseCurriculumInitialFormData,
   courseLandingInitialFormData,
-} from "../../config";
+} from "@/config";
 
 type CourseLandingFormType = typeof courseLandingInitialFormData;
 export type CourseCurriculumFormType = typeof courseCurriculumInitialFormData;

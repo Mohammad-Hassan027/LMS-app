@@ -1,25 +1,20 @@
 import { useNavigate, useParams } from "react-router-dom";
-import { useStudentViewCourseDetailsService } from "../../service/studentQueries";
-import Loader from "../../components/Loader";
+import { useStudentViewCourseDetailsService } from "@/service/studentQueries";
+import Loader from "@/components/Loader";
 import { CheckCircle, Globe, Lock, PlayCircle, Video } from "lucide-react";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "../../components/ui/card";
-import Player from "../../components/video-player";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import Player from "@/components/video-player";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogDescription,
-} from "../../components/ui/dialog";
+} from "@/components/ui/dialog";
 import { Suspense, useEffect, useState } from "react";
-import PaypalPayment from "../../components/PaypalPayment";
+import PaypalPayment from "@/components/PaypalPayment";
 import { useUser } from "@clerk/clerk-react";
-import { checkIsStudentEnrolledService } from "../../service";
+import { checkIsStudentEnrolledService } from "@/service";
 import type { UserResource } from "@clerk/shared/types";
 
 function CourseDetailsContent({

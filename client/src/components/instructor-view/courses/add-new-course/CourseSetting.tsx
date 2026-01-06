@@ -1,9 +1,9 @@
-import { useInstructorContext } from "../../../../contexts/Instructor/hook";
-import { UploadMediaService } from "../../../../service";
-import MediaProgressBar from "../../../media-progress-bar";
-import { Card, CardContent, CardHeader, CardTitle } from "../../../ui/card";
-import { Input } from "../../../ui/input";
-import { Label } from "../../../ui/label";
+import { useInstructorContext } from "@/contexts/Instructor/hook";
+import { UploadMediaService } from "@/service";
+import MediaProgressBar from "@/components/media-progress-bar";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 function CourseSetting() {
   const {

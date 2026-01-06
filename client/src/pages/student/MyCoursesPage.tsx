@@ -1,8 +1,8 @@
 import { useUser } from "@clerk/clerk-react";
-import { useGetMyCoursesService } from "../../service/studentQueries";
-import { Card, CardContent, CardTitle } from "../../components/ui/card";
-import Loader from "../../components/Loader";
-import { Button } from "../../components/ui/button";
+import { useGetMyCoursesService } from "@/service/studentQueries";
+import { Card, CardContent, CardTitle } from "@/components/ui/card";
+import Loader from "@/components/Loader";
+import { Button } from "@/components/ui/button";
 import { WatchIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 

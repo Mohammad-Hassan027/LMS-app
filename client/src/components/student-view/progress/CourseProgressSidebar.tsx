@@ -1,5 +1,5 @@
 import type { Dispatch, SetStateAction } from "react";
-import { Button } from "../../ui/button";
+import { Button } from "@/components/ui/button";
 import {
   Sidebar,
   SidebarContent,
@@ -10,10 +10,10 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
-} from "../../ui/sidebar";
-import { ScrollArea } from "../../ui/scroll-area";
+} from "@/components/ui/sidebar";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { PlayCircle, CheckCircle } from "lucide-react";
-import type { Course, Lecture, LectureProgress } from "../../../@types/types";
+import type { Course, Lecture, LectureProgress } from "@/@types/types";
 
 type Props = {
   progress: LectureProgress[] | undefined;
@@ -32,7 +32,6 @@ export default function CourseProgressSidebar({
   currentLecture,
   setCurrentLecture,
 }: Props) {
-
   return (
     <Sidebar
       side="right"

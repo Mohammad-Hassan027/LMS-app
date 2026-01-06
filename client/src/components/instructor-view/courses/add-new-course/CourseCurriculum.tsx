@@ -1,20 +1,20 @@
 import { toast } from "sonner";
-import { useInstructorContext } from "../../../../contexts/Instructor/hook";
+import { useInstructorContext } from "@/contexts/Instructor/hook";
 import {
   DeleteMediaService,
   UploadBulkMediaService,
   UploadMediaService,
-} from "../../../../service";
-import MediaProgressBar from "../../../media-progress-bar";
-import { Button } from "../../../ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "../../../ui/card";
-import { Input } from "../../../ui/input";
-import { Label } from "../../../ui/label";
-import { Switch } from "../../../ui/switch";
-import Player from "../../../video-player";
+} from "@/service";
+import MediaProgressBar from "@/components/media-progress-bar";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import Player from "@/components/video-player";
 import { useRef } from "react";
 import { Upload } from "lucide-react";
-import type { CourseCurriculumFormType } from "../../../../contexts/Instructor/hook";
+import type { CourseCurriculumFormType } from "@/contexts/Instructor/hook";
 
 function CourseCurriculum() {
   const {

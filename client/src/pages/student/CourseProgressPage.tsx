@@ -1,31 +1,31 @@
 import { useUser } from "@clerk/clerk-react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Button } from "../../components/ui/button";
+import { Button } from "@/components/ui/button";
 import { ChevronLeftIcon } from "lucide-react";
 import {
   useGetStudentCourseProgressService,
   useMarkCurrentLectureAsViewedService,
   useResetCurrentCourseProgressService,
-} from "../../service/studentQueries";
+} from "@/service/studentQueries";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "../../components/ui/dialog";
-import Loader from "../../components/Loader";
+} from "@/components/ui/dialog";
+import Loader from "@/components/Loader";
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
-} from "../../components/ui/sidebar";
+} from "@/components/ui/sidebar";
 import { useEffect, useState } from "react";
-import CourseProgressSidebar from "../../components/student-view/progress/CourseProgressSidebar";
-import type { Lecture } from "../../@types/types";
-import Player from "../../components/video-player";
+import CourseProgressSidebar from "@/components/student-view/progress/CourseProgressSidebar";
+import type { Lecture } from "@/@types/types";
+import Player from "@/components/video-player";
 import Confetti from "react-confetti";
-import { Label } from "../../components/ui/label";
+import { Label } from "@/components/ui/label";
 
 export default function CourseProgressPage() {
   const navigate = useNavigate();

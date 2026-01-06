@@ -1,7 +1,7 @@
 import { Fragment, type ReactNode } from "react";
 import { useAuth, useUser } from "@clerk/clerk-react";
 import { Navigate, useLocation } from "react-router-dom";
-import Loader from "../Loader";
+import Loader from "@/components/Loader";
 
 interface ProtectedRouteProps {
   children: ReactNode;

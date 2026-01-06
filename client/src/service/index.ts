@@ -1,4 +1,4 @@
-import type { FilterState } from "../components/student-view/courses/CoursesSidebar";
+
 import type {
   ApiResponse,
   MediaData,
@@ -8,8 +8,9 @@ import type {
   CourseProgress,
   CreateCourse,
   UpdateCourse,
-} from "../@types/types";
-import axiosInstance from "./apiInstance";
+} from "@/@types/types";
+import type { FilterState } from "@/hooks/use-filters";
+import axiosInstance from "@/service/apiInstance";
 import type { AxiosProgressEvent } from "axios";
 
 // export async function ProtectedService() {

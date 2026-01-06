@@ -1,6 +1,8 @@
 import type { Dispatch, SetStateAction, FormEvent } from "react";
-import { Button } from "../ui/button";
-import FormControls, { type FormControlItem } from "./FormControls";
+import { Button } from "@/components/ui/button";
+import FormControls, {
+  type FormControlItem,
+} from "@/components/common-form/FormControls";
 
 interface CommonFormProps<T extends Record<string, string>> {
   formControls: FormControlItem[];

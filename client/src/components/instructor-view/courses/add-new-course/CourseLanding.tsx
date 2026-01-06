@@ -1,7 +1,7 @@
-import { courseLandingPageFormControls } from "../../../../config";
-import { useInstructorContext } from "../../../../contexts/Instructor/hook";
-import CommonForm from "../../../common-form";
-import { Card, CardContent, CardHeader, CardTitle } from "../../../ui/card";
+import { courseLandingPageFormControls } from "@/config";
+import { useInstructorContext } from "@/contexts/Instructor/hook";
+import CommonForm from "@/components/common-form";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 function CourseLanding() {
   const { courseLandingFormData, setCourseLandingFormData } =

@@ -6,10 +6,10 @@ import {
   UserButton,
 } from "@clerk/clerk-react";
 import { GraduationCap } from "lucide-react";
-import InstructorCourses from "./courses";
-import InstructorDashboard from "./dashboard";
-import { Button } from "../ui/button";
-import { useInstructorContext } from "../../contexts/Instructor/hook";
+import InstructorCourses from "@/components/instructor-view/courses";
+import InstructorDashboard from "@/components/instructor-view/dashboard";
+import { Button } from "@/components/ui/button";
+import { useInstructorContext } from "@/contexts/Instructor/hook";
 
 function InstructorViewLayout() {
   const { activeTab, setActiveTab } = useInstructorContext();
@@ -31,9 +31,7 @@ function InstructorViewLayout() {
       <header className="px-4 lg:px-6 h-16 flex items-center justify-between border-b">
         <Link to={"/"} className="flex items-center justify-center">
           <GraduationCap className="h-7 w-7 sm:h-8 sm:w-8 mr-4" />
-          <span className="font-extrabold text-base sm:text-xl">
-            LMS LERN
-          </span>
+          <span className="font-extrabold text-base sm:text-xl">LMS LERN</span>
         </Link>
         <div className="flex items-center gap-2">
           <div className="flex md:hidden">

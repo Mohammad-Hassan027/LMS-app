@@ -5,26 +5,21 @@ import {
   useAddNewCourseService,
   useCourseDetailsForInstructorService,
   useUpdateCourseService,
-} from "../../service/instructorQueries";
-import { useInstructorContext } from "../../contexts/Instructor/hook";
+} from "@/service/instructorQueries";
+import { useInstructorContext } from "@/contexts/Instructor/hook";
 import {
   courseCurriculumInitialFormData,
   courseLandingInitialFormData,
-} from "../../config";
-import { isEmpty } from "../../utils";
+} from "@/config";
+import { isEmpty } from "@/utils";
 
-import Loader from "../../components/Loader";
-import { Button } from "../../components/ui/button";
-import { Card, CardContent } from "../../components/ui/card";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "../../components/ui/tabs";
-import CourseCurriculum from "../../components/instructor-view/courses/add-new-course/CourseCurriculum";
-import CourseLanding from "../../components/instructor-view/courses/add-new-course/CourseLanding";
-import CourseSetting from "../../components/instructor-view/courses/add-new-course/CourseSetting";
+import Loader from "@/components/Loader";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import CourseCurriculum from "@/components/instructor-view/courses/add-new-course/CourseCurriculum";
+import CourseLanding from "@/components/instructor-view/courses/add-new-course/CourseLanding";
+import CourseSetting from "@/components/instructor-view/courses/add-new-course/CourseSetting";
 
 function InstructorCourseForm({
   isEditMode = false,

@@ -8,31 +8,15 @@ import {
   SidebarGroupLabel,
   SidebarHeader,
   SidebarRail,
-} from "../../../components/ui/sidebar";
-import { filterOptions } from "../../../config";
-import { Button } from "../../ui/button";
-import { Checkbox } from "../../ui/checkbox";
-import { Label } from "../../ui/label";
+} from "@/components/ui/sidebar";
+import { filterOptions } from "@/config";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import { useFilters, type FilterState } from "@/hooks/use-filters";
 
-export type FilterState = {
-  category: string[] | null;
-  level: string[] | null;
-  primaryLanguage: string[] | null;
-};
-
-type CoursesSidebarProps = {
-  filters: FilterState;
-  setFilters: (
-    update:
-      | Partial<FilterState>
-      | ((old: FilterState) => Partial<FilterState> | null)
-  ) => Promise<URLSearchParams>;
-};
-
-export default function CoursesSidebar({
-  filters,
-  setFilters,
-}: CoursesSidebarProps) {
+export default function CoursesSidebar() {
+  const { filters, setFilters } = useFilters();
   function handleFilterOnChange(
     sectionId: keyof FilterState,
     option: { id: string; label: string }

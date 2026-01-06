@@ -9,8 +9,8 @@ import {
   updateCourseService,
   deleteCourseService,
   addNewCourseService,
-} from "./index";
-import type { CreateCourse, UpdateCourse } from "../@types/types";
+} from "@/service";
+import type { CreateCourse, UpdateCourse } from "@/@types/types";
 
 export const COURSE_KEYS = {
   all: ["instructorCourses"] as const,

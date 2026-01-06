@@ -1,9 +1,9 @@
 import { BrowserRouter } from "react-router-dom";
 import { ClerkProvider } from "@clerk/clerk-react";
-import InstructorProvider from "../contexts/Instructor/index.tsx";
-import { Toaster } from "./ui/sonner.tsx";
+import InstructorProvider from "@/contexts/Instructor/index.tsx";
+import { Toaster } from "@/components/ui/sonner.tsx";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import StudentContextProvider from "../contexts/student/index.tsx";
+import StudentContextProvider from "@/contexts/student/index.tsx";
 import type { ReactElement } from "react";
 import { NuqsAdapter } from "nuqs/adapters/react";
 import { PayPalScriptProvider } from "@paypal/react-paypal-js";

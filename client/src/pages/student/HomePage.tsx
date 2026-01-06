@@ -1,9 +1,9 @@
 import { useNavigate } from "react-router-dom";
-import Loader from "../../components/Loader";
-import { Button } from "../../components/ui/button";
-import { courseCategories } from "../../config";
-import { useStudentAllCoursesService } from "../../service/studentQueries";
-import { Card, CardContent } from "../../components/ui/card";
+import Loader from "@/components/Loader";
+import { Button } from "@/components/ui/button";
+import { courseCategories } from "@/config";
+import { useStudentAllCoursesService } from "@/service/studentQueries";
+import { Card, CardContent } from "@/components/ui/card";
 
 function HomePage() {
   const navigate = useNavigate();

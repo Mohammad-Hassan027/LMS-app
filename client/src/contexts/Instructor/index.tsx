@@ -3,8 +3,8 @@ import { useState, type ReactNode } from "react";
 import {
   courseCurriculumInitialFormData,
   courseLandingInitialFormData,
-} from "../../config";
-import { InstructorContext } from "./hook";
+} from "@/config";
+import { InstructorContext } from "@/contexts/Instructor/hook";
 
 export default function InstructorProvider({
   children,
