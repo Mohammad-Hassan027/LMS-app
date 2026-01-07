@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 import Order from '../../models/Order.js';
 import StudentCourses from '../../models/StudentCourses.js';
 import Course from '../../models/Course.js';
+import { verifyPayPalSignature } from './../../utils/paypalVerification';
 
 // Helper function to finalize enrollment (Dry logic)
 const finalizeEnrollment = async (orderId, paymentId, payerId, session) => {
@@ -13,7 +14,7 @@ const finalizeEnrollment = async (orderId, paymentId, payerId, session) => {
   // 1. Update Order Status
   order.paymentStatus = 'paid';
   order.orderStatus = 'confirmed';
-  order.payerId = payerId || 'N/A';
+  order.payerId = payerId || 'Guest_User';
   await order.save({ session });
 
   // 2. Update Student Courses
@@ -56,6 +57,13 @@ export const handlePayPalWebhook = async (req, res) => {
   // the request actually came from PayPal.
   // const isValid = await verifyPayPalSignature(req);
   // if (!isValid) return res.status(400).send('Invalid Signature');
+
+  const isValid = await verifyPayPalSignature(req);
+
+  if (!isValid) {
+    console.error('⚠️ Security Warning: Fake PayPal Webhook detected!');
+    return res.status(400).send('Invalid Signature');
+  }
 
   const event = req.body;
   const eventType = event.event_type;
