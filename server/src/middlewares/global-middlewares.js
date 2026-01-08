@@ -3,7 +3,7 @@ import cors from 'cors';
 import { clerkMiddleware } from '@clerk/express';
 import helmet from 'helmet';
 import morgan from 'morgan';
-import connectDB from '../db';
+import connectDB from '../db/index.js';
 // import mongoSanitize from 'express-mongo-sanitize';
 
 export function middleware(app) {
