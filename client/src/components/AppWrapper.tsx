@@ -7,6 +7,7 @@ import StudentContextProvider from "@/contexts/student/index.tsx";
 import type { ReactElement } from "react";
 import { NuqsAdapter } from "nuqs/adapters/react";
 import { PayPalScriptProvider } from "@paypal/react-paypal-js";
+import AxiosInterceptor from "./AxiosInterceptor";
 
 // Environment Variables
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
@@ -40,12 +41,14 @@ export default function AppWrapper({ children }: { children: ReactElement }) {
               signUpUrl={import.meta.env.VITE_CLERK_SIGN_UP_URL}
               afterSignOutUrl={import.meta.env.VITE_CLERK_SIGN_IN_URL}
             >
-              <InstructorProvider>
-                <StudentContextProvider>
-                  {children}
-                  <Toaster />
-                </StudentContextProvider>
-              </InstructorProvider>
+              <AxiosInterceptor>
+                <InstructorProvider>
+                  <StudentContextProvider>
+                    {children}
+                    <Toaster />
+                  </StudentContextProvider>
+                </InstructorProvider>
+              </AxiosInterceptor>
             </ClerkProvider>
           </PayPalScriptProvider>
         </QueryClientProvider>
