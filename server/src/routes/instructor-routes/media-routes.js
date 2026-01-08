@@ -1,3 +1,4 @@
+import os from 'os';
 import { Router } from 'express';
 import {
   uploadMediaToCloudinary,
@@ -7,7 +8,7 @@ import multer from 'multer';
 
 const router = Router();
 
-const upload = multer({ dest: 'uploads/' });
+const upload = multer({ dest: os.tmpdir() });
 
 router.post('/upload', upload.single('file'), async (req, res) => {
   if (!req.file) {
