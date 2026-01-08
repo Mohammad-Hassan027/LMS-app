@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import Order from '../../models/Order.js';
 import StudentCourses from '../../models/StudentCourses.js';
 import Course from '../../models/Course.js';
-import { verifyPayPalSignature } from './../../utils/paypalVerification';
+import { verifyPayPalSignature } from './../../utils/paypalVerification.js';
 
 // Helper function to finalize enrollment (Dry logic)
 const finalizeEnrollment = async (orderId, paymentId, payerId, session) => {

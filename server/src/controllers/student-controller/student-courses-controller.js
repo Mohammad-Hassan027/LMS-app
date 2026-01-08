@@ -17,9 +17,9 @@ export const getStudentCourses = asyncHandler(async (req, res) => {
 
   const StudentCourse = await StudentCourses.findOne({ userId: paramUserId });
 
-  if (StudentCourse) {
-    throw new ApiError(404, 'No Course Found.');
-  }
+  // if (!StudentCourse) {
+  //   throw new ApiError(404, 'No Course Found.');
+  // }
 
   return res
     .status(200)
