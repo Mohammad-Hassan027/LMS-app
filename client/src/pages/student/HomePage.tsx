@@ -61,7 +61,7 @@ function HomePage() {
                     <img
                       width={300}
                       height={150}
-                      src={course.image}
+                      src={course.image.replace("http://", "https://")}
                       alt={`course-image`}
                       className="w-full h-40 object-cover"
                     />

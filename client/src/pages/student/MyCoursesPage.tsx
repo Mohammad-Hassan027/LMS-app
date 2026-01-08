@@ -31,7 +31,7 @@ function MyCourses() {
               <img
                 width={300}
                 height={150}
-                src={course.courseImage}
+                src={course.courseImage.replace("http://", "https://")}
                 alt={`course-image`}
                 className="object-cover"
               />
