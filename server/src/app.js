@@ -9,8 +9,8 @@ import { globalErrorHandler } from './middlewares/error-handler.js';
 
 const app = express();
 
-app.set('trust proxy', 1);
 middleware(app);
+app.set('trust proxy', 1);
 app.use(globalRateLimiter);
 
 import { requireRole } from './middlewares/auth-middleware.js';
