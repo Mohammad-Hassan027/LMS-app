@@ -43,17 +43,19 @@ function CoursesContent() {
 
   return (
     <div className="flex flex-col h-full">
-      <header className="flex justify-between h-14 items-center border-b px-2 lg:h-[60px] shrink-0">
-        <div className="flex items-center gap-2">
+      <header className="flex justify-between h-14 items-center border-b px-0 sm:px-2 lg:h-[60px] shrink-0">
+        <div className="flex items-center gap-1 sm:gap-2">
           <SidebarTrigger />
-          <span className="font-semibold">Course Catalog</span>
+          <span className="font-semibold tracking-tight sm:tracking-normal">
+            Course Catalog
+          </span>
         </div>
         <div className="mr-4 flex items-center gap-2">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button className="flex items-center gap-1" variant={"outline"}>
-                <ArrowUpDownIcon className="h-4 w-4" />
-                <span>Sort By</span>
+                <ArrowUpDownIcon className="h-1 w-1 sm:h-4 sm:w-4" />
+                <span className="hidden sm:flex">Sort By</span>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
@@ -70,7 +72,7 @@ function CoursesContent() {
             </DropdownMenuContent>
           </DropdownMenu>
 
-          <span className="text-sm font-semibold text-gray-900">
+          <span className="text-sm font-semibold text-gray-900 tracking-tight sm:tracking-normal">
             {studentViewCoursesList?.length || 0} Results
           </span>
         </div>
@@ -85,12 +87,12 @@ function CoursesContent() {
                 key={`course-id-${course._id}`}
                 onClick={() => navigate(`/course/details/${course._id}`)}
               >
-                <CardContent className="flex gap-4 p-4">
+                <CardContent className="flex flex-col sm:flex-row gap-4 p-4">
                   <picture className="w-56 h-40 shrink-0">
                     <img
                       width={300}
                       height={150}
-                      src={course.image.replace("http://", "https://")}
+                      src={course.image}
                       alt={`course-image`}
                       className="w-full h-full object-cover"
                     />

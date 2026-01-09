@@ -61,9 +61,7 @@ function CourseSetting() {
         <div className="flex flex-col gap-3">
           <Label>Upload Course Image</Label>
           {courseLandingFormData.image && (
-            <img
-              src={courseLandingFormData.image.replace("http://", "https://")}
-            />
+            <img src={courseLandingFormData.image} />
           )}
           <Input
             type="file"

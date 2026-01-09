@@ -16,7 +16,7 @@ function HomePage() {
 
   return (
     <div>
-      <section className="mt-10 flex flex-col md:flex-row items-center gap-10">
+      <section className="mt-5 md:mt-10 p-6 flex flex-col md:flex-row items-center gap-10">
         <div>
           <picture className="">
             <img src="/Hero.png" alt="Hero image" height={700} width={700} />
@@ -61,7 +61,7 @@ function HomePage() {
                     <img
                       width={300}
                       height={150}
-                      src={course.image.replace("http://", "https://")}
+                      src={course.image}
                       alt={`course-image`}
                       className="w-full h-40 object-cover"
                     />
