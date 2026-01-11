@@ -1,4 +1,3 @@
-import { useUser } from "@clerk/clerk-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ChevronLeftIcon } from "lucide-react";
@@ -25,7 +24,7 @@ import CourseProgressSidebar from "@/components/student-view/progress/CourseProg
 import type { Lecture } from "@/@types/types";
 import Player from "@/components/video-player";
 import Confetti from "react-confetti";
-// import { Label } from "@/components/ui/label";
+import { useProtectedUser } from "@/hooks/useProtectedUser";
 
 export default function CourseProgressPage() {
   const navigate = useNavigate();
@@ -36,17 +35,18 @@ export default function CourseProgressPage() {
   const [showConfetti, setShowConfetti] = useState(false);
 
   const { courseId } = useParams();
-  const { user } = useUser();
+
+  const user = useProtectedUser();
 
   const { data, isLoading, refetch } = useGetStudentCourseProgressService(
     courseId || "",
-    user?.id || ""
+    user.id
   );
   const { mutateAsync: markCurrentLectureAsViewed } =
-    useMarkCurrentLectureAsViewedService(courseId || "", user?.id || "");
+    useMarkCurrentLectureAsViewedService(courseId || "", user.id);
   const { mutateAsync: resetProgress } = useResetCurrentCourseProgressService(
     courseId || "",
-    user?.id || ""
+    user.id
   );
 
   async function handleVideoEnded() {
@@ -173,7 +173,6 @@ export default function CourseProgressPage() {
             </h2>
           </div>
 
-          {/* Only show Sidebar Toggle on Desktop (Mobile uses Sheet) */}
           <SidebarTrigger className="hidden md:flex" />
         </header>
 

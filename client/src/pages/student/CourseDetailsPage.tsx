@@ -22,7 +22,7 @@ function CourseDetailsContent({
   user,
 }: {
   courseId: string;
-  user: UserResource | null;
+  user: UserResource | null | undefined;
 }) {
   const navigate = useNavigate();
   const [showFreePreviewDialog, setShowFreePreviewDialog] = useState(false);
@@ -56,7 +56,7 @@ function CourseDetailsContent({
         }
       } catch (e) {
         if (!canceled) setIsEnrollmentChecking(false);
-        console.log(e);
+        console.error(e);
       }
     })();
 
@@ -70,8 +70,7 @@ function CourseDetailsContent({
       setFreePreviewLectureVideoUrl(videoUrl);
       setShowFreePreviewDialog(true);
     }
-
-    // Optional: Add an else block to show a toast like "Buy the course to watch this"
+    // Optional: Add toast for non-free lectures
   };
 
   const capitalize = (str: string) => {
@@ -250,11 +249,9 @@ function CourseDetailsContent({
 
 function CourseDetails() {
   const { courseId } = useParams();
-  const { user, isLoaded } = useUser();
+  const { user } = useUser();
 
   if (!courseId) return <div>Invalid Course ID</div>;
-
-  if (!isLoaded) return <Loader height="h-screen" />;
 
   return (
     <Suspense fallback={<Loader height="h-screen" />}>

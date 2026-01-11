@@ -15,13 +15,13 @@ import {
   courseCurriculumInitialFormData,
   courseLandingInitialFormData,
 } from "@/config";
-import { useUser } from "@clerk/clerk-react";
 import {
   useDeleteCourseService,
   useInstructorCoursesService,
 } from "@/service/instructorQueries";
 import Loader from "@/components/Loader";
 import { Suspense } from "react";
+import { useProtectedUser } from "@/hooks/useProtectedUser";
 
 function InstructorCoursesList({ instructorId }: { instructorId: string }) {
   const navigate = useNavigate();
@@ -116,12 +116,7 @@ function InstructorCoursesList({ instructorId }: { instructorId: string }) {
 }
 
 function InstructorCourses() {
-  const { user, isLoaded } = useUser();
-
-  if (!isLoaded) return <Loader height="h-15 ml-5" />;
-
-  // Guard against missing user (should normally be handled by protected route)
-  if (!user?.id) return null;
+  const user = useProtectedUser();
 
   return (
     <Suspense fallback={<Loader height="h-15 ml-5" />}>

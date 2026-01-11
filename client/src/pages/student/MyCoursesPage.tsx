@@ -1,17 +1,15 @@
-import { useUser } from "@clerk/clerk-react";
 import { useGetMyCoursesService } from "@/service/studentQueries";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import Loader from "@/components/Loader";
 import { Button } from "@/components/ui/button";
 import { WatchIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { Suspense } from "react";
+import { useProtectedUser } from "@/hooks/useProtectedUser";
 
-function MyCourses() {
+function MyCoursesList({ userId }: { userId: string }) {
   const navigate = useNavigate();
-  const { user } = useUser();
-  const { data, isLoading } = useGetMyCoursesService(user?.id || "");
-
-  if (isLoading) return <Loader height="h-screen" />;
+  const { data } = useGetMyCoursesService(userId);
 
   const courseList = data?.courses || [];
 
@@ -21,7 +19,7 @@ function MyCourses() {
 
   return (
     <div className="flex flex-wrap gap-6 p-6">
-      {courseList?.map((course) => (
+      {courseList.map((course) => (
         <Card
           key={course.courseId}
           className="cursor-pointer hover:shadow-lg transition-shadow"
@@ -54,6 +52,16 @@ function MyCourses() {
         </Card>
       ))}
     </div>
+  );
+}
+
+function MyCourses() {
+  const user = useProtectedUser();
+
+  return (
+    <Suspense fallback={<Loader height="h-screen" />}>
+      <MyCoursesList userId={user.id} />
+    </Suspense>
   );
 }
 

@@ -1,6 +1,5 @@
 import { useEffect, Suspense } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useUser } from "@clerk/clerk-react";
 import {
   useAddNewCourseService,
   useCourseDetailsForInstructorService,
@@ -20,6 +19,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import CourseCurriculum from "@/components/instructor-view/courses/add-new-course/CourseCurriculum";
 import CourseLanding from "@/components/instructor-view/courses/add-new-course/CourseLanding";
 import CourseSetting from "@/components/instructor-view/courses/add-new-course/CourseSetting";
+import { useProtectedUser } from "@/hooks/useProtectedUser";
 
 function InstructorCourseForm({
   isEditMode = false,
@@ -36,7 +36,7 @@ function InstructorCourseForm({
     setCurrentEditedCourseId,
   } = useInstructorContext();
 
-  const { user } = useUser();
+  const user = useProtectedUser();
   const navigate = useNavigate();
 
   const { mutateAsync: addNewCourse } = useAddNewCourseService();
@@ -69,7 +69,7 @@ function InstructorCourseForm({
   }
 
   async function handleSubmit() {
-    if (!user || !user.fullName) return;
+    if (!user.fullName) return;
     if (!validateFormData()) return;
 
     const commonData = {
@@ -208,11 +208,8 @@ function CreateCourseEntry() {
 }
 
 function AddNewCoursePage() {
-  const { user, isLoaded } = useUser();
   const params = useParams<{ courseId: string }>();
 
-  if (!isLoaded) return <Loader />;
-  if (!user?.id) return null;
 
   const isEdit = !!params.courseId;
 
