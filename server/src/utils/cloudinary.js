@@ -24,7 +24,7 @@ const uploadMediaToCloudinary = async (filePath, options = {}) => {
     });
     fs.unlinkSync(filePath);
     const data = {
-      url: result.url,
+      url: result.secure_url,
       public_id: result.public_id,
     };
     return data;
@@ -43,7 +43,7 @@ const deleteMediaFromCloudinary = async (publicId, resourceType = 'image') => {
       resource_type: resourceType,
     });
     const data = {
-      url: result.url,
+      url: result.secure_url,
       public_id: result.public_id,
     };
     return data;

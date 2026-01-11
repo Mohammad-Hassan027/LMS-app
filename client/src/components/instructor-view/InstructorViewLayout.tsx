@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import {
   SignedIn,
   SignedOut,
@@ -22,6 +22,11 @@ import { useInstructorContext } from "@/contexts/Instructor/hook";
 function InstructorViewLayout() {
   const { activeTab, setActiveTab } = useInstructorContext();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const isRootInstructorPath =
+    location.pathname === "/instructor" || location.pathname === "/instructor/";
 
   const menuItems = [
     {
@@ -53,6 +58,7 @@ function InstructorViewLayout() {
           : "text-muted-foreground"
       }`}
       onClick={() => {
+        navigate("/instructor");
         setActiveTab(item.value);
         if (isMobile) setIsMobileMenuOpen(false);
       }}
@@ -111,10 +117,14 @@ function InstructorViewLayout() {
 
         {/* SCROLLABLE BODY CONTENT */}
         <main className="flex-1 overflow-y-auto p-4 md:p-6 bg-gray-50">
-          {menuItems.map((item) =>
-            item.value === activeTab ? (
-              <div key={item.value}>{item.component}</div>
-            ) : null
+          {isRootInstructorPath ? (
+            menuItems.map((item) =>
+              item.value === activeTab ? (
+                <div key={item.value}>{item.component}</div>
+              ) : null
+            )
+          ) : (
+            <Outlet />
           )}
         </main>
       </div>
