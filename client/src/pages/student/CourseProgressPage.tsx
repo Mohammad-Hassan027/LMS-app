@@ -25,7 +25,7 @@ import CourseProgressSidebar from "@/components/student-view/progress/CourseProg
 import type { Lecture } from "@/@types/types";
 import Player from "@/components/video-player";
 import Confetti from "react-confetti";
-import { Label } from "@/components/ui/label";
+// import { Label } from "@/components/ui/label";
 
 export default function CourseProgressPage() {
   const navigate = useNavigate();
@@ -52,9 +52,6 @@ export default function CourseProgressPage() {
   async function handleVideoEnded() {
     if (currentLecture?._id) {
       await markCurrentLectureAsViewed(currentLecture._id);
-      // Optional: If you want to auto-advance to the next video, you can do it here
-      // by finding the next index and settingCurrentLecture.
-      // For now, refetching will update the sidebar progress checkmarks.
       await refetch();
     }
   }
@@ -91,11 +88,10 @@ export default function CourseProgressPage() {
       const safeIndex =
         nextIndex < data.courseDetails.curriculum.length
           ? nextIndex
-          : lastViewedIndex; // Stay on the last video if finished
+          : lastViewedIndex;
 
       setCurrentLecture(data.courseDetails.curriculum[safeIndex]);
     } else if (!currentLecture && data?.courseDetails?.curriculum?.length) {
-      // Fallback if progress array is empty/mismatched
       setCurrentLecture(data.courseDetails.curriculum[0]);
     }
   }, [data, currentLecture]);
@@ -111,17 +107,25 @@ export default function CourseProgressPage() {
 
   if (!data || !data.isPurchased) {
     return (
-      <div className="h-screen flex items-center justify-center">
+      <div className="h-screen flex items-center justify-center bg-background">
         <Dialog open>
-          <DialogHeader>
-            <DialogTitle>
-              You need to purchase this course to access it.
-            </DialogTitle>
-          </DialogHeader>
-          <DialogContent>
-            <Button onClick={() => navigate(`/course/details/${courseId}`)}>
-              Go to Course Details Page
-            </Button>
+          <DialogContent className="w-[90%] max-w-md rounded-xl border-none shadow-xl">
+            <DialogHeader className="space-y-3">
+              <DialogTitle className="text-center text-xl font-bold">
+                Access Restricted 🔒
+              </DialogTitle>
+              <DialogDescription className="text-center text-base">
+                You need to purchase this course to access the content.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="mt-4">
+              <Button
+                className="w-full h-12 text-base rounded-lg"
+                onClick={() => navigate(`/course/details/${courseId}`)}
+              >
+                Go to Course Details
+              </Button>
+            </div>
           </DialogContent>
         </Dialog>
       </div>
@@ -129,49 +133,76 @@ export default function CourseProgressPage() {
   }
 
   return (
-    <SidebarProvider defaultOpen={true}>
-      {showConfetti && <Confetti />}
-      <SidebarInset className="h-screen overflow-hidden flex flex-col">
-        <header className="flex h-14 shrink-0 items-center justify-between border-b bg-background px-4 lg:h-[60px] transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
-          <div className="flex items-center gap-4">
+    <SidebarProvider
+      defaultOpen={true}
+      className="flex flex-col md:flex-row h-screen overflow-hidden"
+    >
+      {showConfetti && (
+        <Confetti
+          width={window.innerWidth}
+          height={window.innerHeight}
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            zIndex: 100, // High enough to see, but usually pointer-events-none helps
+            pointerEvents: "none", // Allows clicking through the confetti
+          }}
+          numberOfPieces={500}
+          recycle={false}
+          onConfettiComplete={() => setShowConfetti(false)}
+        />
+      )}
+
+      <SidebarInset className="flex-1 flex flex-col h-full overflow-hidden">
+        {/* HEADER */}
+        <header className="flex h-14 shrink-0 items-center justify-between border-b bg-background px-4 lg:h-[60px]">
+          <div className="flex items-center gap-2 lg:gap-4 overflow-hidden">
             <Button
               onClick={() => navigate("/my-courses")}
               variant="ghost"
               size="sm"
-              className="flex items-center gap-2"
+              className="flex items-center gap-2 shrink-0"
             >
               <ChevronLeftIcon className="w-4 h-4" />
-              Back
+              <span className="hidden sm:inline">Back</span>
             </Button>
-            <h2 className="text-lg font-bold truncate max-w-[300px] md:max-w-md">
+
+            <h2 className="text-sm md:text-lg font-bold truncate max-w-[200px] md:max-w-md">
               {data.courseDetails?.title}
             </h2>
           </div>
-          <SidebarTrigger />
+
+          {/* Only show Sidebar Toggle on Desktop (Mobile uses Sheet) */}
+          <SidebarTrigger className="hidden md:flex" />
         </header>
 
-        <main className="flex-1 overflow-auto p-4 bg-muted/20 flex flex-col items-center">
-          <div className="w-full max-w-4xl space-y-4">
+        {/* MAIN SCROLLABLE CONTENT */}
+        <main className="flex-1 overflow-y-auto p-2 md:p-4 bg-muted/20 flex flex-col">
+          <div className="w-full max-w-4xl mx-auto space-y-4">
+            {/* Title above video */}
             <div className="flex items-center justify-between">
-              <h3 className="text-xl font-semibold">{currentLecture?.title}</h3>
+              <h3 className="text-lg md:text-xl font-semibold line-clamp-2">
+                {currentLecture?.title}
+              </h3>
             </div>
 
-            <div className="aspect-video bg-black rounded-xl overflow-hidden shadow-lg flex items-center justify-center text-white relative">
+            {/* Video Player Container */}
+            <div className="w-full aspect-video bg-black rounded-xl overflow-hidden shadow-lg flex items-center justify-center text-white relative">
               {currentLecture ? (
                 <Player
                   url={currentLecture?.videoUrl}
-                  width={800}
-                  height={400}
                   onStart={() => console.log("Video started")}
                   onEnded={handleVideoEnded}
                 />
               ) : (
-                <div className="text-muted-foreground">
+                <div className="text-muted-foreground p-4 text-center">
                   Select a lecture to start
                 </div>
               )}
             </div>
 
+            {/* Lecture Description */}
             <div className="p-4 bg-background rounded-lg border">
               <h4 className="font-medium mb-2">About this lecture</h4>
               <p className="text-sm text-muted-foreground">
@@ -191,20 +222,43 @@ export default function CourseProgressPage() {
         currentLecture={currentLecture}
       />
 
-      <Dialog open={showCourseCompleteDialog}>
-        <DialogContent className="sm:w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Congratulations!</DialogTitle>
-            <DialogDescription className="flex flex-col gap-3">
-              <Label>You have completed the course</Label>
+      {/* COMPLETION DIALOG */}
+      <Dialog
+        open={showCourseCompleteDialog}
+        onOpenChange={setShowCourseCompleteDialog}
+      >
+        <DialogContent className="w-[90%] max-w-md rounded-xl border-none shadow-2xl p-6">
+          <DialogHeader className="items-center space-y-4">
+            <div className="text-4xl animate-bounce">🎉</div>
+
+            <DialogTitle className="text-2xl font-extrabold text-center">
+              Congratulations!
+            </DialogTitle>
+
+            <DialogDescription className="text-center text-base font-medium text-muted-foreground">
+              You have successfully completed the course: <br />
+              <span className="text-foreground font-bold mt-1 block">
+                {data.courseDetails?.title}
+              </span>
             </DialogDescription>
-            <div className="flex flex-row gap-3">
-              <Button onClick={() => navigate("/my-courses")}>
-                My Courses Page
-              </Button>
-              <Button onClick={handleRewatchCourse}>Rewatch Course</Button>
-            </div>
           </DialogHeader>
+
+          <div className="flex flex-col gap-3 pt-6">
+            <Button
+              className="w-full h-11 text-base rounded-lg shadow-md"
+              onClick={() => navigate("/my-courses")}
+            >
+              Go to My Courses
+            </Button>
+
+            <Button
+              variant="outline"
+              className="w-full h-11 text-base rounded-lg border-gray-300"
+              onClick={handleRewatchCourse}
+            >
+              Rewatch Course
+            </Button>
+          </div>
         </DialogContent>
       </Dialog>
     </SidebarProvider>

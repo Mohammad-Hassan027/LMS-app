@@ -1,6 +1,6 @@
 import {
   CodeSquareIcon,
-  GraduationCap,
+  // GraduationCap,
   Menu,
   PlaySquareIcon,
   ShoppingCartIcon,
@@ -12,7 +12,7 @@ import {
   SignInButton,
   UserButton,
 } from "@clerk/clerk-react";
-import { Button } from "../ui/button";
+import { Button } from "@/components/ui/button";
 import { useFilters } from "@/hooks/use-filters";
 import { useState } from "react";
 
@@ -24,8 +24,8 @@ function StudentViewHeader() {
 
   async function handleExploreCourses() {
     // Close menu if open on mobile
-    setIsMenuOpen(false); 
-    
+    setIsMenuOpen(false);
+
     if (location.pathname.includes("/courses")) {
       await setFilters({
         category: null,
@@ -43,18 +43,21 @@ function StudentViewHeader() {
         {/* Left Section: Logo & Desktop Explore */}
         <div className="flex items-center space-x-4">
           <Link to={"/"} className="flex items-center justify-center">
-            <GraduationCap className="h-8 w-8 mr-2 lg:mr-4" />
-            <span className="font-extrabold text-lg lg:text-xl">PathOS</span>
+            <img src="/logo.png" className="h-10 w-36 mr-2 bg-accent" />
+            {/* <GraduationCap className="h-8 w-8 mr-2 lg:mr-4" /> */}
+            {/* <span className="font-extrabold text-lg lg:text-xl">PathOS</span> */}
           </Link>
 
           {/* Desktop Only: Explore Button */}
           <Button
-            className="hidden md:inline-flex items-center justify-center gap-2 px-3 py-2"
+            className="hidden md:inline-flex items-center justify-center gap-2 px-3 py-2 cursor-pointer"
             onClick={handleExploreCourses}
             variant={"ghost"}
           >
-            <CodeSquareIcon />
-            <span className="text-base lg:text-lg font-bold">Explore Courses</span>
+            <CodeSquareIcon className="w-6 h-6" />
+            <span className="text-base lg:text-lg font-bold">
+              Explore Courses
+            </span>
           </Button>
         </div>
 
@@ -77,10 +80,12 @@ function StudentViewHeader() {
           {/* Always Visible: Auth */}
           <div className="flex items-center">
             <SignedIn>
-              <UserButton afterSignOutUrl="/" />
+              <UserButton />
             </SignedIn>
             <SignedOut>
-              <SignInButton mode="modal" />
+              <Button>
+                <SignInButton mode="modal" />
+              </Button>
             </SignedOut>
           </div>
 
@@ -100,7 +105,7 @@ function StudentViewHeader() {
       {/* Mobile Menu Dropdown */}
       {isMenuOpen && (
         <div className="md:hidden border-t p-4 space-y-4 bg-background">
-          <div 
+          <div
             onClick={handleExploreCourses}
             className="flex items-center gap-2 font-bold cursor-pointer py-2 hover:bg-muted rounded-md px-2"
           >
