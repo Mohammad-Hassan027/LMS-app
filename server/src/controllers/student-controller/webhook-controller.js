@@ -7,12 +7,13 @@ import { verifyPayPalSignature } from './../../utils/paypalVerification.js';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-// Helper function to finalize enrollment (Dry logic)
 const finalizeEnrollment = async (orderId, paymentId, payerId, session) => {
   const order = await Order.findById(orderId).session(session);
 
   if (!order) throw new Error('Order not found');
-  if (order.paymentStatus === 'paid') return;
+
+  // Return false if already processed
+  if (order.paymentStatus === 'paid') return false;
 
   // 1. Update Order Status
   order.paymentStatus = 'paid';
@@ -53,6 +54,9 @@ const finalizeEnrollment = async (orderId, paymentId, payerId, session) => {
     },
     { session }
   );
+
+  // Return true to indicate we did the work
+  return true;
 };
 
 export const handlePayPalWebhook = async (req, res) => {
@@ -65,31 +69,26 @@ export const handlePayPalWebhook = async (req, res) => {
 
   const event = req.body;
   const eventType = event.event_type;
-  const resource = event.resource; // The Capture Object
+  const resource = event.resource;
 
   if (eventType === 'PAYMENT.CAPTURE.COMPLETED') {
     const session = await mongoose.startSession();
     session.startTransaction();
 
     try {
-      // PayPal Webhooks usually provide the Order ID in supplementary data
-      // OR we can search by the PayPal Order ID associated with this Capture
-      // Note: resource.supplementary_data.related_ids.order_id often holds the Order ID
-
       const paypalOrderId = resource.supplementary_data?.related_ids?.order_id;
 
       if (!paypalOrderId) {
-        // Fallback/Log error
         return res.status(200).send();
       }
 
-      // Find our DB Order using the PayPal Order ID
       const order = await Order.findOne({ paymentId: paypalOrderId }).session(
         session
       );
 
       if (order) {
-        await finalizeEnrollment(
+        // Capture the return value (true/false)
+        const isNewEnrollment = await finalizeEnrollment(
           order._id,
           paypalOrderId,
           resource.payer?.payer_id,
@@ -98,24 +97,28 @@ export const handlePayPalWebhook = async (req, res) => {
 
         await session.commitTransaction();
 
-        // SEND EMAIL
-        try {
-          await resend.emails.send({
-            from: 'PathOS <onboarding@resend.dev>',
-            to: order.userEmail,
-            subject: 'Order Confirmation - PathOS',
-            html: `
-              <h1>Thank you for your purchase, ${order.userName}!</h1>
-              <p>You have successfully enrolled in <strong>${order.courseTitle}</strong>.</p>
-              <p><strong>Order ID:</strong> ${order._id}</p>
-              <p><strong>Amount Paid:</strong> $${order.coursePricing}</p>
-              <br/>
-              <a href="https://path-os.vercel.app/my-courses">Go to your Dashboard</a>
-            `,
-          });
-          console.log(`📧 Email sent to ${order.userEmail} via Webhook`);
-        } catch (emailError) {
-          console.error('❌ Failed to send email via Webhook:', emailError);
+        // Only send email if this was a NEW enrollment
+        if (isNewEnrollment) {
+          try {
+            await resend.emails.send({
+              from: 'PathOS <onboarding@resend.dev>',
+              to: order.userEmail,
+              subject: 'Order Confirmation - PathOS',
+              html: `
+                <h1>Thank you for your purchase, ${order.userName}!</h1>
+                <p>You have successfully enrolled in <strong>${order.courseTitle}</strong>.</p>
+                <p><strong>Order ID:</strong> ${order._id}</p>
+                <p><strong>Amount Paid:</strong> $${order.coursePricing}</p>
+                <br/>
+                <a href="https://path-os.vercel.app/my-courses">Go to your Dashboard</a>
+              `,
+            });
+            console.log(`📧 Email sent to ${order.userEmail} via Webhook`);
+          } catch (emailError) {
+            console.error('❌ Failed to send email via Webhook:', emailError);
+          }
+        } else {
+          console.log('ℹ️ Webhook received, but order was already processed.');
         }
       } else {
         await session.abortTransaction();
@@ -123,13 +126,11 @@ export const handlePayPalWebhook = async (req, res) => {
     } catch (error) {
       console.error('Webhook Error:', error);
       await session.abortTransaction();
-      // Still return 200 to PayPal so they don't keep retrying infinitely
       return res.status(200).send();
     } finally {
       session.endSession();
     }
   }
 
-  // Acknowledge receipt to PayPal
   res.status(200).send();
 };
