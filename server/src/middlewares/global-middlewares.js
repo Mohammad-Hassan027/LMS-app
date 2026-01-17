@@ -4,7 +4,7 @@ import { clerkMiddleware } from '@clerk/express';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import connectDB from '../db/index.js';
-// import mongoSanitize from 'express-mongo-sanitize';
+import mongoSanitize from 'express-mongo-sanitize';
 
 export function middleware(app) {
   app.use(async (req, res, next) => {
@@ -31,7 +31,17 @@ export function middleware(app) {
   app.use(express.json({ limit: '16kb' }));
   app.use(express.urlencoded({ extended: true, limit: '16kb' }));
 
-  // app.use(mongoSanitize());
+  app.use((req, res, next) => {
+    Object.defineProperty(req, 'query', {
+      value: req.query,
+      writable: true,
+      configurable: true,
+      enumerable: true,
+    });
+    next();
+  });
+
+  app.use(mongoSanitize());
 
   app.use(
     clerkMiddleware({

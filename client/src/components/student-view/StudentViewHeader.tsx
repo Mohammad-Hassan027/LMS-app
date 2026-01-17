@@ -83,9 +83,9 @@ function StudentViewHeader() {
               <UserButton />
             </SignedIn>
             <SignedOut>
-              <Button>
-                <SignInButton mode="modal" />
-              </Button>
+              <SignInButton mode="modal">
+                <Button>Sign In</Button>
+              </SignInButton>
             </SignedOut>
           </div>
 
