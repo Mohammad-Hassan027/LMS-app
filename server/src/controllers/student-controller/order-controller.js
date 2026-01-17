@@ -6,6 +6,7 @@ import {
   LogLevel,
   OrdersController,
 } from '@paypal/paypal-server-sdk';
+import { Resend } from 'resend';
 
 import Order from '../../models/Order.js';
 import Course from '../../models/Course.js';
@@ -17,7 +18,9 @@ import { validateId } from '../../utils/validateId.js';
 import { getAuth } from '@clerk/express';
 import mongoose from 'mongoose';
 
-const { PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET } = process.env;
+const { PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET, RESEND_API_KEY } = process.env;
+
+const resend = new Resend(RESEND_API_KEY);
 
 const client = new Client({
   clientCredentialsAuthCredentials: {
@@ -243,6 +246,26 @@ export const captureOrder = asyncHandler(async (req, res) => {
 
       await session.commitTransaction();
 
+      // SEND EMAIL (After transaction commits)
+      try {
+        await resend.emails.send({
+          from: 'PathOS <onboarding@resend.dev>',
+          to: order.userEmail,
+          subject: 'Order Confirmation - PathOS',
+          html: `
+            <h1>Thank you for your purchase, ${order.userName}!</h1>
+            <p>You have successfully enrolled in <strong>${order.courseTitle}</strong>.</p>
+            <p><strong>Order ID:</strong> ${order._id}</p>
+            <p><strong>Amount Paid:</strong> $${order.coursePricing}</p>
+            <br/>
+            <a href="https://your-frontend-url.com/student/courses">Go to your Dashboard</a>
+          `,
+        });
+      } catch (emailError) {
+        // Log the error but DO NOT fail the request, as the order is already saved
+        console.error('Failed to send order confirmation email:', emailError);
+      }
+
       return res
         .status(200)
         .json(
@@ -250,9 +273,8 @@ export const captureOrder = asyncHandler(async (req, res) => {
         );
     }
 
-    // --- CASE B: PAYMENT PENDING (Money Processing) ---
+    // --- CASE B: PAYMENT PENDING ---
     else if (status === 'PENDING') {
-      // We do NOT enroll the student yet. We just note that payment is processing.
       order.paymentStatus = 'pending_approval';
       order.orderStatus = 'pending';
       order.payerId = jsonResponse?.payer?.payer_id || 'Guest_User';

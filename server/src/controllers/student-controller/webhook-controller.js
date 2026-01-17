@@ -1,15 +1,18 @@
 import mongoose from 'mongoose';
+import { Resend } from 'resend';
 import Order from '../../models/Order.js';
 import StudentCourses from '../../models/StudentCourses.js';
 import Course from '../../models/Course.js';
 import { verifyPayPalSignature } from './../../utils/paypalVerification.js';
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 // Helper function to finalize enrollment (Dry logic)
 const finalizeEnrollment = async (orderId, paymentId, payerId, session) => {
   const order = await Order.findById(orderId).session(session);
 
   if (!order) throw new Error('Order not found');
-  if (order.paymentStatus === 'paid') return; // Already processed
+  if (order.paymentStatus === 'paid') return;
 
   // 1. Update Order Status
   order.paymentStatus = 'paid';
@@ -53,11 +56,6 @@ const finalizeEnrollment = async (orderId, paymentId, payerId, session) => {
 };
 
 export const handlePayPalWebhook = async (req, res) => {
-  // In production, you MUST verify the webhook signature here to ensure
-  // the request actually came from PayPal.
-  // const isValid = await verifyPayPalSignature(req);
-  // if (!isValid) return res.status(400).send('Invalid Signature');
-
   const isValid = await verifyPayPalSignature(req);
 
   if (!isValid) {
@@ -97,7 +95,28 @@ export const handlePayPalWebhook = async (req, res) => {
           resource.payer?.payer_id,
           session
         );
+
         await session.commitTransaction();
+
+        // SEND EMAIL
+        try {
+          await resend.emails.send({
+            from: 'PathOS <onboarding@resend.dev>',
+            to: order.userEmail,
+            subject: 'Order Confirmation - PathOS',
+            html: `
+              <h1>Thank you for your purchase, ${order.userName}!</h1>
+              <p>You have successfully enrolled in <strong>${order.courseTitle}</strong>.</p>
+              <p><strong>Order ID:</strong> ${order._id}</p>
+              <p><strong>Amount Paid:</strong> $${order.coursePricing}</p>
+              <br/>
+              <a href="https://path-os.vercel.app/my-courses">Go to your Dashboard</a>
+            `,
+          });
+          console.log(`📧 Email sent to ${order.userEmail} via Webhook`);
+        } catch (emailError) {
+          console.error('❌ Failed to send email via Webhook:', emailError);
+        }
       } else {
         await session.abortTransaction();
       }
