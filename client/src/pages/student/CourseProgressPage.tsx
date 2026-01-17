@@ -40,13 +40,13 @@ export default function CourseProgressPage() {
 
   const { data, isLoading, refetch } = useGetStudentCourseProgressService(
     courseId || "",
-    user.id
+    user.id,
   );
   const { mutateAsync: markCurrentLectureAsViewed } =
     useMarkCurrentLectureAsViewedService(courseId || "", user.id);
   const { mutateAsync: resetProgress } = useResetCurrentCourseProgressService(
     courseId || "",
-    user.id
+    user.id,
   );
 
   async function handleVideoEnded() {
@@ -190,6 +190,8 @@ export default function CourseProgressPage() {
             <div className="w-full aspect-video bg-black rounded-xl overflow-hidden shadow-lg flex items-center justify-center text-white relative">
               {currentLecture ? (
                 <Player
+                  width={800}
+                  height={400}
                   url={currentLecture?.videoUrl}
                   onStart={() => console.log("Video started")}
                   onEnded={handleVideoEnded}

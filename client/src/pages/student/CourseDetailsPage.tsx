@@ -47,7 +47,7 @@ function CourseDetailsContent({
       try {
         const isEnrolled = await checkIsStudentEnrolledService(
           courseId,
-          user.id
+          user.id,
         );
         if (!canceled && isEnrolled) {
           navigate(`/course-progress/${courseId}`);
@@ -171,7 +171,7 @@ function CourseDetailsContent({
                     onClick={() =>
                       handleFreePreviewDialog(
                         lecture.videoUrl,
-                        lecture.isFreePreview
+                        lecture.isFreePreview,
                       )
                     }
                   >
@@ -218,7 +218,7 @@ function CourseDetailsContent({
                     course={studentViewCourseDetails}
                   />
                 </div>
-                <p className="text-xs text-center text-muted-foreground">
+                <p className="mt-3 text-xs text-center text-muted-foreground">
                   30-Day Money-Back Guarantee
                 </p>
               </CardContent>
