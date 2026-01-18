@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { courseCategories } from "@/config";
 import { useStudentAllCoursesService } from "@/service/studentQueries";
 import { Card, CardContent } from "@/components/ui/card";
+import Footer from "@/components/student-view/Footer";
 
 function HomePage() {
   const navigate = useNavigate();
@@ -22,12 +23,14 @@ function HomePage() {
             <img src="/Hero.png" alt="Hero image" height={700} width={700} />
           </picture>
         </div>
-        <div>
+        <div className="w-[40%]">
           <h1 className="text-3xl font-bold mb-4">
-            Welcome to the Learning Management System,
+            Unlock your potential with PathOS.
           </h1>
           <p className="ml-2 text-xl font-medium text-gray-800">
-            your journey to success starts here.
+            A comprehensive Learning Management System (LMS) connecting students
+            with expert instructors. Explore courses, track your progress, and
+            achieve your goals.
           </p>
         </div>
       </section>
@@ -81,6 +84,35 @@ function HomePage() {
           )}
         </div>
       </section>
+      <section>
+        <div className="p-6 mt-10 bg-blue-600 text-white rounded-lg text-center">
+          <h2 className="text-3xl font-semibold mb-4">
+            Ready to start learning?
+          </h2>
+          <Button
+            variant="secondary"
+            onClick={() => navigate("/courses")}
+            className="mt-4"
+          >
+            Explore Courses
+          </Button>
+        </div>
+      </section>
+      <section>
+        <div className="p-6 mt-10 bg-orange-600 text-white rounded-lg text-center">
+          <h2 className="text-3xl font-semibold mb-4">
+            Want to become an instructor?
+          </h2>
+          <Button
+            variant="secondary"
+            onClick={() => navigate("/become-instructor")}
+            className="mt-4"
+          >
+            Become an Instructor
+          </Button>
+        </div>
+      </section>
+      <Footer />
     </div>
   );
 }

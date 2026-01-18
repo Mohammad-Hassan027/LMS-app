@@ -3,25 +3,27 @@ import ProtectedRoute from "@/components/protected-route";
 import { Outlet, useRoutes } from "react-router-dom";
 import { lazy } from "react";
 
+const AdminDashboard = lazy(() => import("@/pages/admin/AdminDashboard"));
 const SignInPage = lazy(() => import("@/pages/auth/SignInPage"));
 const SignUpPage = lazy(() => import("@/pages/auth/SignUpPage"));
 const HomePage = lazy(() => import("@/pages/student/HomePage"));
 const InstructorDashboardPage = lazy(() => import("@/pages/instructor"));
 const StudentViewLayout = lazy(
-  () => import("@/components/student-view/StudentViewLayout")
+  () => import("@/components/student-view/StudentViewLayout"),
 );
 const InstructorViewLayout = lazy(
-  () => import("@/components/instructor-view/InstructorViewLayout")
+  () => import("@/components/instructor-view/InstructorViewLayout"),
 );
 const AddNewCoursePage = lazy(() => import("@/pages/instructor/addNewCourse"));
 const CoursesPage = lazy(() => import("@/pages/student/CoursesPage"));
 const CourseDetailsPage = lazy(
-  () => import("@/pages/student/CourseDetailsPage")
+  () => import("@/pages/student/CourseDetailsPage"),
 );
 const MyCoursesPage = lazy(() => import("@/pages/student/MyCoursesPage"));
 const CourseProgressPage = lazy(
-  () => import("@/pages/student/CourseProgressPage")
+  () => import("@/pages/student/CourseProgressPage"),
 );
+const BecomeInstructor = lazy(() => import("@/pages/student/BecomeInstructor"));
 
 export default function Routes() {
   const element = useRoutes([
@@ -77,8 +79,8 @@ export default function Routes() {
           element: <div>Cart</div>,
         },
         {
-          path: "checkout",
-          element: <div>Checkout page</div>,
+          path: "become-instructor",
+          element: <BecomeInstructor />,
         },
         {
           path: "my-courses",
@@ -111,7 +113,23 @@ export default function Routes() {
           path: "edit-course/:courseId",
           element: <AddNewCoursePage />,
         },
+        {
+          path: "admin",
+          element: (
+            <ProtectedRoute allowedRoles={["admin"]}>
+              <AdminDashboard />
+            </ProtectedRoute>
+          ),
+        },
       ],
+    },
+    {
+      path: "/unauthorized",
+      element: (
+        <div className="flex justify-center items-center h-screen">
+          <h1 className="text-3xl font-bold">Unauthorized Access</h1>
+        </div>
+      ),
     },
   ]);
   return element;

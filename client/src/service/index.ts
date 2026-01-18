@@ -1,4 +1,3 @@
-
 import type {
   ApiResponse,
   MediaData,
@@ -30,7 +29,7 @@ import type { AxiosProgressEvent } from "axios";
 
 export async function UploadMediaService(
   formData: FormData,
-  cb: (percent: number) => void
+  cb: (percent: number) => void,
 ): Promise<MediaData> {
   try {
     const { data: response } = await axiosInstance.post<ApiResponse<MediaData>>(
@@ -43,11 +42,11 @@ export async function UploadMediaService(
         onUploadProgress(progressEvent: AxiosProgressEvent) {
           const total = progressEvent.total || 1;
           const percentCompleted = Math.round(
-            (progressEvent.loaded * 100) / total
+            (progressEvent.loaded * 100) / total,
           );
           cb(percentCompleted);
         },
-      }
+      },
     );
     return response.data;
   } catch (error) {
@@ -58,7 +57,7 @@ export async function UploadMediaService(
 
 export async function UploadBulkMediaService(
   formData: FormData,
-  cb: (percent: number) => void
+  cb: (percent: number) => void,
 ): Promise<MediaData[]> {
   try {
     const { data: response } = await axiosInstance.post<
@@ -70,7 +69,7 @@ export async function UploadBulkMediaService(
       onUploadProgress(progressEvent: AxiosProgressEvent) {
         const total = progressEvent.total || 1;
         const percentCompleted = Math.round(
-          (progressEvent.loaded * 100) / total
+          (progressEvent.loaded * 100) / total,
         );
         cb(percentCompleted);
       },
@@ -84,7 +83,7 @@ export async function UploadBulkMediaService(
 
 export async function DeleteMediaService(
   id: string,
-  type: string
+  type: string,
 ): Promise<MediaData> {
   let resourceType = "image";
 
@@ -112,12 +111,12 @@ export async function DeleteMediaService(
 // ==========================================
 
 export async function addNewCourseService(
-  formData: CreateCourse
+  formData: CreateCourse,
 ): Promise<Course> {
   try {
     const { data: response } = await axiosInstance.post<ApiResponse<Course>>(
       `/instructor/course/add`,
-      formData
+      formData,
     );
     return response.data;
   } catch (error) {
@@ -128,12 +127,12 @@ export async function addNewCourseService(
 
 export async function updateCourseService(
   formData: UpdateCourse,
-  id: string
+  id: string,
 ): Promise<Course> {
   try {
     const { data: response } = await axiosInstance.put<ApiResponse<Course>>(
       `/instructor/course/update/${id}`,
-      formData
+      formData,
     );
     return response.data;
   } catch (error) {
@@ -143,11 +142,11 @@ export async function updateCourseService(
 }
 
 export async function getCourseDetailsForInstructorService(
-  id: string
+  id: string,
 ): Promise<Course> {
   try {
     const { data: response } = await axiosInstance.get<ApiResponse<Course>>(
-      `/instructor/course/get/details/${id}`
+      `/instructor/course/get/details/${id}`,
     );
     return response.data;
   } catch (error) {
@@ -157,11 +156,11 @@ export async function getCourseDetailsForInstructorService(
 }
 
 export async function getAllCoursesOfInstructorService(
-  id: string
+  id: string,
 ): Promise<Course[]> {
   try {
     const { data: response } = await axiosInstance.get<ApiResponse<Course[]>>(
-      `/instructor/course/get/${id}`
+      `/instructor/course/get/${id}`,
     );
     return response.data;
   } catch (error) {
@@ -188,7 +187,7 @@ export async function deleteCourseService(id: string): Promise<Course[]> {
 
 export async function getAllStudentViewCoursesService(
   sort?: string,
-  filters?: FilterState
+  filters?: FilterState,
 ): Promise<Course[]> {
   try {
     if (!filters) {
@@ -215,7 +214,7 @@ export async function getAllStudentViewCoursesService(
     });
 
     const { data: response } = await axiosInstance.get<ApiResponse<Course[]>>(
-      `/student/course/get?${queryParams.toString()}`
+      `/student/course/get?${queryParams.toString()}`,
     );
 
     return response.data;
@@ -226,11 +225,11 @@ export async function getAllStudentViewCoursesService(
 }
 
 export async function getStudentViewCourseDetailsService(
-  courseId: string
+  courseId: string,
 ): Promise<Course> {
   try {
     const { data: response } = await axiosInstance.get<ApiResponse<Course>>(
-      `/student/course/get/${courseId}`
+      `/student/course/get/${courseId}`,
     );
     return response.data;
   } catch (error) {
@@ -241,11 +240,11 @@ export async function getStudentViewCourseDetailsService(
 
 export async function checkIsStudentEnrolledService(
   courseId: string,
-  userId: string
+  userId: string,
 ) {
   try {
     const { data: response } = await axiosInstance.get<ApiResponse<boolean>>(
-      `/student/course/check-is-enrolled/${userId}/${courseId}`
+      `/student/course/check-is-enrolled/${userId}/${courseId}`,
     );
 
     return response.data;
@@ -272,7 +271,7 @@ export async function createOrderService(
   courseImage: string,
   courseTitle: string,
   courseId: string,
-  coursePricing: string
+  coursePricing: string,
 ) {
   try {
     const { data: response } = await axiosInstance.post(
@@ -291,7 +290,7 @@ export async function createOrderService(
         courseTitle,
         courseId,
         coursePricing,
-      }
+      },
     );
 
     return response.data;
@@ -304,7 +303,7 @@ export async function createOrderService(
 export async function capturePaymentAndFinalizeOrderService(paymentId: string) {
   try {
     const { data: response } = await axiosInstance.post(
-      `/student/order/capture/${paymentId}`
+      `/student/order/capture/${paymentId}`,
     );
     return response.data;
   } catch (error) {
@@ -336,7 +335,7 @@ export async function getMyCoursesService(userId: string) {
 
 export async function getStudentCourseProgressService(
   courseId: string,
-  userId: string
+  userId: string,
 ): Promise<{
   isPurchased: boolean;
   progress?: LectureProgress[];
@@ -346,7 +345,7 @@ export async function getStudentCourseProgressService(
 }> {
   try {
     const { data: response } = await axiosInstance.get(
-      `/student/course-progress/get/${courseId}/${userId}`
+      `/student/course-progress/get/${courseId}/${userId}`,
     );
 
     return response.data;
@@ -359,7 +358,7 @@ export async function getStudentCourseProgressService(
 export async function markCurrentLectureAsViewedService(
   courseId: string,
   userId: string,
-  lectureId: string
+  lectureId: string,
 ): Promise<CourseProgress> {
   try {
     const { data: response } = await axiosInstance.post(
@@ -368,7 +367,7 @@ export async function markCurrentLectureAsViewedService(
         lectureId,
         courseId,
         userId,
-      }
+      },
     );
 
     return response.data;
@@ -380,17 +379,95 @@ export async function markCurrentLectureAsViewedService(
 
 export async function resetCurrentCourseProgressService(
   courseId: string,
-  userId: string
+  userId: string,
 ): Promise<CourseProgress> {
   try {
     const { data: response } = await axiosInstance.post(
       `/student/course-progress/reset-progress`,
-      { userId, courseId }
+      { userId, courseId },
     );
 
     return response.data;
   } catch (error) {
     console.error("resetCurrentCourseProgressService Error:", error);
+    throw error;
+  }
+}
+
+// ==========================================
+// Admin SERVICES
+// ==========================================
+
+export async function requestToBeInstructorService({
+  userId,
+  email,
+  userName,
+  reason,
+}: {
+  userId: string;
+  email: string;
+  userName: string;
+  reason: string;
+}) {
+  try {
+    const { data: response } = await axiosInstance.post("/admin/request", {
+      userId,
+      email,
+      userName,
+      reason,
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error("requestToBeInstructorService Error:", error);
+    throw error;
+  }
+}
+
+export async function promoteToInstructorService({
+  requestId,
+  userId,
+}: {
+  requestId: string;
+  userId: string;
+}) {
+  try {
+    const { data: response } = await axiosInstance.post("/admin/approve", {
+      requestId,
+      userId,
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error("promoteToInstructorService Error:", error);
+    throw error;
+  }
+}
+
+export async function rejectRequestService({
+  requestId,
+}: {
+  requestId: string;
+}) {
+  try {
+    const { data: response } = await axiosInstance.post("/admin/reject", {
+      requestId,
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error("rejectRequestService Error:", error);
+    throw error;
+  }
+}
+
+export async function getInstructorRequestsService() {
+  try {
+    const { data: response } = await axiosInstance.get("/admin/requests");
+
+    return response.data;
+  } catch (error) {
+    console.error("getInstructorRequestsService Error:", error);
     throw error;
   }
 }
