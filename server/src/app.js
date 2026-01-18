@@ -20,13 +20,17 @@ import studentViewCourseRoutes from './routes/student-routes/course-routes.js';
 import studentViewOrderRoutes from './routes/student-routes/order-routes.js';
 import studentViewMyCourseRoutes from './routes/student-routes/student-courses-routes.js';
 import studentViewCourseProgressRoutes from './routes/student-routes/course-progress-routes.js';
+import adminRoutes from './routes/admin-routes.js';
 
 app.get('/api/v1/health', (req, res) => res.status(200).json({ status: 'ok' }));
 app.use('/api/v1/media', requireAuth(), mediaRoutes);
+
+app.use('/api/v1/admin', requireAuth(), adminRoutes);
+
 app.use(
   '/api/v1/instructor/course',
   requireAuth(),
-  requireRole('instructor'),
+  requireRole(['instructor']),
   instructorCourseRoutes
 );
 
