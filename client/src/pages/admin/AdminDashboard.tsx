@@ -23,6 +23,7 @@ interface Request {
   userName: string;
   email: string;
   reason: string;
+  status: "pending" | "approved" | "rejected";
   createdAt: string;
 }
 

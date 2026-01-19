@@ -24,7 +24,7 @@ export function middleware(app) {
   app.use(morgan('combined'));
   app.use(
     cors({
-      origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
+      origin: process.env.CLIENT_URL || 'http://localhost:5173',
       credentials: true,
     })
   );
@@ -45,7 +45,7 @@ export function middleware(app) {
 
   app.use(
     clerkMiddleware({
-      authorizedParties: [process.env.CLERK_FRONTEND_API],
+      authorizedParties: [process.env.CLIENT_URL],
       secretKey: process.env.CLERK_SECRET_KEY,
       publishableKey: process.env.CLERK_PUBLISHABLE_KEY,
     })

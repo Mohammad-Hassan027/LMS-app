@@ -6,7 +6,7 @@ import {
   LogLevel,
   OrdersController,
 } from '@paypal/paypal-server-sdk';
-import { Resend } from 'resend';
+import { transporter } from '../../utils/emailTransporter.js';
 
 import Order from '../../models/Order.js';
 import Course from '../../models/Course.js';
@@ -18,9 +18,7 @@ import { validateId } from '../../utils/validateId.js';
 import { getAuth } from '@clerk/express';
 import mongoose from 'mongoose';
 
-const { PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET, RESEND_API_KEY } = process.env;
-
-const resend = new Resend(RESEND_API_KEY);
+const { PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET, GMAIL_USER } = process.env;
 
 const client = new Client({
   clientCredentialsAuthCredentials: {
@@ -248,8 +246,8 @@ export const captureOrder = asyncHandler(async (req, res) => {
 
       // SEND EMAIL (After transaction commits)
       try {
-        await resend.emails.send({
-          from: 'PathOS <onboarding@resend.dev>',
+        await transporter.sendMail({
+          from: '"PathOS Team" <' + GMAIL_USER + '>',
           to: order.userEmail,
           subject: 'Order Confirmation - PathOS',
           html: `

@@ -1,11 +1,11 @@
 import mongoose from 'mongoose';
-import { Resend } from 'resend';
 import Order from '../../models/Order.js';
 import StudentCourses from '../../models/StudentCourses.js';
 import Course from '../../models/Course.js';
 import { verifyPayPalSignature } from './../../utils/paypalVerification.js';
+import { transporter } from '../../utils/emailTransporter.js';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const { GMAIL_USER } = process.env;
 
 const finalizeEnrollment = async (orderId, paymentId, payerId, session) => {
   const order = await Order.findById(orderId).session(session);
@@ -100,8 +100,8 @@ export const handlePayPalWebhook = async (req, res) => {
         // Only send email if this was a NEW enrollment
         if (isNewEnrollment) {
           try {
-            await resend.emails.send({
-              from: 'PathOS <onboarding@resend.dev>',
+            await transporter.sendMail({
+              from: '"PathOS Team" <' + GMAIL_USER + '>',
               to: order.userEmail,
               subject: 'Order Confirmation - PathOS',
               html: `

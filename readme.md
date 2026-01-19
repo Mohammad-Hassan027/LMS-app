@@ -57,7 +57,7 @@ PathOS is a modern, production-grade Learning Management System (LMS) designed t
 - **Database:** MongoDB + Mongoose
 - **Storage:** Cloudinary (Video/Image)
 - **Payments:** PayPal Server SDK
-- **Email:** Resend API
+- **Email:** Nodemailer + Gmail
 
 ---
 
@@ -69,8 +69,15 @@ Create `.env` files in both `client` and `server` directories with the following
 
 ```env
 VITE_CLERK_PUBLISHABLE_KEY=your_clerk_key
-VITE_API_URL=http://localhost:5000/api/v1
 VITE_PAYPAL_CLIENT_ID=your_paypal_client_id
+VITE_BACKEND_URI=http://localhost:5000
+# fallback urls
+VITE_CLERK_SIGN_IN_URL=/login
+VITE_CLERK_SIGN_UP_URL=/register
+VITE_CLERK_SIGN_IN_FORCE_REDIRECT_URL=/
+VITE_CLERK_SIGN_UP_FORCE_REDIRECT_URL=/
+VITE_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL=/
+VITE_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL=/
 ```
 
 **Server (`/server/.env`)**
@@ -85,7 +92,8 @@ CLOUDINARY_API_KEY=your_api_key
 CLOUDINARY_API_SECRET=your_api_secret
 PAYPAL_CLIENT_ID=your_paypal_client_id
 PAYPAL_CLIENT_SECRET=your_paypal_secret
-RESEND_API_KEY=your_resend_api_key
+GMAIL_USER=your.email@gmail.com
+GMAIL_PASS=xxxx xxxx xxxx xxxx  <-- Your 16-char App Password
 CLIENT_URL=http://localhost:5173
 ```
 

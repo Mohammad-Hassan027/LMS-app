@@ -1,12 +1,10 @@
-import { Resend } from 'resend';
 import { clerkClient } from '@clerk/express';
 import InstructorRequest from '../../models/InstructorRequest.js';
 import { asyncHandler } from '../../utils/asyncHandler.js';
 import { ApiResponse } from '../../utils/ApiResponse.js';
+import { transporter } from '../../utils/emailTransporter.js';
 
-const { RESEND_API_KEY, CLIENT_URL } = process.env;
-
-const resend = new Resend(RESEND_API_KEY);
+const { GMAIL_USER } = process.env;
 
 export const getInstructorRequests = asyncHandler(async (req, res) => {
   const requests = await InstructorRequest.find({ status: 'pending' });
@@ -56,8 +54,8 @@ export const promoteToInstructor = asyncHandler(async (req, res) => {
     console.log(userEmail);
 
     if (userEmail) {
-      await resend.emails.send({
-        from: 'PathOS <onboarding@resend.dev>',
+      await transporter.sendMail({
+        from: '"PathOS Team" <' + GMAIL_USER + '>',
         to: userEmail,
         subject: 'Instructor Application Approved! - PathOS',
         html: `
@@ -73,7 +71,7 @@ export const promoteToInstructor = asyncHandler(async (req, res) => {
             </ul>
             <p>Head over to your dashboard to get started:</p>
             <div style="margin: 20px 0;">
-              <a href="${CLIENT_URL || 'http://localhost:5173'}/instructor" 
+              <a href="https://path-os.vercel.app/instructor" 
                  style="background-color: #000; color: #fff; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold;">
                  Go to Instructor Dashboard
               </a>
@@ -82,6 +80,7 @@ export const promoteToInstructor = asyncHandler(async (req, res) => {
           </div>
         `,
       });
+      console.log('Email sent successfully via Gmail');
     }
   } catch (emailError) {
     console.error('Failed to send promotion email:', emailError);
