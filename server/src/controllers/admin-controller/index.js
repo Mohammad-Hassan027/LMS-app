@@ -6,6 +6,23 @@ import { transporter } from '../../utils/emailTransporter.js';
 
 const { GMAIL_USER } = process.env;
 
+export const getActiveInstructors = asyncHandler(async (req, res) => {
+  const response = await clerkClient.users.getUserList({
+    limit: 500,
+  });
+
+  // Handle potential pagination structure from Clerk SDK
+  const users = response.data || response;
+
+  const instructors = users.filter(
+    (user) => user.publicMetadata?.role === 'instructor'
+  );
+
+  res
+    .status(200)
+    .json(new ApiResponse(200, instructors, 'Fetched active instructors'));
+});
+
 export const getInstructorRequests = asyncHandler(async (req, res) => {
   const requests = await InstructorRequest.find({ status: 'pending' });
   res
@@ -99,4 +116,76 @@ export const rejectRequest = asyncHandler(async (req, res) => {
     status: 'rejected',
   });
   res.status(200).json(new ApiResponse(200, null, 'Request rejected'));
+});
+
+export const revokeInstructorRole = asyncHandler(async (req, res) => {
+  const { userId } = req.body;
+
+  await clerkClient.users.updateUserMetadata(userId, {
+    publicMetadata: { role: 'student' },
+  });
+
+  try {
+    const user = await clerkClient.users.getUser(userId);
+    const userEmail = user.emailAddresses[0]?.emailAddress;
+
+    if (userEmail) {
+      await transporter.sendMail({
+        from: '"PathOS Team" <' + GMAIL_USER + '>',
+        to: userEmail,
+        subject: 'Important: Instructor Privileges Revoked - PathOS',
+        html: `
+            <p>Hi ${user.firstName || 'User'},</p>
+            <p>Your instructor privileges on PathOS have been revoked by an administrator.</p>
+            <p>You can still access your account as a student.</p>
+            <p>If you believe this is an error, please contact support.</p>
+          `,
+      });
+    }
+  } catch (err) {
+    console.error('Email failed:', err);
+  }
+
+  res
+    .status(200)
+    .json(new ApiResponse(200, null, 'Instructor role revoked successfully'));
+});
+
+export const sendWarningToInstructor = asyncHandler(async (req, res) => {
+  const { userId, reason } = req.body;
+
+  if (!reason) {
+    throw new ApiError(400, 'Warning reason is required');
+  }
+
+  try {
+    const user = await clerkClient.users.getUser(userId);
+    const userEmail = user.emailAddresses[0]?.emailAddress;
+
+    if (userEmail) {
+      await transporter.sendMail({
+        from: '"PathOS Team" <' + GMAIL_USER + '>',
+        to: userEmail,
+        subject: 'Official Warning - PathOS',
+        html: `
+            <div style="border: 1px solid #eab308; padding: 20px; border-radius: 8px; background-color: #fffbeb;">
+              <h2 style="color: #ca8a04; margin-top: 0;">⚠️ Official Warning</h2>
+              <p>Hi ${user.firstName},</p>
+              <p>We are writing to bring the following issue to your attention:</p>
+              <blockquote style="border-left: 4px solid #ca8a04; padding-left: 15px; margin: 20px 0; color: #444;">
+                ${reason}
+              </blockquote>
+              <p>Please address this issue immediately to maintain your instructor status.</p>
+            </div>
+          `,
+      });
+    }
+  } catch (err) {
+    console.error('Email failed:', err);
+    return res
+      .status(500)
+      .json(new ApiResponse(500, null, 'Failed to send warning email'));
+  }
+
+  res.status(200).json(new ApiResponse(200, null, 'Warning sent successfully'));
 });

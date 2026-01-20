@@ -1,13 +1,18 @@
 import {
+  getActiveInstructors,
   getInstructorRequests,
   promoteToInstructor,
   rejectRequest,
   requestToBeInstructor,
+  revokeInstructorRole,
+  sendWarningToInstructor,
 } from '../controllers/admin-controller/index.js';
 import { Router } from 'express';
 import { requireRole } from '../middlewares/auth-middleware.js';
 
 const router = Router();
+
+router.get('/active-instructors', getActiveInstructors);
 
 // request
 router.post('/request', requestToBeInstructor);
@@ -19,5 +24,11 @@ router.get('/requests', requireRole(['admin']), getInstructorRequests);
 router.post('/approve', requireRole(['admin']), promoteToInstructor);
 
 router.post('/reject', requireRole(['admin']), rejectRequest);
+
+// Revoke Instructor Role
+router.post('/revoke', requireRole(['admin']), revokeInstructorRole);
+
+// Send Warning
+router.post('/warn', requireRole(['admin']), sendWarningToInstructor);
 
 export default router;
