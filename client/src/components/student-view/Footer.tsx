@@ -1,192 +1,144 @@
 import { GithubIcon, LinkedinIcon, TwitterIcon } from "lucide-react";
 import { Link } from "react-router-dom";
-// import { FaGithub, FaTwitter, FaLinkedin } from "react-icons/fa";
 
 function Footer() {
+  const socialLinks = [
+    {
+      icon: <GithubIcon className="w-5 h-5" />,
+      url: "https://github.com/Mohammad-Hassan027",
+      label: "GitHub",
+    },
+    {
+      icon: <TwitterIcon className="w-5 h-5" />,
+      url: "https://twitter.com",
+      label: "Twitter",
+    },
+    {
+      icon: <LinkedinIcon className="w-5 h-5" />,
+      url: "https://www.linkedin.com/in/mohammad-hassan-shaikh",
+      label: "LinkedIn",
+    },
+  ];
+
   return (
-    <footer className="border-t border-gray-200/80">
-      <div className="container px-4 py-12 mx-auto sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
-          {/* Brand section */}
-          <div className="md:col-span-1">
-            <Link to="/" className="flex items-center gap-3 mb-4">
-              <img
-                src="/logo.png"
-                alt="logo"
-                className="h-12 w-36 mr-2 bg-accent"
-              />
+    <footer className="bg-background border-t border-border text-foreground">
+      <div className="container px-6 py-16 mx-auto">
+        <div className="grid grid-cols-1 gap-12 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="space-y-6">
+            <Link to="/" className="inline-block">
+              <div className="h-10 w-auto flex items-center">
+                <img
+                  src="/logo.png"
+                  alt="PathOS Logo"
+                  className="h-full w-auto object-contain"
+                />
+              </div>
             </Link>
-            <p className="mb-4 text-sm text-gray-600">
-              Share your stories, ideas, and expertise with the world.
+            <p className="text-muted-foreground text-sm leading-relaxed max-w-xs">
+              Share your stories, ideas, and expertise with the world. Join our
+              community of learners today.
             </p>
-            <div className="flex gap-4">
-              <Link
-                to="https://github.com/Mohammad-Hassan027"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-gray-600 transition-colors hover:text-blue-500"
-                aria-label="GitHub"
-              >
-                {/* <FaGithub size={20} /> */}
-                <GithubIcon />
-              </Link>
-              <Link
-                to="https://twitter.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-gray-600 transition-colors hover:text-blue-500"
-                aria-label="Twitter"
-              >
-                {/* <FaTwitter size={20} /> */}
-                <TwitterIcon />
-              </Link>
-              <Link
-                to="https://www.linkedin.com/in/mohammad-hassan-shaikh"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-gray-600 transition-colors hover:text-blue-500"
-                aria-label="LinkedIn"
-              >
-                {/* <FaLinkedin size={20} /> */}
-                <LinkedinIcon />
-              </Link>
+
+            <div className="flex gap-3">
+              {socialLinks.map((social, index) => (
+                <a
+                  key={index}
+                  href={social.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="h-10 w-10 flex items-center justify-center rounded-full bg-secondary text-muted-foreground hover:bg-primary hover:text-primary-foreground transition-all duration-300"
+                  aria-label={social.label}
+                >
+                  {social.icon}
+                </a>
+              ))}
             </div>
           </div>
 
-          {/* Quick Links */}
-          <div className="md:col-span-1">
-            <h3 className="mb-4 text-sm font-semibold tracking-wider text-gray-900 uppercase">
+          <div>
+            <h3 className="mb-6 text-sm font-bold tracking-wider uppercase text-foreground">
               Quick Links
             </h3>
-            <ul className="space-y-3">
-              <li>
-                <Link
-                  to="/"
-                  className="text-sm text-gray-600 transition-colors hover:text-blue-500"
-                  onClick={() => {
-                    window.scrollTo({ top: 0, behavior: "smooth" });
-                  }}
-                >
-                  Home
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="#"
-                  className="text-sm text-gray-600 transition-colors hover:text-blue-500"
-                  onClick={() => {
-                    window.scrollTo({ top: 0, behavior: "smooth" });
-                  }}
-                >
-                  About Us
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="#"
-                  className="text-sm text-gray-600 transition-colors hover:text-blue-500"
-                  onClick={() => {
-                    window.scrollTo({ top: 0, behavior: "smooth" });
-                  }}
-                >
-                  Contact
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/courses"
-                  className="text-sm text-gray-600 transition-colors hover:text-blue-500"
-                  onClick={() => {
-                    window.scrollTo({ top: 0, behavior: "smooth" });
-                  }}
-                >
-                  Explore Courses
-                </Link>
-              </li>
+            <ul className="space-y-4">
+              {["Home", "About Us", "Contact", "Explore Courses"].map(
+                (item) => (
+                  <li key={item}>
+                    <Link
+                      to={
+                        item === "Home"
+                          ? "/"
+                          : item === "Explore Courses"
+                            ? "/courses"
+                            : "#"
+                      }
+                      className="text-muted-foreground hover:text-primary transition-all duration-200 hover:translate-x-1 inline-block"
+                      onClick={() =>
+                        window.scrollTo({ top: 0, behavior: "smooth" })
+                      }
+                    >
+                      {item}
+                    </Link>
+                  </li>
+                ),
+              )}
             </ul>
           </div>
 
-          {/* Categories */}
-          <div className="md:col-span-1">
-            <h3 className="mb-4 text-sm font-semibold tracking-wider text-gray-900 uppercase">
+          <div>
+            <h3 className="mb-6 text-sm font-bold tracking-wider uppercase text-foreground">
               Categories
             </h3>
-            <ul className="space-y-3">
-              <li>
-                <Link
-                  to="#"
-                  className="text-sm text-gray-600 transition-colors hover:text-blue-500"
-                >
-                  Technology
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="#"
-                  className="text-sm text-gray-600 transition-colors hover:text-blue-500"
-                >
-                  Programming
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="#"
-                  className="text-sm text-gray-600 transition-colors hover:text-blue-500"
-                >
-                  AI & Machine Learning
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="#"
-                  className="text-sm text-gray-600 transition-colors hover:text-blue-500"
-                >
-                  Web Development
-                </Link>
-              </li>
+            <ul className="space-y-4">
+              {[
+                "Technology",
+                "Programming",
+                "AI & Machine Learning",
+                "Web Development",
+              ].map((item) => (
+                <li key={item}>
+                  <Link
+                    to="#"
+                    className="text-muted-foreground hover:text-primary transition-all duration-200 hover:translate-x-1 inline-block"
+                  >
+                    {item}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
-          {/* Legal */}
-          <div className="md:col-span-1">
-            <h3 className="mb-4 text-sm font-semibold tracking-wider text-gray-900 uppercase">
+          <div>
+            <h3 className="mb-6 text-sm font-bold tracking-wider uppercase text-foreground">
               Legal
             </h3>
-            <ul className="space-y-3">
-              <li>
-                <Link
-                  to="#"
-                  className="text-sm text-gray-600 transition-colors hover:text-blue-500"
-                >
-                  Privacy Policy
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="#"
-                  className="text-sm text-gray-600 transition-colors hover:text-blue-500"
-                >
-                  Terms of Service
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="#"
-                  className="text-sm text-gray-600 transition-colors hover:text-blue-500"
-                >
-                  Cookie Policy
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="#"
-                  className="text-sm text-gray-600 transition-colors hover:text-blue-500"
-                >
-                  GDPR
-                </Link>
-              </li>
+            <ul className="space-y-4">
+              {[
+                "Privacy Policy",
+                "Terms of Service",
+                "Cookie Policy",
+                "GDPR",
+              ].map((item) => (
+                <li key={item}>
+                  <Link
+                    to="#"
+                    className="text-muted-foreground hover:text-primary transition-all duration-200 hover:translate-x-1 inline-block"
+                  >
+                    {item}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
+        </div>
+
+        <div className="mt-16 pt-8 border-t border-border flex flex-col md:flex-row items-center justify-between gap-4">
+          <p className="text-sm text-muted-foreground">
+            &copy; {new Date().getFullYear()} PathOS. All rights reserved.
+          </p>
+          <p className="text-sm text-muted-foreground flex items-center gap-1">
+            Made with <span className="text-red-500 animate-pulse">❤</span> by
+            Mohammad Hassan
+          </p>
         </div>
       </div>
     </footer>

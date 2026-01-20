@@ -7,10 +7,12 @@ import {
   CardHeader,
   CardTitle,
   CardDescription,
+  CardFooter,
 } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { requestToBeInstructorService } from "@/service";
+import { CheckCircle2, DollarSign, Users, Zap } from "lucide-react";
 
 const BecomeInstructor = () => {
   const { user } = useUser();
@@ -32,6 +34,7 @@ const BecomeInstructor = () => {
         reason: reason,
       });
       toast.success("Application submitted! An admin will review it shortly.");
+      setReason("");
     } catch (error: any) {
       console.error(error);
       toast.error(
@@ -42,37 +45,101 @@ const BecomeInstructor = () => {
     }
   };
 
+  const benefits = [
+    {
+      icon: <DollarSign className="w-6 h-6 text-green-600" />,
+      title: "Earn Money",
+      desc: "Earn money every time a student purchases your course.",
+    },
+    {
+      icon: <Users className="w-6 h-6 text-blue-600" />,
+      title: "Inspire Students",
+      desc: "Help people learn new skills, advance their careers, and explore their hobbies.",
+    },
+    {
+      icon: <Zap className="w-6 h-6 text-yellow-500" />,
+      title: "Flexible Schedule",
+      desc: "Teach what you know and love, on your own terms and schedule.",
+    },
+  ];
+
   return (
-    <div className="flex justify-center items-center min-h-[80vh] p-4">
-      <Card className="w-full max-w-lg">
-        <CardHeader>
-          <CardTitle>Become an Instructor</CardTitle>
-          <CardDescription>
-            Share your knowledge with the world. Apply to become an instructor
-            on PathOS.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <label className="text-sm font-medium">
-              Why do you want to teach?
-            </label>
-            <Textarea
-              placeholder="Tell us about your experience and what you plan to teach..."
-              value={reason}
-              onChange={(e) => setReason(e.target.value)}
-              disabled={isSubmitting}
-            />
+    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-6 md:p-12">
+      <div className="grid md:grid-cols-2 gap-12 max-w-6xl w-full items-start">
+        <div className="space-y-8">
+          <div className="space-y-4">
+            <h1 className="text-4xl font-bold tracking-tight text-gray-900">
+              Come teach with us
+            </h1>
+            <p className="text-lg text-gray-600">
+              Become an instructor and change lives — including your own.
+            </p>
           </div>
-          <Button
-            onClick={handleSubmit}
-            disabled={isSubmitting || !reason.trim()}
-            className="w-full"
-          >
-            {isSubmitting ? "Submitting..." : "Submit Application"}
-          </Button>
-        </CardContent>
-      </Card>
+
+          <div className="grid gap-6">
+            {benefits.map((benefit, idx) => (
+              <div key={idx} className="flex gap-4 items-start">
+                <div className="p-3 bg-white rounded-xl shadow-sm border border-gray-100 shrink-0">
+                  {benefit.icon}
+                </div>
+                <div>
+                  <h3 className="font-semibold text-lg text-gray-900">
+                    {benefit.title}
+                  </h3>
+                  <p className="text-gray-500">{benefit.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <Card className="w-full shadow-lg border-t-4 border-t-primary">
+          <CardHeader>
+            <CardTitle className="text-2xl">Instructor Application</CardTitle>
+            <CardDescription>
+              Tell us a bit about yourself and what you plan to teach.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700">
+                Why do you want to teach on PathOS?
+              </label>
+              <Textarea
+                placeholder="I have 5 years of experience in..."
+                value={reason}
+                onChange={(e) => setReason(e.target.value)}
+                disabled={isSubmitting}
+                className="min-h-[150px] resize-none focus-visible:ring-primary"
+              />
+              <p className="text-xs text-muted-foreground text-right">
+                {reason.length} characters
+              </p>
+            </div>
+
+            <div className="bg-blue-50 p-4 rounded-md flex gap-3 items-start">
+              <CheckCircle2 className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
+              <p className="text-sm text-blue-700">
+                By submitting, you agree to our Instructor Terms and Community
+                Guidelines.
+              </p>
+            </div>
+
+            <Button
+              onClick={handleSubmit}
+              disabled={isSubmitting || !reason.trim()}
+              className="w-full text-lg h-12"
+            >
+              {isSubmitting ? "Submitting..." : "Submit Application"}
+            </Button>
+          </CardContent>
+          <CardFooter className="justify-center border-t p-4 bg-gray-50">
+            <p className="text-xs text-muted-foreground">
+              We usually respond within 2-3 business days.
+            </p>
+          </CardFooter>
+        </Card>
+      </div>
     </div>
   );
 };

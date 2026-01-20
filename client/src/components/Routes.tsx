@@ -24,6 +24,7 @@ const CourseProgressPage = lazy(
   () => import("@/pages/student/CourseProgressPage"),
 );
 const BecomeInstructor = lazy(() => import("@/pages/student/BecomeInstructor"));
+const NotFoundPage = lazy(() => import("@/pages/NotFoundPage"));
 
 export default function Routes() {
   const element = useRoutes([
@@ -122,15 +123,6 @@ export default function Routes() {
           <AdminDashboard />
         </ProtectedRoute>
       ),
-      // children: [
-      //   {
-      //     path: "dashboard",
-      //     element: <AdminDashboard />,
-      //   },
-      //   {
-      //     path: "",
-      //   }
-      // ],
     },
     {
       path: "/unauthorized",
@@ -139,6 +131,10 @@ export default function Routes() {
           <h1 className="text-3xl font-bold">Unauthorized Access</h1>
         </div>
       ),
+    },
+    {
+      path: "*",
+      element: <NotFoundPage />,
     },
   ]);
   return element;

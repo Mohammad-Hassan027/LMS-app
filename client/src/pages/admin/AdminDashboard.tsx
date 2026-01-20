@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Table,
@@ -10,22 +10,7 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { toast } from "sonner";
-import {
-  Loader2,
-  Check,
-  X,
-  ShieldAlert,
-  Trash2,
-} from "lucide-react";
-import {
-  getActiveInstructorsService,
-  getInstructorRequestsService,
-  promoteToInstructorService,
-  rejectRequestService,
-  revokeInstructorRoleService,
-  sendWarningToInstructorService,
-} from "@/service";
+import { Check, X, ShieldAlert, Trash2 } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -35,6 +20,14 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  useGetActiveInstructorsService,
+  useGetInstructorRequestsService,
+  usePromoteToInstructorService,
+  useRejectRequestService,
+  useRevokeInstructorRoleService,
+  useSendWarningToInstructorService,
+} from "@/service/adminQueries";
 
 interface Request {
   _id: string;
@@ -54,30 +47,24 @@ interface Instructor {
 }
 
 const AdminDashboard = () => {
-  const [requests, setRequests] = useState<Request[]>([]);
-  const [instructors, setInstructors] = useState<Instructor[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: requests } = useGetInstructorRequestsService();
+  const { data: instructors } = useGetActiveInstructorsService();
+
+  const { mutate: promoteUser } = usePromoteToInstructorService();
+  const { mutate: rejectRequest } = useRejectRequestService();
+  const { mutate: revokeRole } = useRevokeInstructorRoleService();
+  const { mutate: sendWarning } = useSendWarningToInstructorService();
+
   const [warnDialogOpen, setWarnDialogOpen] = useState(false);
   const [selectedInstructorId, setSelectedInstructorId] = useState<
     string | null
   >(null);
   const [warnReason, setWarnReason] = useState("");
 
-  const handleRevoke = async (userId: string) => {
-    if (
-      !confirm(
-        "Are you sure you want to revoke instructor privileges? This action cannot be undone.",
-      )
-    )
+  const handleRevoke = (userId: string) => {
+    if (!confirm("Are you sure you want to revoke instructor privileges?"))
       return;
-
-    try {
-      await revokeInstructorRoleService({ instructorId: userId });
-      toast.success("Instructor privileges revoked");
-      fetchInstructors();
-    } catch (error) {
-      toast.error("Failed to revoke role");
-    }
+    revokeRole({ instructorId: userId });
   };
 
   const openWarnDialog = (userId: string) => {
@@ -86,77 +73,18 @@ const AdminDashboard = () => {
     setWarnDialogOpen(true);
   };
 
-  const handleSendWarning = async () => {
+  const handleSendWarning = () => {
     if (!selectedInstructorId || !warnReason.trim()) return;
 
-    try {
-      await sendWarningToInstructorService({
-        instructorId: selectedInstructorId,
-        message: warnReason,
-      });
-      toast.success("Warning sent to instructor");
-      setWarnDialogOpen(false);
-    } catch (error) {
-      toast.error("Failed to send warning");
-    }
-  };
-
-  // Fetch pending requests
-  const fetchRequests = async () => {
-    try {
-      const data = await getInstructorRequestsService();
-      setRequests(data);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  // Fetch active instructors
-  const fetchInstructors = async () => {
-    try {
-      const data = await getActiveInstructorsService();
-      setInstructors(data);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  useEffect(() => {
-    const loadData = async () => {
-      setLoading(true);
-      await Promise.all([fetchRequests(), fetchInstructors()]);
-      setLoading(false);
-    };
-    loadData();
-  }, []);
-
-  const handleApprove = async (requestId: string, userId: string) => {
-    try {
-      await promoteToInstructorService({ requestId, userId });
-      toast.success("User promoted to Instructor");
-      fetchRequests();
-      fetchInstructors();
-    } catch (error) {
-      toast.error("Failed to promote user");
-    }
-  };
-
-  const handleReject = async (requestId: string) => {
-    try {
-      await rejectRequestService({ requestId });
-      toast.success("Request rejected");
-      fetchRequests();
-    } catch (error) {
-      toast.error("Failed to reject request");
-    }
-  };
-
-  if (loading)
-    return (
-      <div className="flex justify-center items-center h-[50vh]">
-        <Loader2 className="animate-spin w-8 h-8" />
-      </div>
+    sendWarning(
+      { instructorId: selectedInstructorId, message: warnReason },
+      {
+        onSuccess: () => {
+          setWarnDialogOpen(false);
+        },
+      },
     );
+  };
 
   return (
     <div className="p-8 space-y-6 min-h-screen bg-gray-50/50">
@@ -164,19 +92,18 @@ const AdminDashboard = () => {
         <h1 className="text-3xl font-bold tracking-tight">Admin Dashboard</h1>
         <div className="text-sm text-muted-foreground">
           Total Instructors:{" "}
-          <span className="font-bold">{instructors.length}</span>
+          <span className="font-bold">{instructors?.length || 0}</span>
         </div>
       </div>
 
       <Tabs defaultValue="requests" className="w-full">
         <TabsList className="grid w-full max-w-md grid-cols-2 mb-8">
           <TabsTrigger value="requests">
-            Pending Requests ({requests.length})
+            Pending Requests ({requests?.length || 0})
           </TabsTrigger>
           <TabsTrigger value="instructors">Active Instructors</TabsTrigger>
         </TabsList>
 
-        {/* --- TAB 1: REQUESTS --- */}
         <TabsContent value="requests">
           <Card>
             <CardHeader>
@@ -189,12 +116,12 @@ const AdminDashboard = () => {
                     <TableHead>User</TableHead>
                     <TableHead>Email</TableHead>
                     <TableHead>Reason</TableHead>
-                    <TableHead>Applied On</TableHead>
+                    <TableHead>Date</TableHead>
                     <TableHead className="text-center">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {requests.length === 0 ? (
+                  {requests?.length === 0 ? (
                     <TableRow>
                       <TableCell
                         colSpan={5}
@@ -204,10 +131,10 @@ const AdminDashboard = () => {
                       </TableCell>
                     </TableRow>
                   ) : (
-                    requests.map((req) => (
+                    requests?.map((req: Request) => (
                       <TableRow key={req._id}>
                         <TableCell className="font-medium">
-                          {req.userName || "N/A"}
+                          {req.userName}
                         </TableCell>
                         <TableCell>{req.email}</TableCell>
                         <TableCell
@@ -223,14 +150,21 @@ const AdminDashboard = () => {
                           <Button
                             size="sm"
                             variant="outline"
-                            className="text-red-500 hover:text-red-600 hover:bg-red-50"
-                            onClick={() => handleReject(req._id)}
+                            className="text-red-500 hover:bg-red-50"
+                            onClick={() =>
+                              rejectRequest({ requestId: req._id })
+                            }
                           >
                             <X className="w-4 h-4 mr-1" /> Reject
                           </Button>
                           <Button
                             size="sm"
-                            onClick={() => handleApprove(req._id, req.userId)}
+                            onClick={() =>
+                              promoteUser({
+                                requestId: req._id,
+                                userId: req.userId,
+                              })
+                            }
                           >
                             <Check className="w-4 h-4 mr-1" /> Approve
                           </Button>
@@ -244,7 +178,6 @@ const AdminDashboard = () => {
           </Card>
         </TabsContent>
 
-        {/* --- TAB 2: INSTRUCTORS --- */}
         <TabsContent value="instructors">
           <Card>
             <CardHeader>
@@ -261,73 +194,58 @@ const AdminDashboard = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {instructors.length === 0 ? (
-                    <TableRow>
-                      <TableCell
-                        colSpan={4}
-                        className="text-center py-10 text-muted-foreground"
-                      >
-                        No active instructors found.
+                  {instructors?.map((inst: Instructor) => (
+                    <TableRow key={inst.id}>
+                      <TableCell className="font-medium">
+                        {inst.firstName} {inst.lastName}
+                      </TableCell>
+                      <TableCell>
+                        {inst.emailAddresses?.[0]?.emailAddress}
+                      </TableCell>
+                      <TableCell>
+                        <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                          {inst.publicMetadata?.role}
+                        </span>
+                      </TableCell>
+                      <TableCell className="text-center space-x-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="text-amber-600 hover:bg-amber-50"
+                          onClick={() => openWarnDialog(inst.id)}
+                        >
+                          <ShieldAlert className="w-4 h-4 mr-1" /> Warn
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          onClick={() => handleRevoke(inst.id)}
+                        >
+                          <Trash2 className="w-4 h-4 mr-1" /> Revoke
+                        </Button>
                       </TableCell>
                     </TableRow>
-                  ) : (
-                    instructors.map((inst) => (
-                      <TableRow key={inst.id}>
-                        <TableCell className="font-medium">
-                          {inst.firstName} {inst.lastName}
-                        </TableCell>
-                        <TableCell>
-                          {inst.emailAddresses?.[0]?.emailAddress}
-                        </TableCell>
-                        <TableCell>
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                            {inst.publicMetadata?.role}
-                          </span>
-                        </TableCell>
-                        <TableCell className="text-center space-x-2">
-                          {/* Warn Button */}
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="text-amber-600 border-amber-200 hover:bg-amber-50"
-                            onClick={() => openWarnDialog(inst.id)}
-                          >
-                            <ShieldAlert className="w-4 h-4 mr-1" /> Warn
-                          </Button>
-
-                          {/* Revoke Button */}
-                          <Button
-                            size="sm"
-                            variant="destructive"
-                            onClick={() => handleRevoke(inst.id)}
-                          >
-                            <Trash2 className="w-4 h-4 mr-1" /> Revoke
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  )}
+                  ))}
                 </TableBody>
               </Table>
             </CardContent>
           </Card>
         </TabsContent>
       </Tabs>
-      {/* Warning Dialog */}
+
       <Dialog open={warnDialogOpen} onOpenChange={setWarnDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Issue Official Warning</DialogTitle>
+            <DialogTitle>Issue Warning</DialogTitle>
             <DialogDescription>
-              This message will be emailed directly to the instructor.
+              This will be emailed to the instructor.
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">
             <Textarea
-              placeholder="Reason for warning (e.g., Low course quality, violation of terms...)"
+              placeholder="Reason..."
               value={warnReason}
               onChange={(e) => setWarnReason(e.target.value)}
-              className="min-h-[100px]"
             />
           </div>
           <DialogFooter>

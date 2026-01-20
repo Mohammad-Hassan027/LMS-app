@@ -1,12 +1,7 @@
 import { Suspense } from "react";
-import { ArrowUpDownIcon } from "lucide-react";
+import { ArrowUpDownIcon, SearchX, SlidersHorizontal } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import {
-  // parseAsArrayOf,
-  // parseAsString,
-  useQueryState,
-  // useQueryStates,
-} from "nuqs";
+import { useQueryState } from "nuqs";
 
 import Loader from "@/components/Loader";
 import { Button } from "@/components/ui/button";
@@ -29,7 +24,7 @@ import CoursesSidebar from "@/components/student-view/courses/CoursesSidebar";
 import { useFilters } from "@/hooks/use-filters";
 
 function CoursesContent() {
-  const { filters } = useFilters();
+  const { filters, setFilters } = useFilters();
   const navigate = useNavigate();
 
   const [sort, setSort] = useQueryState("sort", {
@@ -38,43 +33,52 @@ function CoursesContent() {
 
   const { data: studentViewCoursesList } = useStudentAllCoursesService(
     sort,
-    filters
+    filters,
   );
 
   return (
     <div className="flex flex-col h-full">
-      <header className="flex justify-between h-14 items-center border-b px-0 sm:px-2 lg:h-[60px] shrink-0">
-        <div className="flex items-center gap-1 sm:gap-2">
-          <SidebarTrigger />
-          <span className="font-semibold tracking-tight sm:tracking-normal">
-            Course Catalog
-          </span>
+      <header className="flex h-16 items-center justify-between border-b bg-background px-4 lg:px-6 shrink-0 sticky top-0 z-10">
+        <div className="flex items-center gap-4">
+          <SidebarTrigger className="-ml-2">
+            <SlidersHorizontal className="w-4 h-4" />
+          </SidebarTrigger>
+          <div className="h-6 w-px bg-border hidden sm:block" />
+          <h1 className="font-bold text-lg tracking-tight">All Courses</h1>
         </div>
-        <div className="mr-4 flex items-center gap-2">
+
+        <div className="flex items-center gap-3">
+          <span className="text-sm text-muted-foreground hidden sm:inline-block">
+            {studentViewCoursesList?.length < 0
+              ? "..."
+              : studentViewCoursesList?.length || 0}{" "}
+            Results
+          </span>
+
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button className="flex items-center gap-1" variant={"outline"}>
-                <ArrowUpDownIcon className="h-1 w-1 sm:h-4 sm:w-4" />
-                <span className="hidden sm:flex">Sort By</span>
+              <Button variant="outline" size="sm" className="ml-auto h-9 gap-2">
+                <ArrowUpDownIcon className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline-block">Sort</span>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
+            <DropdownMenuContent align="end" className="w-[200px]">
               <DropdownMenuRadioGroup
                 value={sort}
                 onValueChange={(value) => setSort(value)}
               >
                 {sortOptions.map((sortItem) => (
-                  <DropdownMenuRadioItem value={sortItem.id} key={sortItem.id}>
+                  <DropdownMenuRadioItem
+                    value={sortItem.id}
+                    key={sortItem.id}
+                    className="cursor-pointer"
+                  >
                     {sortItem.label}
                   </DropdownMenuRadioItem>
                 ))}
               </DropdownMenuRadioGroup>
             </DropdownMenuContent>
           </DropdownMenu>
-
-          <span className="text-sm font-semibold text-gray-900 tracking-tight sm:tracking-normal">
-            {studentViewCoursesList?.length || 0} Results
-          </span>
         </div>
       </header>
 
@@ -116,7 +120,27 @@ function CoursesContent() {
               </Card>
             ))
           ) : (
-            <h1 className="text-lg font-medium">No Courses Found.</h1>
+            <div className="flex flex-col items-center justify-center h-[60vh] text-center space-y-4">
+              <div className="bg-muted p-6 rounded-full">
+                <SearchX className="w-12 h-12 text-muted-foreground" />
+              </div>
+              <h2 className="text-xl font-bold">No Courses Found</h2>
+              <p className="text-muted-foreground max-w-sm">
+                Try adjusting your filters or search for something else.
+              </p>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setFilters({
+                    category: null,
+                    level: null,
+                    primaryLanguage: null,
+                  });
+                }}
+              >
+                Clear Filters
+              </Button>
+            </div>
           )}
         </div>
       </main>
@@ -126,11 +150,11 @@ function CoursesContent() {
 
 export default function CoursesPage() {
   return (
-    <div className="flex min-h-screen w-full">
+    <div className="flex min-h-[calc(100vh-4rem)] w-full">
       <SidebarProvider defaultOpen={true}>
         <CoursesSidebar />
 
-        <SidebarInset className="flex flex-col">
+        <SidebarInset className="flex flex-col overflow-hidden">
           <Suspense fallback={<Loader height="h-screen" />}>
             <CoursesContent />
           </Suspense>

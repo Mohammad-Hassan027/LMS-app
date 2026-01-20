@@ -1,7 +1,14 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { useStudentViewCourseDetailsService } from "@/service/studentQueries";
 import Loader from "@/components/Loader";
-import { CheckCircle, Globe, Lock, PlayCircle, Video } from "lucide-react";
+import {
+  CheckCircle,
+  Globe,
+  Lock,
+  PlayCircle,
+  Video,
+  AlertCircle,
+} from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Player from "@/components/video-player";
 import {
@@ -16,6 +23,8 @@ import PaypalPayment from "@/components/PaypalPayment";
 import { useUser } from "@clerk/clerk-react";
 import { checkIsStudentEnrolledService } from "@/service";
 import type { UserResource } from "@clerk/shared/types";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 
 function CourseDetailsContent({
   courseId,
@@ -30,13 +39,12 @@ function CourseDetailsContent({
     useState("");
   const [isEnrollmentChecking, setIsEnrollmentChecking] = useState(true);
 
-  const { data: studentViewCourseDetails } =
+  const { data: studentViewCourseDetails, isLoading } =
     useStudentViewCourseDetailsService(courseId);
 
   useEffect(() => {
     if (!courseId) return;
 
-    // If there is no user (guest), stop checking and show the page
     if (!user?.id) {
       setIsEnrollmentChecking(false);
       return;
@@ -70,7 +78,6 @@ function CourseDetailsContent({
       setFreePreviewLectureVideoUrl(videoUrl);
       setShowFreePreviewDialog(true);
     }
-    // Optional: Add toast for non-free lectures
   };
 
   const capitalize = (str: string) => {
@@ -78,167 +85,232 @@ function CourseDetailsContent({
     return str.charAt(0).toUpperCase() + str.slice(1);
   };
 
-  if (isEnrollmentChecking) return <Loader height="h-screen" />;
+  if (isEnrollmentChecking || isLoading) return <Loader height="h-screen" />;
 
   if (!studentViewCourseDetails)
-    return <div className="p-10">No Course Found</div>;
+    return (
+      <div className="flex h-screen items-center justify-center text-muted-foreground">
+        Course Not Found
+      </div>
+    );
 
   return (
-    <div className="container mx-auto p-4 md:p-10">
-      {/* --- Header Section --- */}
-      <div className="bg-gray-900 rounded-lg p-6 md:p-10 mb-8 text-white shadow-xl">
-        <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight mb-4">
-          {studentViewCourseDetails?.title}
-        </h1>
+    <div className="min-h-screen bg-gray-50/50 pb-20">
+      <div className="bg-gray-900 text-white py-12 md:py-20">
+        <div className="container mx-auto px-6">
+          <div className="max-w-4xl space-y-6">
+            <div className="flex flex-wrap items-center gap-3">
+              <Badge
+                variant="secondary"
+                className="bg-blue-600 text-white hover:bg-blue-700"
+              >
+                {studentViewCourseDetails?.category}
+              </Badge>
+              <span className="flex items-center gap-1 text-gray-300 text-sm">
+                <Globe className="w-3 h-3" />
+                {capitalize(studentViewCourseDetails?.primaryLanguage)}
+              </span>
+              <span className="text-gray-300 text-sm">•</span>
+              <span className="text-gray-300 text-sm">
+                {capitalize(studentViewCourseDetails?.level)} Level
+              </span>
+            </div>
 
-        <div className="flex flex-col md:flex-row gap-4 md:gap-8 mb-4 text-sm md:text-base">
-          <p className="opacity-90">
-            Created By:{" "}
-            <span className="font-semibold">
-              {studentViewCourseDetails?.instructorName}
-            </span>
-          </p>
-          <p className="flex items-center gap-2 opacity-90">
-            <Globe className="w-4 h-4" />
-            {capitalize(studentViewCourseDetails?.primaryLanguage)}
-          </p>
-        </div>
+            <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight leading-tight">
+              {studentViewCourseDetails?.title}
+            </h1>
 
-        <div className="flex flex-wrap gap-4 text-sm font-medium opacity-80">
-          <p>
-            Category:{" "}
-            <span className="text-white ml-1">
-              {studentViewCourseDetails?.category}
-            </span>
-          </p>
-          <p>
-            Level:{" "}
-            <span className="text-white ml-1">
-              {capitalize(studentViewCourseDetails?.level)}
-            </span>
-          </p>
+            <p className="text-lg text-gray-300 max-w-2xl font-light">
+              {studentViewCourseDetails?.subtitle ||
+                "Master this skill with our comprehensive curriculum designed by industry experts."}
+            </p>
+
+            <div className="flex items-center gap-2 pt-2">
+              <span className="text-gray-400 text-sm">Created By</span>
+              <span className="font-semibold text-white">
+                {studentViewCourseDetails?.instructorName}
+              </span>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* --- Main Content Layout --- */}
-      <div className="flex flex-col lg:flex-row gap-8">
-        {/* Left Column: Details & Curriculum */}
-        <div className="flex-1 space-y-6">
-          {/* Objectives */}
-          <Card>
-            <CardHeader>
-              <CardTitle>What you'll learn</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {studentViewCourseDetails?.objectives
-                  .split(",")
-                  .map((objective, index) => (
-                    <li key={index} className="flex items-start gap-2">
-                      <CheckCircle className="text-green-500 w-5 h-5 shrink-0 mt-0.5" />
-                      <span className="text-sm md:text-base">{objective}</span>
-                    </li>
-                  ))}
-              </ul>
-            </CardContent>
-          </Card>
+      <div className="container mx-auto px-6 -mt-10 relative z-10">
+        <div className="flex flex-col lg:flex-row gap-8">
+          <div className="flex-1 space-y-8">
+            <Card className="shadow-sm border-gray-200">
+              <CardHeader>
+                <CardTitle className="text-xl">What you'll learn</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {studentViewCourseDetails?.objectives
+                    .split(",")
+                    .map((objective, index) => (
+                      <li key={index} className="flex items-start gap-3">
+                        <CheckCircle className="text-primary w-5 h-5 shrink-0 mt-0.5" />
+                        <span className="text-sm text-gray-700 leading-relaxed">
+                          {objective}
+                        </span>
+                      </li>
+                    ))}
+                </ul>
+              </CardContent>
+            </Card>
 
-          {/* Description */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Description</CardTitle>
-            </CardHeader>
-            <CardContent className="text-muted-foreground leading-relaxed">
-              {studentViewCourseDetails?.description}
-            </CardContent>
-          </Card>
+            <Card className="shadow-sm border-gray-200">
+              <CardHeader className="border-b bg-gray-50/50">
+                <CardTitle className="text-xl flex items-center justify-between">
+                  <span>Course Content</span>
+                  <span className="text-sm font-normal text-muted-foreground">
+                    {studentViewCourseDetails?.curriculum.length} Lectures
+                  </span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-0">
+                <div className="divide-y divide-gray-100">
+                  {studentViewCourseDetails?.curriculum.map(
+                    (lecture, index) => (
+                      <div
+                        key={index}
+                        className={`flex items-center justify-between p-4 transition-colors ${
+                          lecture.isFreePreview
+                            ? "cursor-pointer hover:bg-blue-50/50"
+                            : "opacity-80 hover:bg-gray-50/50"
+                        }`}
+                        onClick={() =>
+                          handleFreePreviewDialog(
+                            lecture.videoUrl,
+                            lecture.isFreePreview,
+                          )
+                        }
+                      >
+                        <div className="flex items-center gap-4">
+                          <div
+                            className={`p-2 rounded-full ${lecture.isFreePreview ? "bg-blue-100 text-blue-600" : "bg-gray-100 text-gray-500"}`}
+                          >
+                            <Video className="w-4 h-4" />
+                          </div>
+                          <span className="font-medium text-sm md:text-base text-gray-800">
+                            {lecture.title}
+                          </span>
+                        </div>
 
-          {/* Curriculum */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Course Content</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {studentViewCourseDetails?.curriculum.map((lecture, index) => (
-                  <div
-                    key={index}
-                    className={`flex items-center justify-between p-3 rounded-md border ${
-                      lecture.isFreePreview
-                        ? "cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
-                        : "opacity-75"
-                    }`}
-                    onClick={() =>
-                      handleFreePreviewDialog(
-                        lecture.videoUrl,
-                        lecture.isFreePreview,
-                      )
-                    }
-                  >
-                    <div className="flex items-center gap-3">
-                      <Video className="w-5 h-5 text-muted-foreground" />
-                      <span className="font-medium text-sm md:text-base line-clamp-1">
-                        {index + 1}. {lecture.title}
-                      </span>
-                    </div>
-
-                    {lecture.isFreePreview ? (
-                      <div className="flex items-center gap-1 text-sm text-blue-600 font-medium">
-                        <PlayCircle className="w-4 h-4" />
-                        <span>Preview</span>
+                        {lecture.isFreePreview ? (
+                          <div className="flex items-center gap-1.5 text-xs md:text-sm text-blue-600 font-semibold bg-blue-50 px-3 py-1 rounded-full">
+                            <PlayCircle className="w-3.5 h-3.5" />
+                            <span>Preview</span>
+                          </div>
+                        ) : (
+                          <Lock className="w-4 h-4 text-gray-400" />
+                        )}
                       </div>
-                    ) : (
-                      <Lock className="w-4 h-4 text-muted-foreground" />
-                    )}
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+                    ),
+                  )}
+                </div>
+              </CardContent>
+            </Card>
 
-        {/* Right Column: Sticky Sidebar for Purchase */}
-        <aside className="w-full lg:w-[400px] shrink-0">
-          <div className="sticky top-6 space-y-6">
-            <Card className="overflow-hidden shadow-lg">
-              <div className="aspect-video relative flex items-center justify-center">
-                <Player
-                  url={
-                    studentViewCourseDetails?.curriculum?.[0]?.videoUrl || ""
-                  }
-                />
-              </div>
-              <CardContent className="p-6">
-                <div className="text-3xl font-bold mb-4">
-                  ${studentViewCourseDetails?.pricing}
-                </div>
-                <div className="w-full">
-                  <PaypalPayment
-                    user={user}
-                    course={studentViewCourseDetails}
-                  />
-                </div>
-                <p className="mt-3 text-xs text-center text-muted-foreground">
-                  30-Day Money-Back Guarantee
-                </p>
+            <Card className="shadow-sm border-gray-200">
+              <CardHeader>
+                <CardTitle className="text-xl">Description</CardTitle>
+              </CardHeader>
+              <CardContent className="prose prose-sm md:prose-base text-gray-600 max-w-none">
+                {studentViewCourseDetails?.description}
               </CardContent>
             </Card>
           </div>
-        </aside>
+
+          <aside className="w-full lg:w-[380px] shrink-0">
+            <div className="sticky top-24 space-y-6">
+              <Card className="overflow-hidden shadow-xl border-0 ring-1 ring-gray-200">
+                <div
+                  className="aspect-video relative bg-black flex items-center justify-center group cursor-pointer"
+                  onClick={() => {
+                    const preview = studentViewCourseDetails?.curriculum.find(
+                      (c) => c.isFreePreview,
+                    );
+                    if (preview)
+                      handleFreePreviewDialog(preview.videoUrl, true);
+                  }}
+                >
+                  {studentViewCourseDetails?.curriculum.some(
+                    (c) => c.isFreePreview,
+                  ) ? (
+                    <>
+                      <img
+                        src={studentViewCourseDetails.image}
+                        alt="Course Preview"
+                        className="w-full h-full object-cover opacity-60 group-hover:opacity-40 transition-opacity"
+                      />
+                      <PlayCircle className="absolute w-8 h-8 text-white opacity-90 group-hover:scale-110 transition-transform" />
+                      <div className="absolute bottom-4 text-white font-medium text-sm">
+                        Preview this course
+                      </div>
+                    </>
+                  ) : (
+                    <img
+                      src={studentViewCourseDetails?.image}
+                      className="w-full h-full object-cover"
+                    />
+                  )}
+                </div>
+
+                <CardContent className="p-6 space-y-6">
+                  <div className="flex items-end gap-2">
+                    <span className="text-4xl font-extrabold text-gray-900">
+                      ${studentViewCourseDetails?.pricing}
+                    </span>
+                    <span className="text-lg text-gray-500 line-through mb-1.5 opacity-60">
+                      $
+                      {(
+                        Number(studentViewCourseDetails?.pricing) * 1.5
+                      ).toFixed(0)}
+                    </span>
+                  </div>
+
+                  <div className="w-full">
+                    <PaypalPayment
+                      user={user}
+                      course={studentViewCourseDetails}
+                    />
+                  </div>
+
+                  <div className="space-y-3 pt-2">
+                    <p className="text-xs text-center text-muted-foreground">
+                      30-Day Money-Back Guarantee
+                    </p>
+                    <Separator />
+                    <div className="space-y-2 text-sm text-gray-600">
+                      <div className="flex items-center gap-2">
+                        <span className="font-bold">Includes:</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Video className="w-4 h-4" /> Lifetime Access
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <AlertCircle className="w-4 h-4" /> Certificate of
+                        Completion
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </aside>
+        </div>
       </div>
 
       <Dialog
         open={showFreePreviewDialog}
         onOpenChange={setShowFreePreviewDialog}
       >
-        <DialogContent>
-          <DialogHeader>
+        <DialogContent className="max-w-4xl p-0 overflow-hidden bg-black border-none">
+          <DialogHeader className="sr-only">
             <DialogTitle>Course Preview</DialogTitle>
-            <DialogDescription>
-              Watch a free preview of this course
-            </DialogDescription>
+            <DialogDescription>Video Player</DialogDescription>
           </DialogHeader>
-          <div className="flex items-center justify-center w-full">
+          <div className="aspect-video w-full">
             <Player url={freePreviewLectureVideoUrl} />
           </div>
         </DialogContent>

@@ -3,9 +3,9 @@ import StudentViewHeader from "@/components/student-view/StudentViewHeader";
 
 function StudentViewLayout() {
   return (
-    <div>
+    <div className="flex flex-col min-h-screen bg-background">
       <StudentViewHeader />
-      <main className="">
+      <main className="grow">
         <Outlet />
       </main>
     </div>

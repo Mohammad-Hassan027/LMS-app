@@ -49,14 +49,17 @@ function StudentViewHeader() {
     <header
       className={`sticky top-0 z-50 w-full border-b transition-all duration-300 ${
         scrolled
-          ? "bg-background/80 backdrop-blur-md border-gray-200"
+          ? "bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60 border-border/40 shadow-sm"
           : "bg-background border-transparent"
       }`}
     >
       <div className="container mx-auto px-4 lg:px-6 h-16 flex items-center justify-between">
-        <div className="flex items-center gap-6">
-          <Link to={"/"} className="flex items-center gap-2 group">
-            <div className="h-10 w-auto min-w-[120px] flex items-center justify-center rounded-md overflow-hidden">
+        <div className="flex items-center gap-8">
+          <Link
+            to={"/"}
+            className="flex items-center gap-2 hover:opacity-90 transition-opacity"
+          >
+            <div className="h-9 w-auto flex items-center">
               <img
                 src="/logo.png"
                 alt="PathOS Logo"
@@ -69,22 +72,30 @@ function StudentViewHeader() {
           <Button
             variant="ghost"
             onClick={handleExploreCourses}
-            className="hidden md:flex items-center gap-2 text-gray-600 transition-colors"
+            className={`hidden md:flex items-center gap-2 transition-colors ${
+              location.pathname.includes("/courses")
+                ? "text-primary bg-primary/5 font-semibold"
+                : "text-muted-foreground hover:text-primary hover:bg-transparent"
+            }`}
           >
             <CodeSquareIcon className="w-5 h-5" />
-            <span className="font-medium">Explore Courses</span>
+            <span className="text-sm lg:text-base">Explore Courses</span>
           </Button>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3 lg:gap-4">
           <SignedIn>
             <Link to="/my-courses">
               <Button
                 variant="ghost"
-                className="hidden md:flex items-center gap-2 text-gray-600 transition-colors"
+                className={`hidden md:flex items-center gap-2 transition-colors ${
+                  location.pathname.includes("/my-courses")
+                    ? "text-primary font-semibold"
+                    : "text-muted-foreground hover:text-primary hover:bg-transparent"
+                }`}
               >
                 <PlaySquareIcon className="w-5 h-5" />
-                <span className="font-medium">My Learning</span>
+                <span className="text-sm lg:text-base">My Learning</span>
               </Button>
             </Link>
           </SignedIn>
@@ -93,30 +104,31 @@ function StudentViewHeader() {
             <Button
               variant="ghost"
               size="icon"
-              className="relative text-gray-600"
+              className="relative text-muted-foreground hover:text-primary transition-colors"
             >
-              <ShoppingCartIcon className="w-6 h-6" />
+              <ShoppingCartIcon className="w-5 h-5 lg:w-6 lg:h-6" />
               <span className="sr-only">Cart</span>
-              <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-red-500 ring-2 ring-white" />
+              <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-red-600 ring-2 ring-background" />
             </Button>
           </Link>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 pl-2">
             <SignedIn>
               <UserButton afterSignOutUrl="/" />
             </SignedIn>
             <SignedOut>
               <SignInButton mode="modal">
-                <Button className="font-medium text-white">Sign In</Button>
+                <Button size="sm" className="font-semibold px-6">
+                  Sign In
+                </Button>
               </SignInButton>
             </SignedOut>
           </div>
 
-          {/* Mobile Menu Toggle */}
           <Button
             variant="ghost"
             size="icon"
-            className="md:hidden text-gray-700"
+            className="md:hidden text-muted-foreground"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
             {isMenuOpen ? (
@@ -128,13 +140,13 @@ function StudentViewHeader() {
         </div>
       </div>
 
-      {/* MOBILE MENU DROPDOWN */}
+      {/* --- MOBILE MENU DROPDOWN --- */}
       {isMenuOpen && (
-        <div className="absolute top-16 left-0 w-full bg-background border-b shadow-xl md:hidden animate-in slide-in-from-top-5 duration-200">
-          <nav className="p-4 flex flex-col gap-2">
+        <div className="absolute top-16 left-0 w-full bg-background/95 backdrop-blur-xl border-b shadow-lg md:hidden animate-in slide-in-from-top-5 duration-200 z-40">
+          <nav className="p-4 flex flex-col gap-1">
             <button
               onClick={handleExploreCourses}
-              className="flex items-center gap-3 px-4 py-3 rounded-md hover:bg-gray-100 text-sm font-medium transition-colors text-left"
+              className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/5 hover:text-primary text-sm font-medium transition-colors text-left text-foreground/80"
             >
               <CodeSquareIcon className="h-5 w-5" />
               Explore Courses
@@ -144,7 +156,7 @@ function StudentViewHeader() {
               <Link
                 to="/my-courses"
                 onClick={() => setIsMenuOpen(false)}
-                className="flex items-center gap-3 px-4 py-3 rounded-md hover:bg-gray-100 text-sm font-medium transition-colors"
+                className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/5 hover:text-primary text-sm font-medium transition-colors text-foreground/80"
               >
                 <PlaySquareIcon className="h-5 w-5" />
                 My Learning
