@@ -24,7 +24,7 @@ function Footer() {
                 to="https://github.com/Mohammad-Hassan027"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-600 transition-colors hover:text-amber-500"
+                className="text-gray-600 transition-colors hover:text-blue-500"
                 aria-label="GitHub"
               >
                 {/* <FaGithub size={20} /> */}
@@ -34,7 +34,7 @@ function Footer() {
                 to="https://twitter.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-600 transition-colors hover:text-amber-500"
+                className="text-gray-600 transition-colors hover:text-blue-500"
                 aria-label="Twitter"
               >
                 {/* <FaTwitter size={20} /> */}
@@ -44,7 +44,7 @@ function Footer() {
                 to="https://www.linkedin.com/in/mohammad-hassan-shaikh"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-600 transition-colors hover:text-amber-500"
+                className="text-gray-600 transition-colors hover:text-blue-500"
                 aria-label="LinkedIn"
               >
                 {/* <FaLinkedin size={20} /> */}
@@ -62,7 +62,7 @@ function Footer() {
               <li>
                 <Link
                   to="/"
-                  className="text-sm text-gray-600 transition-colors hover:text-amber-500"
+                  className="text-sm text-gray-600 transition-colors hover:text-blue-500"
                   onClick={() => {
                     window.scrollTo({ top: 0, behavior: "smooth" });
                   }}
@@ -73,7 +73,7 @@ function Footer() {
               <li>
                 <Link
                   to="#"
-                  className="text-sm text-gray-600 transition-colors hover:text-amber-500"
+                  className="text-sm text-gray-600 transition-colors hover:text-blue-500"
                   onClick={() => {
                     window.scrollTo({ top: 0, behavior: "smooth" });
                   }}
@@ -84,7 +84,7 @@ function Footer() {
               <li>
                 <Link
                   to="#"
-                  className="text-sm text-gray-600 transition-colors hover:text-amber-500"
+                  className="text-sm text-gray-600 transition-colors hover:text-blue-500"
                   onClick={() => {
                     window.scrollTo({ top: 0, behavior: "smooth" });
                   }}
@@ -95,7 +95,7 @@ function Footer() {
               <li>
                 <Link
                   to="/courses"
-                  className="text-sm text-gray-600 transition-colors hover:text-amber-500"
+                  className="text-sm text-gray-600 transition-colors hover:text-blue-500"
                   onClick={() => {
                     window.scrollTo({ top: 0, behavior: "smooth" });
                   }}
@@ -115,7 +115,7 @@ function Footer() {
               <li>
                 <Link
                   to="#"
-                  className="text-sm text-gray-600 transition-colors hover:text-amber-500"
+                  className="text-sm text-gray-600 transition-colors hover:text-blue-500"
                 >
                   Technology
                 </Link>
@@ -123,7 +123,7 @@ function Footer() {
               <li>
                 <Link
                   to="#"
-                  className="text-sm text-gray-600 transition-colors hover:text-amber-500"
+                  className="text-sm text-gray-600 transition-colors hover:text-blue-500"
                 >
                   Programming
                 </Link>
@@ -131,7 +131,7 @@ function Footer() {
               <li>
                 <Link
                   to="#"
-                  className="text-sm text-gray-600 transition-colors hover:text-amber-500"
+                  className="text-sm text-gray-600 transition-colors hover:text-blue-500"
                 >
                   AI & Machine Learning
                 </Link>
@@ -139,7 +139,7 @@ function Footer() {
               <li>
                 <Link
                   to="#"
-                  className="text-sm text-gray-600 transition-colors hover:text-amber-500"
+                  className="text-sm text-gray-600 transition-colors hover:text-blue-500"
                 >
                   Web Development
                 </Link>
@@ -156,7 +156,7 @@ function Footer() {
               <li>
                 <Link
                   to="#"
-                  className="text-sm text-gray-600 transition-colors hover:text-amber-500"
+                  className="text-sm text-gray-600 transition-colors hover:text-blue-500"
                 >
                   Privacy Policy
                 </Link>
@@ -164,7 +164,7 @@ function Footer() {
               <li>
                 <Link
                   to="#"
-                  className="text-sm text-gray-600 transition-colors hover:text-amber-500"
+                  className="text-sm text-gray-600 transition-colors hover:text-blue-500"
                 >
                   Terms of Service
                 </Link>
@@ -172,7 +172,7 @@ function Footer() {
               <li>
                 <Link
                   to="#"
-                  className="text-sm text-gray-600 transition-colors hover:text-amber-500"
+                  className="text-sm text-gray-600 transition-colors hover:text-blue-500"
                 >
                   Cookie Policy
                 </Link>
@@ -180,7 +180,7 @@ function Footer() {
               <li>
                 <Link
                   to="#"
-                  className="text-sm text-gray-600 transition-colors hover:text-amber-500"
+                  className="text-sm text-gray-600 transition-colors hover:text-blue-500"
                 >
                   GDPR
                 </Link>

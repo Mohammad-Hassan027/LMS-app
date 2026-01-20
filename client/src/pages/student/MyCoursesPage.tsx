@@ -13,44 +13,46 @@ function MyCoursesList({ userId }: { userId: string }) {
 
   const courseList = data?.courses || [];
 
-  if (courseList.length === 0) {
-    return <div className="p-10 text-center">No courses found.</div>;
-  }
-
   return (
     <div className="flex flex-wrap gap-6 p-6">
-      {courseList.map((course) => (
-        <Card
-          key={course.courseId}
-          className="cursor-pointer hover:shadow-lg transition-shadow"
-        >
-          <CardContent className="flex flex-col items-stretch">
-            <picture className="w-56 h-40 shrink-0">
-              <img
-                width={300}
-                height={150}
-                src={course.courseImage}
-                alt={`course-image`}
-                className="object-cover"
-              />
-            </picture>
-            <div className="mt-3 flex-1">
-              <CardTitle className="text-xl mb-2">{course.title}</CardTitle>
-              <p className="mb-1 text-sm text-gray-600">
-                Created By{" "}
-                <span className="font-bold">{course.instructorName}</span>
-              </p>
-              <Button
-                className="w-full mt-3 flex items-center"
-                onClick={() => navigate(`/course-progress/${course.courseId}`)}
-              >
-                <WatchIcon className="w-3 h-3" />
-                <span>Start Learning</span>
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      ))}
+      {courseList.length > 0 ? (
+        courseList.map((course) => (
+          <Card
+            key={course.courseId}
+            className="cursor-pointer hover:shadow-lg transition-shadow"
+          >
+            <CardContent className="flex flex-col items-stretch">
+              <picture className="w-56 h-40 shrink-0">
+                <img
+                  width={300}
+                  height={150}
+                  src={course.courseImage}
+                  alt={`course-image`}
+                  className="object-cover"
+                />
+              </picture>
+              <div className="mt-3 flex-1">
+                <CardTitle className="text-xl mb-2">{course.title}</CardTitle>
+                <p className="mb-1 text-sm text-gray-600">
+                  Created By{" "}
+                  <span className="font-bold">{course.instructorName}</span>
+                </p>
+                <Button
+                  className="w-full mt-3 flex items-center"
+                  onClick={() =>
+                    navigate(`/course-progress/${course.courseId}`)
+                  }
+                >
+                  <WatchIcon className="w-3 h-3" />
+                  <span>Start Learning</span>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        ))
+      ) : (
+        <div className="p-10 text-center text-xl">No courses found.</div>
+      )}
     </div>
   );
 }

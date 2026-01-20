@@ -1,9 +1,9 @@
 import {
   CodeSquareIcon,
-  // GraduationCap,
   Menu,
   PlaySquareIcon,
   ShoppingCartIcon,
+  X,
 } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
@@ -14,18 +14,26 @@ import {
 } from "@clerk/clerk-react";
 import { Button } from "@/components/ui/button";
 import { useFilters } from "@/hooks/use-filters";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 function StudentViewHeader() {
   const navigate = useNavigate();
   const location = useLocation();
   const { setFilters } = useFilters();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  // Add shadow on scroll
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 10);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   async function handleExploreCourses() {
-    // Close menu if open on mobile
     setIsMenuOpen(false);
-
     if (location.pathname.includes("/courses")) {
       await setFilters({
         category: null,
@@ -38,89 +46,111 @@ function StudentViewHeader() {
   }
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background">
-      <div className="flex h-16 items-center justify-between px-4 lg:px-6">
-        {/* Left Section: Logo & Desktop Explore */}
-        <div className="flex items-center space-x-4">
-          <Link to={"/"} className="flex items-center justify-center">
-            <img src="/logo.png" className="h-10 w-36 mr-2 bg-accent" />
-            {/* <GraduationCap className="h-8 w-8 mr-2 lg:mr-4" /> */}
-            {/* <span className="font-extrabold text-lg lg:text-xl">PathOS</span> */}
+    <header
+      className={`sticky top-0 z-50 w-full border-b transition-all duration-300 ${
+        scrolled
+          ? "bg-background/80 backdrop-blur-md border-gray-200"
+          : "bg-background border-transparent"
+      }`}
+    >
+      <div className="container mx-auto px-4 lg:px-6 h-16 flex items-center justify-between">
+        <div className="flex items-center gap-6">
+          <Link to={"/"} className="flex items-center gap-2 group">
+            <div className="h-10 w-auto min-w-[120px] flex items-center justify-center rounded-md overflow-hidden">
+              <img
+                src="/logo.png"
+                alt="PathOS Logo"
+                className="h-full w-full object-contain"
+                loading="eager"
+              />
+            </div>
           </Link>
 
-          {/* Desktop Only: Explore Button */}
           <Button
-            className="hidden md:inline-flex items-center justify-center gap-2 px-3 py-2 cursor-pointer"
+            variant="ghost"
             onClick={handleExploreCourses}
-            variant={"ghost"}
+            className="hidden md:flex items-center gap-2 text-gray-600 transition-colors"
           >
-            <CodeSquareIcon className="w-6 h-6" />
-            <span className="text-base lg:text-lg font-bold">
-              Explore Courses
-            </span>
+            <CodeSquareIcon className="w-5 h-5" />
+            <span className="font-medium">Explore Courses</span>
           </Button>
         </div>
 
-        {/* Right Section: Icons & Menu */}
-        <div className="flex items-center space-x-3 lg:space-x-5">
-          {/* Desktop Only: My Courses */}
-          <Link
-            to={"/my-courses"}
-            className="hidden md:inline-flex items-center justify-center gap-2 px-3 py-2"
-          >
-            <PlaySquareIcon className="h-6 w-6" />
-            <span className="text-base lg:text-lg font-bold">My Courses</span>
+        <div className="flex items-center gap-4">
+          <SignedIn>
+            <Link to="/my-courses">
+              <Button
+                variant="ghost"
+                className="hidden md:flex items-center gap-2 text-gray-600 transition-colors"
+              >
+                <PlaySquareIcon className="w-5 h-5" />
+                <span className="font-medium">My Learning</span>
+              </Button>
+            </Link>
+          </SignedIn>
+
+          <Link to="/cart">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="relative text-gray-600"
+            >
+              <ShoppingCartIcon className="w-6 h-6" />
+              <span className="sr-only">Cart</span>
+              <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-red-500 ring-2 ring-white" />
+            </Button>
           </Link>
 
-          {/* Always Visible: Cart */}
-          <Link to={"/cart"} className="flex items-center">
-            <ShoppingCartIcon className="h-6 w-6" />
-          </Link>
-
-          {/* Always Visible: Auth */}
-          <div className="flex items-center">
+          <div className="flex items-center gap-2">
             <SignedIn>
-              <UserButton />
+              <UserButton afterSignOutUrl="/" />
             </SignedIn>
             <SignedOut>
               <SignInButton mode="modal">
-                <Button>Sign In</Button>
+                <Button className="font-medium text-white">Sign In</Button>
               </SignInButton>
             </SignedOut>
           </div>
 
-          {/* Mobile Only: Menu Toggle Button */}
+          {/* Mobile Menu Toggle */}
           <Button
             variant="ghost"
             size="icon"
-            className="md:hidden"
+            className="md:hidden text-gray-700"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
-            <Menu className="h-6 w-6" />
-            <span className="sr-only">Toggle menu</span>
+            {isMenuOpen ? (
+              <X className="h-6 w-6" />
+            ) : (
+              <Menu className="h-6 w-6" />
+            )}
           </Button>
         </div>
       </div>
 
-      {/* Mobile Menu Dropdown */}
+      {/* MOBILE MENU DROPDOWN */}
       {isMenuOpen && (
-        <div className="md:hidden border-t p-4 space-y-4 bg-background">
-          <div
-            onClick={handleExploreCourses}
-            className="flex items-center gap-2 font-bold cursor-pointer py-2 hover:bg-muted rounded-md px-2"
-          >
-            <CodeSquareIcon className="h-5 w-5" />
-            <span>Explore Courses</span>
-          </div>
+        <div className="absolute top-16 left-0 w-full bg-background border-b shadow-xl md:hidden animate-in slide-in-from-top-5 duration-200">
+          <nav className="p-4 flex flex-col gap-2">
+            <button
+              onClick={handleExploreCourses}
+              className="flex items-center gap-3 px-4 py-3 rounded-md hover:bg-gray-100 text-sm font-medium transition-colors text-left"
+            >
+              <CodeSquareIcon className="h-5 w-5" />
+              Explore Courses
+            </button>
 
-          <Link
-            to={"/my-courses"}
-            onClick={() => setIsMenuOpen(false)}
-            className="flex items-center gap-2 font-bold py-2 hover:bg-muted rounded-md px-2"
-          >
-            <PlaySquareIcon className="h-5 w-5" />
-            <span>My Courses</span>
-          </Link>
+            <SignedIn>
+              <Link
+                to="/my-courses"
+                onClick={() => setIsMenuOpen(false)}
+                className="flex items-center gap-3 px-4 py-3 rounded-md hover:bg-gray-100 text-sm font-medium transition-colors"
+              >
+                <PlaySquareIcon className="h-5 w-5" />
+                My Learning
+              </Link>
+            </SignedIn>
+          </nav>
         </div>
       )}
     </header>

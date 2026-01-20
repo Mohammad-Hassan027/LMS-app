@@ -238,7 +238,7 @@ function CourseDetailsContent({
               Watch a free preview of this course
             </DialogDescription>
           </DialogHeader>
-          <div className="flex items-center justify-center aspect-video w-full">
+          <div className="flex items-center justify-center w-full">
             <Player url={freePreviewLectureVideoUrl} />
           </div>
         </DialogContent>
