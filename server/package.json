@@ -22,7 +22,8 @@
     "mongoose": "^8.19.3",
     "morgan": "^1.10.1",
     "multer": "^2.0.2",
-    "nodemailer": "^7.0.12"
+    "nodemailer": "^7.0.12",
+    "svix": "^1.84.1"
   },
   "devDependencies": {
     "prettier": "^3.6.2"
