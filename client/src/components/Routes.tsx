@@ -113,15 +113,24 @@ export default function Routes() {
           path: "edit-course/:courseId",
           element: <AddNewCoursePage />,
         },
-        {
-          path: "admin",
-          element: (
-            <ProtectedRoute allowedRoles={["admin"]}>
-              <AdminDashboard />
-            </ProtectedRoute>
-          ),
-        },
       ],
+    },
+    {
+      path: "admin",
+      element: (
+        <ProtectedRoute allowedRoles={["admin"]}>
+          <AdminDashboard />
+        </ProtectedRoute>
+      ),
+      // children: [
+      //   {
+      //     path: "dashboard",
+      //     element: <AdminDashboard />,
+      //   },
+      //   {
+      //     path: "",
+      //   }
+      // ],
     },
     {
       path: "/unauthorized",

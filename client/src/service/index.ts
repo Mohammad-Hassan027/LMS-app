@@ -398,6 +398,19 @@ export async function resetCurrentCourseProgressService(
 // Admin SERVICES
 // ==========================================
 
+export async function getActiveInstructorsService() {
+  try {
+    const { data: response } = await axiosInstance.get(
+      "/admin/active-instructors",
+    );
+
+    return response.data;
+  } catch (error) {
+    console.error("getActiveInstructorsService Error:", error);
+    throw error;
+  }
+}
+
 export async function requestToBeInstructorService({
   userId,
   email,
@@ -468,6 +481,43 @@ export async function getInstructorRequestsService() {
     return response.data;
   } catch (error) {
     console.error("getInstructorRequestsService Error:", error);
+    throw error;
+  }
+}
+
+export async function revokeInstructorRoleService({
+  instructorId,
+}: {
+  instructorId: string;
+}) {
+  try {
+    const { data: response } = await axiosInstance.post("/admin/revoke", {
+      userId: instructorId,
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error("revokeInstructorRoleService Error:", error);
+    throw error;
+  }
+}
+
+export async function sendWarningToInstructorService({
+  instructorId,
+  message,
+}: {
+  instructorId: string;
+  message: string;
+}) {
+  try {
+    const { data: response } = await axiosInstance.post("/admin/warn", {
+      userId: instructorId,
+      reason: message,
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error("sendWarningToInstructorService Error:", error);
     throw error;
   }
 }
