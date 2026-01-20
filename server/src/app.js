@@ -6,8 +6,15 @@ import {
   paymentRateLimiter,
 } from './middlewares/rate-limter.js';
 import { globalErrorHandler } from './middlewares/error-handler.js';
+import { handleClerkWebhook } from './controllers/student-controller/clerk-webhook-controller.js';
 
 const app = express();
+
+app.post(
+  '/api/v1/assign-role/student/webhook',
+  express.raw({ type: 'application/json' }),
+  handleClerkWebhook
+);
 
 middleware(app);
 app.set('trust proxy', 1);
@@ -21,7 +28,6 @@ import studentViewOrderRoutes from './routes/student-routes/order-routes.js';
 import studentViewMyCourseRoutes from './routes/student-routes/student-courses-routes.js';
 import studentViewCourseProgressRoutes from './routes/student-routes/course-progress-routes.js';
 import adminRoutes from './routes/admin-routes.js';
-import { handleClerkWebhook } from './controllers/student-controller/clerk-webhook-controller.js';
 
 app.get('/api/v1/health', (req, res) => res.status(200).json({ status: 'ok' }));
 app.use('/api/v1/media', requireAuth(), mediaRoutes);
@@ -37,8 +43,6 @@ app.use(
 
 // Public Routes
 app.use('/api/v1/student/course', studentViewCourseRoutes);
-
-app.post('/api/v1/asign-role/student/webhook', handleClerkWebhook);
 
 // Protected Student Routes
 app.use(

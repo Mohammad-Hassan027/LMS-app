@@ -15,7 +15,7 @@ export const handleClerkWebhook = async (req, res) => {
 
   // Get headers and body
   const headers = req.headers;
-  const payload = req.body;
+  const payload = req.body.toString(); // Convert the raw buffer to a string for verification
 
   // Verify payload
   let evt;
