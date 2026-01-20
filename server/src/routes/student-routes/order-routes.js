@@ -3,7 +3,7 @@ import {
   createOrder,
   captureOrder,
 } from '../../controllers/student-controller/order-controller.js';
-import { handlePayPalWebhook } from '../../controllers/student-controller/webhook-controller.js';
+import { handlePayPalWebhook } from '../../controllers/student-controller/paypal-webhook-controller.js';
 import { requireAuth } from '@clerk/express';
 
 const router = Router();

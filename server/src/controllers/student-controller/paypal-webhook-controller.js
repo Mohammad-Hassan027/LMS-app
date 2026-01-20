@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import Order from '../../models/Order.js';
 import StudentCourses from '../../models/StudentCourses.js';
 import Course from '../../models/Course.js';
-import { verifyPayPalSignature } from './../../utils/paypalVerification.js';
+import { verifyPayPalSignature } from '../../utils/paypalVerification.js';
 import { transporter } from '../../utils/emailTransporter.js';
 
 const { GMAIL_USER } = process.env;
