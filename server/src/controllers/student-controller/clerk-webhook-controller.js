@@ -20,7 +20,7 @@ export const handleClerkWebhook = async (req, res) => {
   // Verify payload
   let evt;
   try {
-    evt = wh.verify(JSON.stringify(payload), headers);
+    evt = wh.verify(payload, headers);
   } catch (err) {
     return res.status(400).json({
       success: false,
