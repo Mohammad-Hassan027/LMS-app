@@ -10,6 +10,9 @@ import { handleClerkWebhook } from './controllers/student-controller/clerk-webho
 
 const app = express();
 
+app.set('trust proxy', 1); // real user IP ,not vercel
+app.use(globalRateLimiter);
+
 app.post(
   '/api/v1/assign-role/student/webhook',
   express.raw({ type: 'application/json' }),
@@ -17,8 +20,6 @@ app.post(
 );
 
 middleware(app);
-app.set('trust proxy', 1);
-app.use(globalRateLimiter);
 
 import { requireRole } from './middlewares/auth-middleware.js';
 import mediaRoutes from './routes/instructor-routes/media-routes.js';
