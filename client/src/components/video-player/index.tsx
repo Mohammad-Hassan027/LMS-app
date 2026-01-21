@@ -21,8 +21,8 @@ export default function Player({
   onEnded,
 }: {
   url: string;
-  width?: number;
-  height?: number;
+  width?: number | string;
+  height?: number | string;
   onStart?: () => void;
   onEnded?: () => void;
 }) {

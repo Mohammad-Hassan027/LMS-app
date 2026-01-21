@@ -305,12 +305,16 @@ function CourseDetailsContent({
         open={showFreePreviewDialog}
         onOpenChange={setShowFreePreviewDialog}
       >
-        <DialogContent className="max-w-4xl p-0 overflow-hidden bg-black border-none">
-          <DialogHeader className="sr-only">
+        <DialogContent>
+          <DialogHeader>
             <DialogTitle>Course Preview</DialogTitle>
-            <DialogDescription>Video Player</DialogDescription>
+
+            <DialogDescription>
+              Watch a free preview of this course
+            </DialogDescription>
           </DialogHeader>
-          <div className="aspect-video w-full">
+
+          <div className="flex items-center justify-center w-full">
             <Player url={freePreviewLectureVideoUrl} />
           </div>
         </DialogContent>
