@@ -25,7 +25,7 @@ async function connectDB() {
 
     // Create the connection promise
     cached.promise = mongoose
-      .connect(`${process.env.MONGO_URI}/${DB_NAME}`, opts)
+      .connect(`${process.env.MONGO_URI}`, opts)
       .then((mongoose) => {
         console.log(
           `\n MongoDB connected !! DB HOST: ${mongoose.connection.host}`

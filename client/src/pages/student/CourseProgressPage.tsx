@@ -194,7 +194,7 @@ export default function CourseProgressPage() {
               Back
             </Button>
             <div className="h-6 w-px bg-border hidden sm:block" />
-            <h1 className="font-bold text-lg tracking-tight line-clamp-1 max-w-[200px] md:max-w-md">
+            <h1 className="font-bold text-lg tracking-tight line-clamp-1 max-w-50 md:max-w-md">
               {data.courseDetails?.title}
             </h1>
           </div>

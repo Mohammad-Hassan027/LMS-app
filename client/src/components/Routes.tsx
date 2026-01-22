@@ -25,6 +25,8 @@ const CourseProgressPage = lazy(
 );
 const BecomeInstructor = lazy(() => import("@/pages/student/BecomeInstructor"));
 const NotFoundPage = lazy(() => import("@/pages/NotFoundPage"));
+const AboutPage = lazy(() => import("@/pages/student/AboutPage"));
+const ContactPage = lazy(() => import("@/pages/student/ContactPage"));
 
 export default function Routes() {
   const element = useRoutes([
@@ -63,6 +65,14 @@ export default function Routes() {
         {
           path: "course/details/:courseId",
           element: <CourseDetailsPage />,
+        },
+        {
+          path: "about",
+          element: <AboutPage />,
+        },
+        {
+          path: "contact",
+          element: <ContactPage />,
         },
       ],
     },

@@ -1,5 +1,7 @@
 import { GithubIcon, LinkedinIcon, TwitterIcon } from "lucide-react";
 import { Link } from "react-router-dom";
+// Make sure this path matches your project structure
+import { courseCategories } from "@/config";
 
 function Footer() {
   const socialLinks = [
@@ -24,9 +26,11 @@ function Footer() {
     <footer className="bg-background border-t border-border text-foreground">
       <div className="container px-6 py-16 mx-auto">
         <div className="grid grid-cols-1 gap-12 sm:grid-cols-2 lg:grid-cols-4">
+          {/* Brand Section */}
           <div className="space-y-6">
             <Link to="/" className="inline-block">
               <div className="h-10 w-auto flex items-center">
+                {/* Ensure logo exists in public folder */}
                 <img
                   src="/logo.png"
                   alt="PathOS Logo"
@@ -38,7 +42,6 @@ function Footer() {
               Share your stories, ideas, and expertise with the world. Join our
               community of learners today.
             </p>
-
             <div className="flex gap-3">
               {socialLinks.map((social, index) => (
                 <a
@@ -55,52 +58,47 @@ function Footer() {
             </div>
           </div>
 
+          {/* Quick Links */}
           <div>
             <h3 className="mb-6 text-sm font-bold tracking-wider uppercase text-foreground">
               Quick Links
             </h3>
             <ul className="space-y-4">
-              {["Home", "About Us", "Contact", "Explore Courses"].map(
-                (item) => (
-                  <li key={item}>
-                    <Link
-                      to={
-                        item === "Home"
-                          ? "/"
-                          : item === "Explore Courses"
-                            ? "/courses"
-                            : "#"
-                      }
-                      className="text-muted-foreground hover:text-primary transition-all duration-200 hover:translate-x-1 inline-block"
-                      onClick={() =>
-                        window.scrollTo({ top: 0, behavior: "smooth" })
-                      }
-                    >
-                      {item}
-                    </Link>
-                  </li>
-                ),
-              )}
+              {[
+                ["Home", "/"],
+                ["About Us", "/about"],
+                ["Contact", "/contact"],
+                ["Explore Courses", "/courses"],
+                ["Become an Instructor", "/become-instructor"], // Added this
+              ].map((item) => (
+                <li key={item[0]}>
+                  <Link
+                    to={item[1]}
+                    className="text-muted-foreground hover:text-primary transition-all duration-200 hover:translate-x-1 inline-block"
+                    onClick={() =>
+                      window.scrollTo({ top: 0, behavior: "smooth" })
+                    }
+                  >
+                    {item[0]}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
+          {/* Dynamic Categories */}
           <div>
             <h3 className="mb-6 text-sm font-bold tracking-wider uppercase text-foreground">
               Categories
             </h3>
             <ul className="space-y-4">
-              {[
-                "Technology",
-                "Programming",
-                "AI & Machine Learning",
-                "Web Development",
-              ].map((item) => (
-                <li key={item}>
+              {courseCategories.slice(0, 5).map((category) => (
+                <li key={category.id}>
                   <Link
-                    to="#"
+                    to={`/courses?category=${category.id}`}
                     className="text-muted-foreground hover:text-primary transition-all duration-200 hover:translate-x-1 inline-block"
                   >
-                    {item}
+                    {category.label}
                   </Link>
                 </li>
               ))}

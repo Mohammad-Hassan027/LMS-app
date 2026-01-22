@@ -169,7 +169,7 @@ export default function CourseProgressSidebar({
           <span className="text-xs text-muted-foreground uppercase tracking-wide">
             Current Lecture
           </span>
-          <span className="font-semibold text-sm truncate max-w-[200px]">
+          <span className="font-semibold text-sm truncate max-w-50">
             {currentLecture?.title || "Select a lecture"}
           </span>
         </div>
