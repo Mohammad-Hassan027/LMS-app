@@ -24,7 +24,25 @@ export function middleware(app) {
   app.use(morgan('combined'));
   app.use(
     cors({
-      origin: process.env.CLIENT_URL || 'http://localhost:5173',
+      origin: (origin, callback) => {
+        // Allow requests with no origin (like mobile apps or curl requests)
+        if (!origin) return callback(null, true);
+
+        const allowedOrigins = [
+          process.env.CLIENT_URL,
+          'http://localhost:5173',
+        ];
+
+        if (
+          allowedOrigins.includes(origin) ||
+          origin.endsWith('.vercel.app')
+        ) {
+          callback(null, true);
+        } else {
+          console.log('Blocked by CORS:', origin);
+          callback(new Error('Not allowed by CORS'));
+        }
+      },
       credentials: true,
     })
   );

@@ -110,7 +110,7 @@ const BecomeInstructor = () => {
                 value={reason}
                 onChange={(e) => setReason(e.target.value)}
                 disabled={isSubmitting}
-                className="min-h-[150px] resize-none focus-visible:ring-primary"
+                className="min-h-37.5 resize-none focus-visible:ring-primary"
               />
               <p className="text-xs text-muted-foreground text-right">
                 {reason.length} characters
