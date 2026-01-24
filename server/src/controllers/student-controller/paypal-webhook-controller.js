@@ -81,9 +81,9 @@ export const handlePayPalWebhook = async (req, res) => {
         return res.status(200).send();
       }
 
-      const orders = await Order.find({ paymentId: paypalOrderId }).session(
-        session
-      );
+      const orders = await Order.find({
+        paymentId: { $eq: paypalOrderId },
+      }).session(session);
 
       if (orders.length > 0) {
         const newlyEnrolledOrders = [];
