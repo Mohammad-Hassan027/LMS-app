@@ -62,7 +62,7 @@ function CoursesContent() {
                 <span className="hidden sm:inline-block">Sort</span>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-[200px]">
+            <DropdownMenuContent align="end" className="w-50">
               <DropdownMenuRadioGroup
                 value={sort}
                 onValueChange={(value) => setSort(value)}
