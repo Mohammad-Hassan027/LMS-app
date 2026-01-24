@@ -15,6 +15,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useFilters } from "@/hooks/use-filters";
 import { useState, useEffect } from "react";
+import { useShoppingCart } from "@/contexts/student/hook";
 
 function StudentViewHeader() {
   const navigate = useNavigate();
@@ -22,6 +23,7 @@ function StudentViewHeader() {
   const { setFilters } = useFilters();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const { cartItems } = useShoppingCart();
 
   // Add shadow on scroll
   useEffect(() => {
@@ -108,7 +110,9 @@ function StudentViewHeader() {
             >
               <ShoppingCartIcon className="w-5 h-5 lg:w-6 lg:h-6" />
               <span className="sr-only">Cart</span>
-              <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-red-600 ring-2 ring-background" />
+              {cartItems.length > 0 && (
+                <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-red-600 ring-2 ring-background" />
+              )}
             </Button>
           </Link>
 

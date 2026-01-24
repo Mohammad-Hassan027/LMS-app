@@ -3,15 +3,14 @@ import { ClerkProvider } from "@clerk/clerk-react";
 import InstructorProvider from "@/contexts/Instructor/index.tsx";
 import { Toaster } from "@/components/ui/sonner.tsx";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import StudentContextProvider from "@/contexts/student/index.tsx";
+import { ShoppingCartProvider } from "@/contexts/student/index.tsx";
 import type { ReactElement } from "react";
 import { NuqsAdapter } from "nuqs/adapters/react";
 import { PayPalScriptProvider } from "@paypal/react-paypal-js";
 import AxiosInterceptor from "./AxiosInterceptor";
 
-// Environment Variables
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
-const PAYPAL_CLIENT_ID = import.meta.env.VITE_PAYPAL_CLIENT_ID; // Ensure this is in your .env
+const PAYPAL_CLIENT_ID = import.meta.env.VITE_PAYPAL_CLIENT_ID;
 
 if (!PUBLISHABLE_KEY) {
   throw new Error("Missing Publishable Key");
@@ -43,10 +42,10 @@ export default function AppWrapper({ children }: { children: ReactElement }) {
             >
               <AxiosInterceptor>
                 <InstructorProvider>
-                  <StudentContextProvider>
+                  <ShoppingCartProvider>
                     {children}
                     <Toaster />
-                  </StudentContextProvider>
+                  </ShoppingCartProvider>
                 </InstructorProvider>
               </AxiosInterceptor>
             </ClerkProvider>

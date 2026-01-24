@@ -27,7 +27,7 @@ export const STUDENT_COURSE_KEYS = {
 
 export function useStudentAllCoursesService(
   sort?: string,
-  filters?: FilterState
+  filters?: FilterState,
 ) {
   return useSuspenseQuery({
     queryKey: STUDENT_COURSE_KEYS.all(sort, filters),
@@ -54,28 +54,21 @@ export function useCreateOrderService() {
       paymentMethod: string;
       paymentStatus: string;
       orderDate: Date;
-      instructorId: string;
-      instructorName: string;
-      courseImage: string;
-      courseTitle: string;
-      courseId: string;
-      coursePricing: string;
-    }) =>
-      createOrderService(
-        data.userId,
-        data.userName,
-        data.userEmail,
-        data.orderStatus,
-        data.paymentMethod,
-        data.paymentStatus,
-        data.orderDate,
-        data.instructorId,
-        data.instructorName,
-        data.courseImage,
-        data.courseTitle,
-        data.courseId,
-        data.coursePricing
-      ),
+      instructorId?: string;
+      instructorName?: string;
+      courseImage?: string;
+      courseTitle?: string;
+      courseId?: string;
+      coursePricing?: string;
+      cartItems?: {
+        id: string;
+        title: string;
+        image: string;
+        price: string;
+        instructorId: string;
+        instructorName: string;
+      }[];
+    }) => createOrderService(data),
   });
 }
 
@@ -87,11 +80,10 @@ export function useCapturePaymentAndFinalizeOrderService() {
       capturePaymentAndFinalizeOrderService(paymentId),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["my-courses"],
-      });
-
-      queryClient.invalidateQueries({
         queryKey: ["studentCourseDetails"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["studentCourses"],
       });
     },
   });
@@ -108,7 +100,7 @@ export function useGetMyCoursesService(userId: string) {
 
 export function useGetStudentCourseProgressService(
   courseId: string,
-  userId: string
+  userId: string,
 ) {
   return useQuery({
     queryKey: STUDENT_COURSE_KEYS.progress(courseId, userId),
@@ -120,7 +112,7 @@ export function useGetStudentCourseProgressService(
 
 export function useMarkCurrentLectureAsViewedService(
   courseId: string,
-  userId: string
+  userId: string,
 ) {
   const queryClient = useQueryClient();
 
@@ -137,7 +129,7 @@ export function useMarkCurrentLectureAsViewedService(
 
 export function useResetCurrentCourseProgressService(
   courseId: string,
-  userId: string
+  userId: string,
 ) {
   const queryClient = useQueryClient();
 

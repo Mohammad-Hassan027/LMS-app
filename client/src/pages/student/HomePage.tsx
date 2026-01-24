@@ -15,7 +15,7 @@ import FeaturedCoursesSection from "@/components/student-view/home/FeaturedCours
 import { Suspense } from "react";
 import { CourseSkeletonCard } from "@/components/student-view/home/CourseSkeletonCard";
 import { Skeleton } from "@/components/ui/skeleton";
-import { GridBackground } from "@/components/GridBackground";
+import { BackgroundRippleEffect } from "@/components/GridBackground";
 
 function HomePage() {
   const navigate = useNavigate();
@@ -24,7 +24,8 @@ function HomePage() {
   return (
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
       <section className="relative w-full border-b border-gray-100">
-        <GridBackground className="min-h-[85vh] md:min-h-200 py-20">
+        <BackgroundRippleEffect rows={10} cols={50} cellSize={52} />
+        <div className="min-h-[85vh] md:min-h-200 py-20">
           <div className="container mx-auto px-6 flex flex-col items-center text-center relative z-10">
             <div className="mb-8 animate-fade-in-up">
               <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary border border-primary/20 font-semibold text-sm shadow-sm hover:bg-primary/15 transition-colors cursor-default">
@@ -98,7 +99,7 @@ function HomePage() {
               </div>
             </div>
           </div>
-        </GridBackground>
+        </div>
       </section>
 
       <section className="bg-primary text-primary-foreground py-16 shadow-inner relative overflow-hidden">

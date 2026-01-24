@@ -12,7 +12,7 @@ const finalizeEnrollment = async (orderId, paymentId, payerId, session) => {
 
   if (!order) throw new Error('Order not found');
 
-  // Return false if already processed
+  // Return false if already processed (Idempotency check)
   if (order.paymentStatus === 'paid') return false;
 
   // 1. Update Order Status
@@ -25,7 +25,7 @@ const finalizeEnrollment = async (orderId, paymentId, payerId, session) => {
   await StudentCourses.findOneAndUpdate(
     { userId: order.userId },
     {
-      $push: {
+      $addToSet: {
         courses: {
           courseId: order.courseId,
           title: order.courseTitle,
@@ -55,7 +55,6 @@ const finalizeEnrollment = async (orderId, paymentId, payerId, session) => {
     { session }
   );
 
-  // Return true to indicate we did the work
   return true;
 };
 
@@ -82,43 +81,72 @@ export const handlePayPalWebhook = async (req, res) => {
         return res.status(200).send();
       }
 
-      const order = await Order.findOne({ paymentId: paypalOrderId }).session(
+      const orders = await Order.find({ paymentId: paypalOrderId }).session(
         session
       );
 
-      if (order) {
-        // Capture the return value (true/false)
-        const isNewEnrollment = await finalizeEnrollment(
-          order._id,
-          paypalOrderId,
-          resource.payer?.payer_id,
-          session
-        );
+      if (orders.length > 0) {
+        const newlyEnrolledOrders = [];
+
+        for (const order of orders) {
+          const isNewEnrollment = await finalizeEnrollment(
+            order._id,
+            paypalOrderId,
+            resource.payer?.payer_id,
+            session
+          );
+          if (isNewEnrollment) {
+            newlyEnrolledOrders.push(order);
+          }
+        }
 
         await session.commitTransaction();
 
-        // Only send email if this was a NEW enrollment
-        if (isNewEnrollment) {
+        if (newlyEnrolledOrders.length > 0) {
           try {
+            const isBulk = newlyEnrolledOrders.length > 1;
+            const userEmail = newlyEnrolledOrders[0].userEmail;
+            const userName = newlyEnrolledOrders[0].userName;
+            const totalPaid = newlyEnrolledOrders
+              .reduce((sum, o) => sum + Number(o.coursePricing), 0)
+              .toFixed(2);
+
+            let emailHtml = `<h1>Thank you for your purchase, ${userName}!</h1>`;
+
+            if (isBulk) {
+              const courseList = newlyEnrolledOrders
+                .map((o) => `<li>${o.courseTitle} - $${o.coursePricing}</li>`)
+                .join('');
+              emailHtml += `
+                  <p>You have successfully enrolled in the following courses:</p>
+                  <ul>${courseList}</ul>
+                  <p><strong>Total Amount Paid:</strong> $${totalPaid}</p>
+              `;
+            } else {
+              const order = newlyEnrolledOrders[0];
+              emailHtml += `
+                  <p>You have successfully enrolled in <strong>${order.courseTitle}</strong>.</p>
+                  <p><strong>Order ID:</strong> ${order._id}</p>
+                  <p><strong>Amount Paid:</strong> $${order.coursePricing}</p>
+              `;
+            }
+
+            emailHtml += `<br/><a href="https://path-os.vercel.app/my-courses">Go to your Dashboard</a>`;
+
             await transporter.sendMail({
               from: '"PathOS Team" <' + GMAIL_USER + '>',
-              to: order.userEmail,
+              to: userEmail,
               subject: 'Order Confirmation - PathOS',
-              html: `
-                <h1>Thank you for your purchase, ${order.userName}!</h1>
-                <p>You have successfully enrolled in <strong>${order.courseTitle}</strong>.</p>
-                <p><strong>Order ID:</strong> ${order._id}</p>
-                <p><strong>Amount Paid:</strong> $${order.coursePricing}</p>
-                <br/>
-                <a href="https://path-os.vercel.app/my-courses">Go to your Dashboard</a>
-              `,
+              html: emailHtml,
             });
-            console.log(`📧 Email sent to ${order.userEmail} via Webhook`);
+            console.log(`📧 Email sent to ${userEmail} via Webhook`);
           } catch (emailError) {
             console.error('❌ Failed to send email via Webhook:', emailError);
           }
         } else {
-          console.log('ℹ️ Webhook received, but order was already processed.');
+          console.log(
+            'ℹ️ Webhook received, but orders were already processed.'
+          );
         }
       } else {
         await session.abortTransaction();
