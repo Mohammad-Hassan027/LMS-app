@@ -310,7 +310,7 @@ export const captureOrder = asyncHandler(async (req, res) => {
             <ul>${coursesListHtml}</ul>
             <p><strong>Total Paid:</strong> $${totalPaid}</p>
             <br/>
-            <a href="https://your-frontend-url.com/my-courses">Go to your Dashboard</a>
+            <a href="https://path-os.vercel.app/my-courses">Go to your Dashboard</a>
           `,
         });
       } catch (emailError) {

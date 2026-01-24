@@ -64,7 +64,7 @@ export function useCreateOrderService() {
         id: string;
         title: string;
         image: string;
-        price: string;
+        pricing: string;
         instructorId: string;
         instructorName: string;
       }[];
