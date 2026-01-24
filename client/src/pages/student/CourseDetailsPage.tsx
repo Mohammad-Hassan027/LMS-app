@@ -25,6 +25,9 @@ import { checkIsStudentEnrolledService } from "@/service";
 import type { UserResource } from "@clerk/shared/types";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { useShoppingCart } from "@/contexts/student/hook";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 
 function CourseDetailsContent({
   courseId,
@@ -38,6 +41,8 @@ function CourseDetailsContent({
   const [freePreviewLectureVideoUrl, setFreePreviewLectureVideoUrl] =
     useState("");
   const [isEnrollmentChecking, setIsEnrollmentChecking] = useState(true);
+
+  const { addToCart } = useShoppingCart();
 
   const { data: studentViewCourseDetails, isLoading } =
     useStudentViewCourseDetailsService(courseId);
@@ -93,6 +98,19 @@ function CourseDetailsContent({
         Course Not Found
       </div>
     );
+
+  const handleAddToCart = () => {
+    addToCart({
+      _id: studentViewCourseDetails?._id,
+      title: studentViewCourseDetails?.title,
+      image: studentViewCourseDetails?.image,
+      pricing: studentViewCourseDetails?.pricing,
+      level: studentViewCourseDetails?.level,
+      instructorName: studentViewCourseDetails?.instructorName,
+      instructorId: studentViewCourseDetails?.instructorId,
+    });
+    toast.success("Added to cart");
+  };
 
   return (
     <div className="min-h-screen bg-gray-50/50 pb-20">
@@ -221,7 +239,7 @@ function CourseDetailsContent({
             </Card>
           </div>
 
-          <aside className="w-full lg:w-[380px] shrink-0">
+          <aside className="w-full lg:w-95 shrink-0">
             <div className="sticky top-24 space-y-6">
               <Card className="overflow-hidden shadow-xl border-0 ring-1 ring-gray-200">
                 <div
@@ -272,9 +290,13 @@ function CourseDetailsContent({
                   <div className="w-full">
                     <PaypalPayment
                       user={user}
-                      course={studentViewCourseDetails}
+                      courses={studentViewCourseDetails}
                     />
                   </div>
+
+                  <Button onClick={handleAddToCart} className="w-full">
+                    Add to Cart
+                  </Button>
 
                   <div className="space-y-3 pt-2">
                     <p className="text-xs text-center text-muted-foreground">

@@ -258,46 +258,31 @@ export async function checkIsStudentEnrolledService(
 // STUDENT COURSE ORDER SERVICES
 // ==========================================
 
-export async function createOrderService(
-  userId: string,
-  userName: string,
-  userEmail: string,
-  orderStatus: string,
-  paymentMethod: string,
-  paymentStatus: string,
-  orderDate: Date,
-  instructorId: string,
-  instructorName: string,
-  courseImage: string,
-  courseTitle: string,
-  courseId: string,
-  coursePricing: string,
-) {
-  try {
-    const { data: response } = await axiosInstance.post(
-      `/student/order/create`,
-      {
-        userId,
-        userName,
-        userEmail,
-        orderStatus,
-        paymentMethod,
-        paymentStatus,
-        orderDate,
-        instructorId,
-        instructorName,
-        courseImage,
-        courseTitle,
-        courseId,
-        coursePricing,
-      },
-    );
-
-    return response.data;
-  } catch (error) {
-    console.error("createOrderService Error:", error);
-    throw error;
-  }
+export async function createOrderService(formData: {
+  userId: string;
+  userName: string;
+  userEmail: string;
+  orderStatus: string;
+  paymentMethod: string;
+  paymentStatus: string;
+  orderDate: Date;
+  instructorId?: string;
+  instructorName?: string;
+  courseImage?: string;
+  courseTitle?: string;
+  courseId?: string;
+  coursePricing?: string;
+  cartItems?: {
+    id: string;
+    title: string;
+    image: string;
+    price: string;
+    instructorId: string;
+    instructorName: string;
+  }[];
+}) {
+  const { data } = await axiosInstance.post("/student/order/create", formData);
+  return data;
 }
 
 export async function capturePaymentAndFinalizeOrderService(paymentId: string) {

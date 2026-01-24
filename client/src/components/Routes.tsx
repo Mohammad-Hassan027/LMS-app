@@ -27,6 +27,7 @@ const BecomeInstructor = lazy(() => import("@/pages/student/BecomeInstructor"));
 const NotFoundPage = lazy(() => import("@/pages/NotFoundPage"));
 const AboutPage = lazy(() => import("@/pages/student/AboutPage"));
 const ContactPage = lazy(() => import("@/pages/student/ContactPage"));
+const CartPage = lazy(() => import("@/pages/student/CartPage"));
 
 export default function Routes() {
   const element = useRoutes([
@@ -87,7 +88,7 @@ export default function Routes() {
       children: [
         {
           path: "cart",
-          element: <div>Cart</div>,
+          element: <CartPage />,
         },
         {
           path: "become-instructor",

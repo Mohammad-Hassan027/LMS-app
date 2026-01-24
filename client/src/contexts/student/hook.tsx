@@ -1,16 +1,14 @@
 import { createContext, useContext } from "react";
+import type { ShoppingCartContextType } from ".";
 
-type StudentContextType = {};
+export const ShoppingCartContext = createContext<ShoppingCartContextType | null>(null);
 
-export const StudentContext = createContext<StudentContextType | null>(null);
-
-export const useStudentContext = () => {
-  const studentContext = useContext(StudentContext);
-
-  if (!studentContext) {
-    // If the provider is not present, fail fast with a helpful message.
-    throw new Error("CourseLanding must be used within an StudentProvider");
+export const useShoppingCart = () => {
+  const context = useContext(ShoppingCartContext);
+  if (!context) {
+    throw new Error(
+      "useShoppingCart must be used within a ShoppingCartProvider",
+    );
   }
-
-  return studentContext;
+  return context;
 };
