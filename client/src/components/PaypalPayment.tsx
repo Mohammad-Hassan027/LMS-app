@@ -22,7 +22,6 @@ const PaypalPayment = ({
   const { mutateAsync: captureOrder } =
     useCapturePaymentAndFinalizeOrderService();
 
-  // Get clearCart from context to empty cart after purchase
   const { clearCart } = useShoppingCart();
 
   const handleCreateOrder = async () => {
@@ -33,7 +32,6 @@ const PaypalPayment = ({
 
     const isBulk = Array.isArray(courses);
 
-    // Common data
     const baseOrderData = {
       userId: user.id,
       userName:
@@ -58,7 +56,7 @@ const PaypalPayment = ({
           id: item._id,
           title: item.title,
           image: item.image,
-          price: item.pricing,
+          pricing: item.pricing,
           instructorId: item.instructorId,
           instructorName: item.instructorName,
         })),

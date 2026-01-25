@@ -35,9 +35,15 @@ export const requestToBeInstructor = asyncHandler(async (req, res) => {
 
   const existingRequest = await InstructorRequest.findOne({ userId });
   if (existingRequest) {
-    return res
-      .status(400)
-      .json(new ApiResponse(400, null, 'Request already pending'));
+    if (existingRequest.status === 'pending') {
+      return res
+        .status(400)
+        .json(new ApiResponse(400, null, 'Request already pending'));
+    } else if (existingRequest.status === 'approved') {
+      return res
+        .status(400)
+        .json(new ApiResponse(400, null, 'You are already an instructor'));
+    }
   }
 
   const newRequest = await InstructorRequest.create({
