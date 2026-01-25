@@ -68,7 +68,10 @@ export const promoteToInstructor = asyncHandler(async (req, res) => {
     publicMetadata: { role: 'instructor' },
   });
 
-  await InstructorRequest.findByIdAndUpdate(requestId, { status: 'approved' });
+  await InstructorRequest.findOneAndUpdate(
+    { _id: { $eq: requestId } },
+    { status: 'approved' }
+  );
 
   try {
     const user = await clerkClient.users.getUser(userId);
