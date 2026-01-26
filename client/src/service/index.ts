@@ -506,3 +506,16 @@ export async function sendWarningToInstructorService({
     throw error;
   }
 }
+
+export async function checkIsInstructorService({ userId }: { userId: string }) {
+  try {
+    const { data: response } = await axiosInstance.get(
+      `/admin/is-instructor/${userId}`,
+    );
+
+    return response.data.isInstructor;
+  } catch (error) {
+    console.error("checkIsInstructorService Error:", error);
+    throw error;
+  }
+}
