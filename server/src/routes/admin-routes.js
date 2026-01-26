@@ -1,6 +1,7 @@
 import {
   getActiveInstructors,
   getInstructorRequests,
+  isInstructor,
   promoteToInstructor,
   rejectRequest,
   requestToBeInstructor,
@@ -30,5 +31,7 @@ router.post('/revoke', requireRole(['admin']), revokeInstructorRole);
 
 // Send Warning
 router.post('/warn', requireRole(['admin']), sendWarningToInstructor);
+
+router.get('/is-instructor/:userId', isInstructor);
 
 export default router;

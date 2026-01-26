@@ -1,10 +1,12 @@
 import {
   useMutation,
+  useQuery,
   useQueryClient,
   useSuspenseQuery,
 } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
+  checkIsInstructorService,
   getActiveInstructorsService,
   getInstructorRequestsService,
   promoteToInstructorService,
@@ -17,6 +19,7 @@ import {
 const QUERY_KEYS = {
   activeInstructors: ["activeInstructors"],
   instructorRequests: ["instructorRequests"],
+  isInstructor: (userId: string) => ["isInstructor", userId],
 };
 
 export function useGetActiveInstructorsService() {
@@ -37,7 +40,7 @@ export function useRequestToBeInstructorService() {
   return useMutation({
     mutationFn: requestToBeInstructorService,
     onSuccess: () => {
-      toast.success("Application submitted successfully!");
+      toast.success("Application submitted! An admin will review it shortly.");
     },
     onError: (error: any) => {
       toast.error(
@@ -106,5 +109,12 @@ export function useSendWarningToInstructorService() {
     onError: () => {
       toast.error("Failed to send warning");
     },
+  });
+}
+
+export function useCheckIsInstructorService({ userId }: { userId: string }) {
+  return useQuery({
+    queryKey: QUERY_KEYS.isInstructor(userId),
+    queryFn: () => checkIsInstructorService({ userId }),
   });
 }

@@ -10,21 +10,56 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
-import { toast } from "sonner";
-import { requestToBeInstructorService } from "@/service";
 import { CheckCircle2, DollarSign, Users, Zap } from "lucide-react";
+import {
+  useCheckIsInstructorService,
+  useRequestToBeInstructorService,
+} from "@/service/adminQueries";
+import { Link } from "react-router-dom";
 
 const BecomeInstructor = () => {
   const { user } = useUser();
   const [reason, setReason] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { data: isUserInstructor, isPending: isCheckingInstructor } =
+    useCheckIsInstructorService({
+      userId: user?.id || "",
+    });
+  const { mutate: requestToBeInstructor, isPending: isSubmitting } =
+    useRequestToBeInstructorService();
 
-  const handleSubmit = async () => {
+  if (isCheckingInstructor) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
+
+  if (isUserInstructor) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-6 md:p-12">
+        <Card className="w-full max-w-lg text-center p-8 shadow-lg border-t-4 border-t-primary">
+          <CardHeader>
+            <CardTitle className="text-2xl">
+              You're Already an Instructor
+            </CardTitle>
+            <CardDescription className="mt-2 text-gray-600">
+              Thank you for being a valued member of our instructor community!
+            </CardDescription>
+            <Button>
+              <Link to="/instructor">Go to Dashboard</Link>
+            </Button>
+          </CardHeader>
+        </Card>
+      </div>
+    );
+  }
+
+  const handleSubmit = () => {
     if (!user || !user?.primaryEmailAddress) return;
-    setIsSubmitting(true);
 
-    try {
-      await requestToBeInstructorService({
+    requestToBeInstructor(
+      {
         userId: user.id,
         email: user.primaryEmailAddress?.emailAddress,
         userName:
@@ -32,17 +67,13 @@ const BecomeInstructor = () => {
           user.username ||
           user.primaryEmailAddress?.emailAddress?.split("@")[0],
         reason: reason,
-      });
-      toast.success("Application submitted! An admin will review it shortly.");
-      setReason("");
-    } catch (error: any) {
-      console.error(error);
-      toast.error(
-        error.response?.data?.message || "Failed to submit application",
-      );
-    } finally {
-      setIsSubmitting(false);
-    }
+      },
+      {
+        onSuccess: () => {
+          setReason("");
+        },
+      },
+    );
   };
 
   const benefits = [

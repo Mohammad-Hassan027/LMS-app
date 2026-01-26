@@ -203,3 +203,14 @@ export const sendWarningToInstructor = asyncHandler(async (req, res) => {
 
   res.status(200).json(new ApiResponse(200, null, 'Warning sent successfully'));
 });
+
+export const isInstructor = asyncHandler(async (req, res) => {
+  const { userId } = req.params;
+  const user = await clerkClient.users.getUser(userId);
+  const isInstructor = user.publicMetadata?.role === 'instructor';
+  res
+    .status(200)
+    .json(
+      new ApiResponse(200, { isInstructor }, 'User role checked successfully')
+    );
+});
