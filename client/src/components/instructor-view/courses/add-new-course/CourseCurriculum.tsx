@@ -201,6 +201,7 @@ function CourseCurriculum() {
       }
     } catch (error) {
       toast.error("Error occured while uploading.");
+      console.log("Failed to upload videos", error);
     } finally {
       setMediaUploadProgress(false);
     }

@@ -27,7 +27,7 @@ export type UpdateCourse = Omit<
   Course,
   "students" | "curriculum" | "_id" | "instructorId" | "instructorName"
 > & {
-  curriculum: Omit<Lecture, "_id">[];
+  curriculum: (Omit<Lecture, "_id"> & { _id?: string })[];
 };
 
 export type CreateCourse = Omit<Course, "students" | "curriculum" | "_id"> & {
@@ -68,7 +68,7 @@ export interface StudentCourses {
       instructorName: string;
       dateOfPurchase: Date;
       courseImage: string;
-    }
+    },
   ];
 }
 
