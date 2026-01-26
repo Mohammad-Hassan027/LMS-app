@@ -46,7 +46,7 @@ function InstructorCourseForm({
     for (const key in courseLandingFormData) {
       if (
         isEmpty(
-          courseLandingFormData[key as keyof typeof courseLandingFormData]
+          courseLandingFormData[key as keyof typeof courseLandingFormData],
         )
       )
         return false;
@@ -106,14 +106,14 @@ function InstructorCourseForm({
   }
 
   return (
-    <div className="container mx-auto p-4">
-      <div className="flex justify-between">
-        <h1 className="text-2xl sm:text-3xl font-extrabold mb-5">
+    <div className="container mx-auto p-4 pb-20 sm:pb-4">
+      <div className="flex flex-col gap-4 sm:flex-row sm:justify-between sm:items-center mb-5">
+        <h1 className="text-2xl sm:text-3xl font-extrabold">
           {isEditMode ? "Edit " : "Create a new "}course
         </h1>
         <Button
           disabled={!validateFormData()}
-          className="text-sm tracking-wider font-bold px-8"
+          className="text-sm tracking-wider font-bold px-8 w-full sm:w-auto"
           onClick={(e) => {
             e.preventDefault();
             handleSubmit();
@@ -125,23 +125,29 @@ function InstructorCourseForm({
       <Card>
         <CardContent>
           <div className="container mx-auto p-0 sm:p-4">
-            <Tabs defaultValue="course-curriculum">
-              <TabsList>
-                <TabsTrigger value="course-curriculum">Curriculum</TabsTrigger>
-                <TabsTrigger value="course-landing-page">
+            <Tabs defaultValue="course-curriculum" className="w-full">
+              <TabsList className="w-full h-auto grid grid-cols-1 sm:grid-cols-3 gap-2">
+                <TabsTrigger value="course-curriculum" className="w-full">
+                  Curriculum
+                </TabsTrigger>
+                <TabsTrigger value="course-landing-page" className="w-full">
                   Course Landing Page
                 </TabsTrigger>
-                <TabsTrigger value="course-setting">Settings</TabsTrigger>
+                <TabsTrigger value="course-setting" className="w-full">
+                  Settings
+                </TabsTrigger>
               </TabsList>
-              <TabsContent value="course-curriculum">
-                <CourseCurriculum />
-              </TabsContent>
-              <TabsContent value="course-landing-page">
-                <CourseLanding />
-              </TabsContent>
-              <TabsContent value="course-setting">
-                <CourseSetting />
-              </TabsContent>
+              <div className="mt-4">
+                <TabsContent value="course-curriculum">
+                  <CourseCurriculum />
+                </TabsContent>
+                <TabsContent value="course-landing-page">
+                  <CourseLanding />
+                </TabsContent>
+                <TabsContent value="course-setting">
+                  <CourseSetting />
+                </TabsContent>
+              </div>
             </Tabs>
           </div>
         </CardContent>
@@ -209,7 +215,6 @@ function CreateCourseEntry() {
 
 function AddNewCoursePage() {
   const params = useParams<{ courseId: string }>();
-
 
   const isEdit = !!params.courseId;
 

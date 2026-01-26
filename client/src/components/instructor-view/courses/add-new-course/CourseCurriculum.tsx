@@ -1,4 +1,6 @@
+import { useRef, useState } from "react";
 import { toast } from "sonner";
+import { Upload } from "lucide-react";
 import { useInstructorContext } from "@/contexts/Instructor/hook";
 import {
   DeleteMediaService,
@@ -12,9 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import Player from "@/components/video-player";
-import { useRef } from "react";
-import { Upload } from "lucide-react";
-import type { CourseCurriculumFormType } from "@/contexts/Instructor/hook";
+import { AlertDialogDestructive } from "./AlertDialogDestructive";
 
 function CourseCurriculum() {
   const {
@@ -28,16 +28,26 @@ function CourseCurriculum() {
 
   const bulkUploadRef = useRef<HTMLInputElement>(null);
 
+  const [activeDialog, setActiveDialog] = useState<{
+    index: number;
+    type: "delete" | "replace";
+  } | null>(null);
+
   function handleAddLecture() {
     setCourseCurriculumFormData([
       ...courseCurriculumFormData,
-      { title: "", videoUrl: "", isFreePreview: false, public_id: "" },
+      {
+        title: "",
+        videoUrl: "",
+        isFreePreview: false,
+        public_id: "",
+      },
     ]);
   }
 
   function handleCourseTitleChange(
     event: React.ChangeEvent<HTMLInputElement>,
-    index: number
+    index: number,
   ) {
     const updatedCurriculum = [...courseCurriculumFormData];
     updatedCurriculum[index] = {
@@ -49,7 +59,7 @@ function CourseCurriculum() {
 
   function handleCourseIsFreePreviewChange(
     currentValue: boolean,
-    index: number
+    index: number,
   ) {
     const cpyCurriculumFormData = [...courseCurriculumFormData];
     cpyCurriculumFormData[index] = {
@@ -61,21 +71,18 @@ function CourseCurriculum() {
 
   async function handleSingleLectureUpload(
     event: React.ChangeEvent<HTMLInputElement>,
-    index: number
+    index: number,
   ) {
     const selectedFile = event.target.files?.[0];
-
     if (selectedFile) {
       const videoFormData = new FormData();
       videoFormData.append("file", selectedFile);
       try {
         setMediaUploadProgress(true);
-
         const data = await UploadMediaService(
           videoFormData,
-          setMediaUploadProgressPercent
+          setMediaUploadProgressPercent,
         );
-
         if (!data) return;
 
         const updatedCurriculum = [...courseCurriculumFormData];
@@ -85,7 +92,6 @@ function CourseCurriculum() {
           public_id: data.public_id,
         };
         setCourseCurriculumFormData(updatedCurriculum);
-
         toast.success("Lecture uploaded successfully");
       } catch (error) {
         toast.error("Error occured while uploading.");
@@ -96,13 +102,16 @@ function CourseCurriculum() {
     }
   }
 
-  async function handleReplaceVideo(publicId: string, index: number) {
+  async function handleReplaceVideo(index: number) {
+    const publicId = courseCurriculumFormData[index]?.public_id;
     try {
-      toast.promise(async () => await DeleteMediaService(publicId, "video"), {
-        loading: "Loading...",
-        success: `Lecture ${index} deleted successfully.`,
-        error: "Error occured while deleting.",
-      });
+      if (publicId) {
+        toast.promise(DeleteMediaService(publicId, "video"), {
+          loading: "Removing old video...",
+          success: `Video removed successfully.`,
+          error: "Error occured while deleting.",
+        });
+      }
 
       const updatedCurriculum = [...courseCurriculumFormData];
       updatedCurriculum[index] = {
@@ -113,23 +122,30 @@ function CourseCurriculum() {
       setCourseCurriculumFormData(updatedCurriculum);
     } catch (error) {
       console.log("Failed to delete video", error);
+    } finally {
+      setActiveDialog(null);
     }
   }
 
-  async function handleDeleteLecture(publicId: string, index: number) {
+  async function handleDeleteLecture(index: number) {
+    const publicId = courseCurriculumFormData[index]?.public_id;
     try {
-      toast.promise(async () => await DeleteMediaService(publicId, "video"), {
-        loading: "Loading...",
-        success: `Lecture ${index} deleted successfully.`,
-        error: "Error occured while deleting.",
-      });
+      if (publicId) {
+        toast.promise(DeleteMediaService(publicId, "video"), {
+          loading: "Deleting video...",
+          success: "Lecture video deleted.",
+          error: "Failed to delete video",
+        });
+      }
 
-      const cpyCurriculumFormData = courseCurriculumFormData.filter((_, i) => {
-        return i !== index;
-      });
+      const cpyCurriculumFormData = courseCurriculumFormData.filter(
+        (_, i) => i !== index,
+      );
       setCourseCurriculumFormData(cpyCurriculumFormData);
     } catch (error) {
       console.log("Failed to delete Lecture", error);
+    } finally {
+      setActiveDialog(null);
     }
   }
 
@@ -144,80 +160,57 @@ function CourseCurriculum() {
     });
   }
 
-  function handleOpenBulkUpload() {
-    bulkUploadRef.current?.click();
-  }
-
-  function areAllCourseCurriculumFormDataObjectsEmpty(
-    arr: CourseCurriculumFormType
-  ) {
-    return arr.every((obj) => {
-      return Object.entries(obj).every(([, value]) => {
-        if (typeof value === "boolean") {
-          return true;
-        }
-
-        return value === "";
-      });
-    });
-  }
-
   async function handleBulkUploadMedia(
-    event: React.ChangeEvent<HTMLInputElement>
+    event: React.ChangeEvent<HTMLInputElement>,
   ) {
-    if (!event.target.files) {
-      console.log(event.target.files, "e");
-      return;
-    }
+    if (!event.target.files) return;
     const selectedFiles = Array.from(event.target.files);
     const bulkFormData = new FormData();
-    if (selectedFiles) {
-      selectedFiles.forEach((fileItem) =>
-        bulkFormData.append("files", fileItem)
+
+    selectedFiles.forEach((fileItem) => bulkFormData.append("files", fileItem));
+
+    try {
+      setMediaUploadProgress(true);
+      const data = await UploadBulkMediaService(
+        bulkFormData,
+        setMediaUploadProgressPercent,
       );
-      try {
-        setMediaUploadProgress(true);
+      if (data) {
+        let cpyCurriculum = [...courseCurriculumFormData];
 
-        const data = await UploadBulkMediaService(
-          bulkFormData,
-          setMediaUploadProgressPercent
-        );
-        if (data) {
-          console.log(data, "data");
-
-          const cpyCurriculum = areAllCourseCurriculumFormDataObjectsEmpty(
-            courseCurriculumFormData
-          )
-            ? []
-            : [...courseCurriculumFormData];
-
-          data.forEach((mediaItem, index) => {
-            cpyCurriculum.push({
-              title: `Lecture ${cpyCurriculum.length + 1 + index}`,
-              videoUrl: mediaItem.url,
-              public_id: mediaItem.public_id,
-              isFreePreview: false,
-            });
-            console.log(mediaItem, "mediaItem");
-          });
-
-          setCourseCurriculumFormData(cpyCurriculum);
-          toast.success("Lecture uploaded successfully");
+        // Optional: clear if the only item is an empty initial lecture
+        if (
+          cpyCurriculum.length === 1 &&
+          cpyCurriculum[0].title === "" &&
+          cpyCurriculum[0].videoUrl === ""
+        ) {
+          cpyCurriculum = [];
         }
-      } catch (error) {
-        toast.error("Error occured while uploading.");
-        console.error("Failed to upload video:", error);
-      } finally {
-        setMediaUploadProgress(false);
+
+        data.forEach((mediaItem) => {
+          cpyCurriculum.push({
+            title: `Lecture ${cpyCurriculum.length + 1}`,
+            videoUrl: mediaItem.url,
+            public_id: mediaItem.public_id,
+            isFreePreview: false,
+          });
+        });
+
+        setCourseCurriculumFormData(cpyCurriculum);
+        toast.success("Bulk lectures uploaded successfully");
       }
+    } catch (error) {
+      toast.error("Error occured while uploading.");
+    } finally {
+      setMediaUploadProgress(false);
     }
   }
 
   return (
     <Card>
-      <CardHeader className="flex justify-between">
+      <CardHeader className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <CardTitle>Course Curriculum</CardTitle>
-        <div>
+        <div className="w-full sm:w-auto">
           <input
             type="file"
             ref={bulkUploadRef}
@@ -230,7 +223,7 @@ function CourseCurriculum() {
           <Button
             className="cursor-pointer"
             variant="outline"
-            onClick={handleOpenBulkUpload}
+            onClick={() => bulkUploadRef.current?.click()}
           >
             <Upload className="w-4 h-5 mr-2" />
             Bulk Upload
@@ -244,6 +237,7 @@ function CourseCurriculum() {
         >
           Add Lectures
         </Button>
+
         {mediaUploadProgress && (
           <div className="mt-4">
             <MediaProgressBar
@@ -252,61 +246,59 @@ function CourseCurriculum() {
             />
           </div>
         )}
+
         <div className="mt-4 space-y-4">
-          {courseCurriculumFormData.map((_curriculumItem, index) => (
-            <div className="border p-3 sm:p-5 rounded-md" key={index}>
-              <div className="flex flex-col sm:flex-row sm:items-center gap-5">
-                <h3 className="font-medium text-sm">Lecture {index + 1}</h3>
+          {courseCurriculumFormData.map((curriculumItem, index) => (
+            <div
+              className="border p-3 sm:p-5 rounded-md"
+              key={curriculumItem.public_id || index}
+            >
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-5">
+                <h3 className="font-medium text-sm whitespace-nowrap">
+                  Lecture {index + 1}
+                </h3>
                 <Input
                   type="text"
-                  value={courseCurriculumFormData[index]?.title}
+                  value={curriculumItem.title}
                   id="title"
                   placeholder="Lecture Title"
-                  className="max-w-96"
-                  onChange={(e) => {
-                    handleCourseTitleChange(e, index);
-                  }}
+                  className="w-full sm:max-w-96"
+                  onChange={(e) => handleCourseTitleChange(e, index)}
                 />
                 <div className="flex items-center space-x-2">
                   <Switch
-                    checked={courseCurriculumFormData[index]?.isFreePreview}
+                    checked={curriculumItem.isFreePreview}
                     id={`freePreview-${index + 1}`}
-                    onCheckedChange={(value) => {
-                      handleCourseIsFreePreviewChange(value, index);
-                    }}
+                    onCheckedChange={(value) =>
+                      handleCourseIsFreePreviewChange(value, index)
+                    }
                   />
                   <Label htmlFor={`freePreview-${index + 1}`}>
                     Free Preview
                   </Label>
                 </div>
               </div>
+
               <div className="mt-4">
-                {courseCurriculumFormData[index]?.videoUrl ? (
+                {curriculumItem.videoUrl ? (
                   <div className="flex flex-col md:flex-row gap-3">
-                    {/* <video
-                      src={courseCurriculumFormData[index]?.videoUrl}
-                      controls
-                      className="mb-4 max-w-md"
-                    /> */}
-                    <Player url={courseCurriculumFormData[index]?.videoUrl} />
-                    <div className="flex gap-3">
+                    <Player url={curriculumItem.videoUrl} />
+                    <div className="flex flex-col sm:flex-row gap-3">
                       <Button
+                        variant="destructive"
+                        className="w-full sm:w-auto"
                         onClick={() =>
-                          handleReplaceVideo(
-                            courseCurriculumFormData[index]?.public_id,
-                            index
-                          )
+                          setActiveDialog({ index, type: "replace" })
                         }
                       >
                         Replace Video
                       </Button>
+
                       <Button
-                        className="bg-red-800"
+                        className="bg-red-800 w-full sm:w-auto"
+                        variant="destructive"
                         onClick={() =>
-                          handleDeleteLecture(
-                            courseCurriculumFormData[index]?.public_id,
-                            index
-                          )
+                          setActiveDialog({ index, type: "delete" })
                         }
                       >
                         Delete Lecture
@@ -315,10 +307,9 @@ function CourseCurriculum() {
                   </div>
                 ) : (
                   <Input
-                    id="videoUrl"
                     type="file"
                     accept="video/*"
-                    className="mb-4"
+                    className="mb-4 w-full"
                     onChange={(e) => handleSingleLectureUpload(e, index)}
                   />
                 )}
@@ -326,6 +317,22 @@ function CourseCurriculum() {
             </div>
           ))}
         </div>
+
+        {activeDialog !== null && (
+          <AlertDialogDestructive
+            isOpen={true}
+            setIsOpen={() => setActiveDialog(null)}
+            title={courseCurriculumFormData[activeDialog.index]?.title}
+            isDelete={activeDialog.type === "delete"}
+            onConfirm={() => {
+              if (activeDialog.type === "delete") {
+                handleDeleteLecture(activeDialog.index);
+              } else {
+                handleReplaceVideo(activeDialog.index);
+              }
+            }}
+          />
+        )}
       </CardContent>
     </Card>
   );
