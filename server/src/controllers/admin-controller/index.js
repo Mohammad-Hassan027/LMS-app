@@ -33,7 +33,9 @@ export const getInstructorRequests = asyncHandler(async (req, res) => {
 export const requestToBeInstructor = asyncHandler(async (req, res) => {
   const { userId, email, userName, reason } = req.body;
 
-  const existingRequest = await InstructorRequest.findOne({ userId });
+  const existingRequest = await InstructorRequest.findOne({
+    userId: { $eq: userId },
+  });
   if (existingRequest) {
     if (existingRequest.status === 'pending') {
       return res
@@ -68,7 +70,10 @@ export const promoteToInstructor = asyncHandler(async (req, res) => {
     publicMetadata: { role: 'instructor' },
   });
 
-  await InstructorRequest.findByIdAndUpdate(requestId, { status: 'approved' });
+  await InstructorRequest.findOneAndUpdate(
+    { _id: { $eq: requestId } },
+    { status: 'approved' }
+  );
 
   try {
     const user = await clerkClient.users.getUser(userId);
@@ -118,9 +123,12 @@ export const promoteToInstructor = asyncHandler(async (req, res) => {
 
 export const rejectRequest = asyncHandler(async (req, res) => {
   const { requestId } = req.body;
-  await InstructorRequest.findByIdAndUpdate(requestId, {
-    status: 'rejected',
-  });
+  await InstructorRequest.findOneAndUpdate(
+    { _id: { $eq: requestId } },
+    {
+      status: 'rejected',
+    }
+  );
   res.status(200).json(new ApiResponse(200, null, 'Request rejected'));
 });
 

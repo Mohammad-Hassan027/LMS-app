@@ -19,7 +19,7 @@ export const getStudentCourseProgress = asyncHandler(async (req, res) => {
   }
 
   const studentPurchasedCourses = await StudentCourses.findOne({
-    userId: userId,
+    userId: { $eq: userId },
   });
 
   const isCurrentCoursePurchasedByCurrentUserOrNot =
@@ -91,7 +91,10 @@ export const markCurrentLectureAsViewed = asyncHandler(async (req, res) => {
     throw new ApiError(403, 'You are not authorized to view these courses.');
   }
 
-  let courseProgress = await CourseProgress.findOne({ courseId, userId });
+  let courseProgress = await CourseProgress.findOne({
+    courseId: { $eq: courseId },
+    userId: { $eq: userId },
+  });
 
   if (!courseProgress) {
     courseProgress = new CourseProgress({
@@ -124,7 +127,7 @@ export const markCurrentLectureAsViewed = asyncHandler(async (req, res) => {
     await courseProgress.save();
   }
 
-  const course = await Course.findById(courseId);
+  const course = await Course.findOne({ _id: { $eq: courseId } });
 
   if (!course) {
     res.status(404).json(new ApiError(404, 'Course not found'));
