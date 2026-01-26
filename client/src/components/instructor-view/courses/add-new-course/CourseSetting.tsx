@@ -4,6 +4,7 @@ import MediaProgressBar from "@/components/media-progress-bar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { ImageIcon } from "lucide-react";
 
 function CourseSetting() {
   const {
@@ -26,7 +27,7 @@ function CourseSetting() {
 
         const data = await UploadMediaService(
           imageFormData,
-          setMediaUploadProgressPercent
+          setMediaUploadProgressPercent,
         );
 
         if (!data) return;
@@ -60,8 +61,18 @@ function CourseSetting() {
       <CardContent>
         <div className="flex flex-col gap-3">
           <Label>Upload Course Image</Label>
-          {courseLandingFormData.image && (
-            <img src={courseLandingFormData.image} />
+          {courseLandingFormData.image ? (
+            <div className="relative aspect-video w-full max-w-md overflow-hidden rounded-md border bg-muted">
+              <img
+                src={courseLandingFormData.image}
+                alt="Course cover"
+                className="h-full w-full object-cover"
+              />
+            </div>
+          ) : (
+            <div className="flex aspect-video w-full max-w-md items-center justify-center rounded-md border border-dashed bg-muted text-muted-foreground">
+              <ImageIcon className="h-10 w-10" />
+            </div>
           )}
           <Input
             type="file"
@@ -71,7 +82,6 @@ function CourseSetting() {
             }}
             className="mb-4"
           />
-          <img />
         </div>
       </CardContent>
     </Card>
