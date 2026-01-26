@@ -108,7 +108,7 @@ export const updateCourse = asyncHandler(async (req, res) => {
 
   const updatedCourse = await Course.findOneAndUpdate(
     { _id: id, instructorId: userId },
-    updateFields,
+    { $set: updateFields },
     { new: true }
   );
 
