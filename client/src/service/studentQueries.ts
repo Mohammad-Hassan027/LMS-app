@@ -15,6 +15,7 @@ import {
   markCurrentLectureAsViewedService,
 } from "@/service";
 import type { FilterState } from "@/hooks/use-filters";
+import { toast } from "sonner";
 
 export const STUDENT_COURSE_KEYS = {
   all: (sort?: string, filters?: FilterState) =>
@@ -69,6 +70,9 @@ export function useCreateOrderService() {
         instructorName: string;
       }[];
     }) => createOrderService(data),
+    onError: () => {
+      toast.error("Failed to create order. Please try again.");
+    },
   });
 }
 
@@ -85,6 +89,10 @@ export function useCapturePaymentAndFinalizeOrderService() {
       queryClient.invalidateQueries({
         queryKey: ["studentCourses"],
       });
+      toast.success("Order finalized successfully.");
+    },
+    onError: () => {
+      toast.error("Failed to finalize order. Please try again.");
     },
   });
 }
@@ -123,6 +131,10 @@ export function useMarkCurrentLectureAsViewedService(
       queryClient.invalidateQueries({
         queryKey: STUDENT_COURSE_KEYS.progress(courseId, userId),
       });
+      toast.success("Course progress updated successfully.");
+    },
+    onError: () => {
+      toast.error("Failed to updated course progress. Please try again.");
     },
   });
 }
@@ -139,6 +151,10 @@ export function useResetCurrentCourseProgressService(
       queryClient.invalidateQueries({
         queryKey: STUDENT_COURSE_KEYS.progress(courseId, userId),
       });
+      toast.success("Course progress reset successfully.");
+    },
+    onError: () => {
+      toast.error("Failed to reset course progress. Please try again.");
     },
   });
 }

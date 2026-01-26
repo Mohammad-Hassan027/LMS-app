@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { useClerk } from "@clerk/clerk-react";
 import { useInstructorContext } from "@/contexts/Instructor/hook";
+import { toast } from "sonner";
 
 function InstructorDashboardPage() {
   const { activeTab, setActiveTab } = useInstructorContext();
@@ -33,6 +34,7 @@ function InstructorDashboardPage() {
 
   function handleLogout() {
     signOut({ redirectUrl: "/" });
+    toast.success("Logged out successfully.");
   }
 
   return (

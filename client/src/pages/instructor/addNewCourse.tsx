@@ -11,7 +11,6 @@ import {
   courseLandingInitialFormData,
 } from "@/config";
 import { isEmpty } from "@/utils";
-
 import Loader from "@/components/Loader";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
