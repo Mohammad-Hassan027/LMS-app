@@ -82,11 +82,33 @@ export const addNewCourse = asyncHandler(async (req, res) => {
 export const updateCourse = asyncHandler(async (req, res) => {
   const { userId } = getAuth(req);
   const id = validateId(req.params.id, 'Course ID');
-  const updatedCourseData = req.body;
+  const courseData = req.body;
+
+  const allowedFields = [
+    'title',
+    'description',
+    'category',
+    'level',
+    'primaryLanguage',
+    'subtitle',
+    'image',
+    'welcomeMessage',
+    'pricing',
+    'objectives',
+    'curriculum',
+    'isPublished',
+  ];
+
+  const updateFields = {};
+  for (const field of allowedFields) {
+    if (courseData[field] !== undefined) {
+      updateFields[field] = courseData[field];
+    }
+  }
 
   const updatedCourse = await Course.findOneAndUpdate(
     { _id: id, instructorId: userId },
-    updatedCourseData,
+    updateFields,
     { new: true }
   );
 
