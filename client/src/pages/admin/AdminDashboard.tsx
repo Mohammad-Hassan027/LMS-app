@@ -87,9 +87,11 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div className="p-8 space-y-6 min-h-screen bg-gray-50/50">
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold tracking-tight">Admin Dashboard</h1>
+    <div className="p-4 sm:p-8 space-y-6 min-h-screen bg-gray-50/50">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0">
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
+          Admin Dashboard
+        </h1>
         <div className="text-sm text-muted-foreground">
           Total Instructors:{" "}
           <span className="font-bold">{instructors?.length || 0}</span>
@@ -97,7 +99,7 @@ const AdminDashboard = () => {
       </div>
 
       <Tabs defaultValue="requests" className="w-full">
-        <TabsList className="grid w-full max-w-md grid-cols-2 mb-8">
+        <TabsList className="grid w-full sm:max-w-md grid-cols-2 mb-8">
           <TabsTrigger value="requests">
             Pending Requests ({requests?.length || 0})
           </TabsTrigger>
@@ -110,70 +112,74 @@ const AdminDashboard = () => {
               <CardTitle>Instructor Applications</CardTitle>
             </CardHeader>
             <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>User</TableHead>
-                    <TableHead>Email</TableHead>
-                    <TableHead>Reason</TableHead>
-                    <TableHead>Date</TableHead>
-                    <TableHead className="text-center">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {requests?.length === 0 ? (
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
                     <TableRow>
-                      <TableCell
-                        colSpan={5}
-                        className="text-center py-10 text-muted-foreground"
-                      >
-                        No pending applications.
-                      </TableCell>
+                      <TableHead>User</TableHead>
+                      <TableHead>Email</TableHead>
+                      <TableHead>Reason</TableHead>
+                      <TableHead>Date</TableHead>
+                      <TableHead className="text-center">Actions</TableHead>
                     </TableRow>
-                  ) : (
-                    requests?.map((req: Request) => (
-                      <TableRow key={req._id}>
-                        <TableCell className="font-medium">
-                          {req.userName}
-                        </TableCell>
-                        <TableCell>{req.email}</TableCell>
+                  </TableHeader>
+                  <TableBody>
+                    {requests?.length === 0 ? (
+                      <TableRow>
                         <TableCell
-                          className="max-w-xs truncate"
-                          title={req.reason}
+                          colSpan={5}
+                          className="text-center py-10 text-muted-foreground"
                         >
-                          {req.reason}
-                        </TableCell>
-                        <TableCell>
-                          {new Date(req.createdAt).toLocaleDateString()}
-                        </TableCell>
-                        <TableCell className="text-center space-x-2">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="text-red-500 hover:bg-red-50"
-                            onClick={() =>
-                              rejectRequest({ requestId: req._id })
-                            }
-                          >
-                            <X className="w-4 h-4 mr-1" /> Reject
-                          </Button>
-                          <Button
-                            size="sm"
-                            onClick={() =>
-                              promoteUser({
-                                requestId: req._id,
-                                userId: req.userId,
-                              })
-                            }
-                          >
-                            <Check className="w-4 h-4 mr-1" /> Approve
-                          </Button>
+                          No pending applications.
                         </TableCell>
                       </TableRow>
-                    ))
-                  )}
-                </TableBody>
-              </Table>
+                    ) : (
+                      requests?.map((req: Request) => (
+                        <TableRow key={req._id}>
+                          <TableCell className="font-medium whitespace-nowrap">
+                            {req.userName}
+                          </TableCell>
+                          <TableCell>{req.email}</TableCell>
+                          <TableCell
+                            className="max-w-37.5 sm:max-w-xs truncate"
+                            title={req.reason}
+                          >
+                            {req.reason}
+                          </TableCell>
+                          <TableCell className="whitespace-nowrap">
+                            {new Date(req.createdAt).toLocaleDateString()}
+                          </TableCell>
+                          <TableCell className="text-center">
+                            <div className="flex gap-2 justify-center">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="text-red-500 hover:bg-red-50"
+                                onClick={() =>
+                                  rejectRequest({ requestId: req._id })
+                                }
+                              >
+                                <X className="w-4 h-4 mr-1" /> Reject
+                              </Button>
+                              <Button
+                                size="sm"
+                                onClick={() =>
+                                  promoteUser({
+                                    requestId: req._id,
+                                    userId: req.userId,
+                                  })
+                                }
+                              >
+                                <Check className="w-4 h-4 mr-1" /> Approve
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
@@ -184,57 +190,61 @@ const AdminDashboard = () => {
               <CardTitle>Current Instructor Team</CardTitle>
             </CardHeader>
             <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Email</TableHead>
-                    <TableHead>Role</TableHead>
-                    <TableHead className="text-center">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {instructors?.map((inst: Instructor) => (
-                    <TableRow key={inst.id}>
-                      <TableCell className="font-medium">
-                        {inst.firstName} {inst.lastName}
-                      </TableCell>
-                      <TableCell>
-                        {inst.emailAddresses?.[0]?.emailAddress}
-                      </TableCell>
-                      <TableCell>
-                        <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                          {inst.publicMetadata?.role}
-                        </span>
-                      </TableCell>
-                      <TableCell className="text-center space-x-2">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          className="text-amber-600 hover:bg-amber-50"
-                          onClick={() => openWarnDialog(inst.id)}
-                        >
-                          <ShieldAlert className="w-4 h-4 mr-1" /> Warn
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="destructive"
-                          onClick={() => handleRevoke(inst.id)}
-                        >
-                          <Trash2 className="w-4 h-4 mr-1" /> Revoke
-                        </Button>
-                      </TableCell>
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Email</TableHead>
+                      <TableHead>Role</TableHead>
+                      <TableHead className="text-center">Actions</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                  </TableHeader>
+                  <TableBody>
+                    {instructors?.map((inst: Instructor) => (
+                      <TableRow key={inst.id}>
+                        <TableCell className="font-medium whitespace-nowrap">
+                          {inst.firstName} {inst.lastName}
+                        </TableCell>
+                        <TableCell>
+                          {inst.emailAddresses?.[0]?.emailAddress}
+                        </TableCell>
+                        <TableCell>
+                          <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                            {inst.publicMetadata?.role}
+                          </span>
+                        </TableCell>
+                        <TableCell className="text-center">
+                          <div className="flex gap-2 justify-center">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="text-amber-600 hover:bg-amber-50"
+                              onClick={() => openWarnDialog(inst.id)}
+                            >
+                              <ShieldAlert className="w-4 h-4 mr-1" /> Warn
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="destructive"
+                              onClick={() => handleRevoke(inst.id)}
+                            >
+                              <Trash2 className="w-4 h-4 mr-1" /> Revoke
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
       </Tabs>
 
       <Dialog open={warnDialogOpen} onOpenChange={setWarnDialogOpen}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Issue Warning</DialogTitle>
             <DialogDescription>

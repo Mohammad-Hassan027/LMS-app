@@ -11,6 +11,7 @@ import {
   addNewCourseService,
 } from "@/service";
 import type { CreateCourse, UpdateCourse } from "@/@types/types";
+import { toast } from "sonner";
 
 export const COURSE_KEYS = {
   all: ["instructorCourses"] as const,
@@ -25,6 +26,10 @@ export function useAddNewCourseService() {
     mutationFn: (formData: CreateCourse) => addNewCourseService(formData),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: COURSE_KEYS.all });
+      toast.success("Course created successfully.");
+    },
+    onError: () => {
+      toast.error("Failed to create course. Please try again.");
     },
   });
 }
@@ -59,6 +64,10 @@ export function useUpdateCourseService(courseId: string) {
       queryClient.invalidateQueries({
         queryKey: COURSE_KEYS.all,
       });
+      toast.success("Course updated successfully.");
+    },
+    onError: () => {
+      toast.error("Failed to update course. Please try again.");
     },
   });
 }
@@ -73,6 +82,10 @@ export function useDeleteCourseService() {
       queryClient.removeQueries({
         queryKey: COURSE_KEYS.details(variables),
       });
+      toast.success("Course deleted successfully.");
+    },
+    onError: () => {
+      toast.error("Failed to delete course. Please try again.");
     },
   });
 }
