@@ -27,14 +27,21 @@ PathOS is a modern, production-grade Learning Management System (LMS) designed t
 
 ### 👨‍🏫 Instructor Tools
 
+- **Easy Onboarding:** Streamlined verification request flow to become an instructor.
 - **Course Studio:** Create and manage courses with a multi-step builder.
 - **Curriculum Management:** Drag-and-drop organization for chapters and lectures.
 - **Media Hub:** Seamless image and video uploads powered by Cloudinary.
-- **Instructor Dashboard:** Track course performance and sales.
+- **Instructor Dashboard:** Track course performance, sales, and student engagement.
+
+### 👮‍♂️ Admin Portal
+
+- **Instructor Verification:** Review, approve, or reject instructor applications.
+- **Platform Overview:** specialized dashboard layout for managing platform-wide statistics.
+- **Responsive Design:** Optimized admin interface for tablet and mobile devices.
 
 ### 🛡️ Security & Architecture
 
-- **Role-Based Access (RBAC):** Strict separation between Student and Instructor views.
+- **Role-Based Access (RBAC):** Strict separation between Student, Instructor, and Admin views.
 - **Modern Auth:** Secure authentication powered by Clerk.
 - **Type Safety:** Built completely with TypeScript for robust reliability.
 
@@ -120,9 +127,9 @@ $ npm run dev
 
 ```bash
 $ cd client
-$ npm install
+$ bun install
 # Configure your .env file
-$ npm run dev
+$ bun run dev
 # Access the app at http://localhost:5173
 ```
 
@@ -134,9 +141,13 @@ pathos/
 ├── client/                 # React 19 Frontend
 │   ├── src/
 │   │   ├── components/     # UI & Feature Components
+│   │   ├── config/         # App Configuration
+│   │   ├── contexts/       # Global State
+│   │   ├── hooks/          # Custom Hooks
+│   │   ├── lib/            # Utility Libraries
 │   │   ├── pages/          # Student & Instructor Pages
 │   │   ├── service/        # API Calls
-│   │   └── contexts/       # Global State
+│   │   └── utils/          # Helper Functions
 │   └── package.json
 │
 └── server/                 # Node.js Backend
