@@ -2,14 +2,14 @@ import PaypalPayment from "@/components/PaypalPayment";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useShoppingCart } from "@/contexts/student/hook";
-import { useProtectedUser } from "@/hooks/useProtectedUser";
+import { useUser } from "@clerk/clerk-react";
 import { Trash2, BookOpen, FilterX } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 function CartPage() {
   const navigate = useNavigate();
   const { cartItems, removeFromCart, cartTotal, clearCart } = useShoppingCart();
-  const user = useProtectedUser();
+  const { user } = useUser();
 
   if (cartItems.length === 0) {
     return (
@@ -101,7 +101,6 @@ function CartPage() {
                     <span>Subtotal</span>
                     <span>${cartTotal.toFixed(2)}</span>
                   </div>
-
 
                   <div className="h-px bg-gray-200 my-4" />
 

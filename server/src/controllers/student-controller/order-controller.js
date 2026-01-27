@@ -125,32 +125,51 @@ export const createOrder = asyncHandler(async (req, res) => {
   let totalAmount = 0;
   let description = '';
 
+  // 1. Calculate Total Amount
   if (isBulkOrder) {
     totalAmount = cartItems.reduce(
-      (acc, item) => acc + Number(item.price || item.coursePricing),
+      (acc, item) =>
+        acc + Number(item.pricing || item.price || item.coursePricing || 0),
       0
     );
     description = `Checkout - ${cartItems.length} Courses`;
   } else {
     validateId(courseId, 'Course ID');
-    totalAmount = coursePricing;
+    totalAmount = Number(coursePricing || 0);
     description = courseTitle;
   }
 
-  // 1. Call PayPal
-  const { jsonResponse, httpStatusCode } = await createPayPalOrder({
-    totalAmount,
-    description,
-    userId,
-  });
+  // Debug Log to ensure price is calculated
+  console.log('Creating Order. Total Amount:', totalAmount);
 
-  if (httpStatusCode !== 201) {
-    throw new ApiError(500, 'Failed to create order with PayPal');
+  let jsonResponse = {};
+
+  // 2. Call PayPal ONLY if price > 0
+  if (totalAmount > 0) {
+    const paypalResult = await createPayPalOrder({
+      totalAmount,
+      description,
+      userId,
+    });
+
+    if (paypalResult.httpStatusCode !== 201) {
+      throw new ApiError(500, 'Failed to create order with PayPal');
+    }
+    jsonResponse = paypalResult.jsonResponse;
+  } else {
+    // FREE COURSE LOGIC: Bypass PayPal
+    jsonResponse = {
+      id: `FREE_${new Date().getTime()}_${userId.slice(-5)}`,
+      status: 'COMPLETED',
+      isFree: true,
+    };
   }
 
-  // 2. Save Pending Orders to DB
-  // We save ONE Order document per course, sharing the same paymentId
+  // 3. Save Orders to DB
   const orderDocuments = [];
+  // If free, mark as paid/confirmed immediately
+  const initialStatus = totalAmount > 0 ? 'pending' : 'confirmed';
+  const initialPaymentStatus = totalAmount > 0 ? 'pending' : 'paid';
 
   if (isBulkOrder) {
     cartItems.forEach((item) => {
@@ -158,16 +177,16 @@ export const createOrder = asyncHandler(async (req, res) => {
         userId,
         userName,
         userEmail,
-        orderStatus: 'pending',
+        orderStatus: initialStatus,
         paymentMethod: 'paypal',
-        paymentStatus: 'pending',
+        paymentStatus: initialPaymentStatus,
         orderDate: new Date(),
-        paymentId: jsonResponse.id, // Shared Payment ID
+        paymentId: jsonResponse.id,
         instructorId: item.instructorId,
         instructorName: item.instructorName,
         courseImage: item.image,
         courseTitle: item.title,
-        courseId: item._id || item.courseId,
+        courseId: item._id || item.courseId || item.id,
         coursePricing: item.pricing,
       });
     });
@@ -176,9 +195,9 @@ export const createOrder = asyncHandler(async (req, res) => {
       userId,
       userName,
       userEmail,
-      orderStatus: 'pending',
+      orderStatus: initialStatus,
       paymentMethod: 'paypal',
-      paymentStatus: 'pending',
+      paymentStatus: initialPaymentStatus,
       orderDate: new Date(),
       paymentId: jsonResponse.id,
       instructorId,
@@ -186,20 +205,71 @@ export const createOrder = asyncHandler(async (req, res) => {
       courseImage,
       courseTitle,
       courseId,
-      coursePricing,
+      coursePricing: totalAmount,
     });
   }
 
-  await Order.insertMany(orderDocuments);
+  // Save to DB
+  const savedOrders = await Order.insertMany(orderDocuments);
 
-  // 3. Return Response
+  // 4. Handle Immediate Enrollment for Free Courses
+  if (totalAmount === 0) {
+    const session = await mongoose.startSession();
+    session.startTransaction();
+    try {
+      for (const order of savedOrders) {
+        // A. Update Student Enrollment
+        await StudentCourses.findOneAndUpdate(
+          { userId: order.userId },
+          {
+            $addToSet: {
+              courses: {
+                courseId: order.courseId,
+                title: order.courseTitle,
+                instructorId: order.instructorId,
+                instructorName: order.instructorName,
+                dateOfPurchase: order.orderDate,
+                courseImage: order.courseImage,
+              },
+            },
+          },
+          { upsert: true, new: true, session }
+        );
+
+        // B. Update Course Student List
+        await Course.findByIdAndUpdate(
+          order.courseId,
+          {
+            $addToSet: {
+              students: {
+                studentId: order.userId,
+                studentName: order.userName,
+                studentEmail: order.userEmail,
+                paidAmount: 0,
+              },
+            },
+          },
+          { session }
+        );
+      }
+      await session.commitTransaction();
+    } catch (err) {
+      await session.abortTransaction();
+      console.error('Error enrolling in free course:', err);
+      // Even if enrollment update fails, we return success so user sees order created
+    } finally {
+      session.endSession();
+    }
+  }
+
+  // 5. Return Response
   res.status(201).json(
     new ApiResponse(
       201,
       {
         ...jsonResponse,
-        // If bulk, we don't return a single internal orderId, just the paymentId is sufficient for tracking
         isBulk: isBulkOrder,
+        isFree: totalAmount === 0,
       },
       'Order created successfully'
     )

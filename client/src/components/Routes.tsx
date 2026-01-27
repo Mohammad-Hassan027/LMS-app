@@ -68,6 +68,10 @@ export default function Routes() {
           element: <CourseDetailsPage />,
         },
         {
+          path: "cart",
+          element: <CartPage />,
+        },
+        {
           path: "about",
           element: <AboutPage />,
         },
@@ -86,10 +90,6 @@ export default function Routes() {
         </ProtectedRoute>
       ),
       children: [
-        {
-          path: "cart",
-          element: <CartPage />,
-        },
         {
           path: "become-instructor",
           element: <BecomeInstructor />,
