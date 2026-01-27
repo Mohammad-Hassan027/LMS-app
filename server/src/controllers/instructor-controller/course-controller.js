@@ -63,8 +63,34 @@ export const addNewCourse = asyncHandler(async (req, res) => {
   const { userId } = getAuth(req);
   const courseData = req.body;
 
+  const allowedFields = [
+    'instructorName',
+    'title',
+    'description',
+    'category',
+    'level',
+    'primaryLanguage',
+    'subtitle',
+    'image',
+    'welcomeMessage',
+    'pricing',
+    'objectives',
+    'curriculum',
+    'isPublished',
+  ];
+
+  const createFields = {};
+  for (const field of allowedFields) {
+    if (courseData[field] !== undefined) {
+      if (field === 'pricing') {
+        createFields['pricing'] = courseData['pricing'].toString();
+      }
+      createFields[field] = courseData[field];
+    }
+  }
+
   const newlyCreatedCourse = new Course({
-    ...courseData,
+    $set: createFields,
     instructorId: userId,
   });
 
@@ -102,6 +128,9 @@ export const updateCourse = asyncHandler(async (req, res) => {
   const updateFields = {};
   for (const field of allowedFields) {
     if (courseData[field] !== undefined) {
+      if (field === 'pricing') {
+        updateFields['pricing'] = courseData['pricing'].toString();
+      }
       updateFields[field] = courseData[field];
     }
   }

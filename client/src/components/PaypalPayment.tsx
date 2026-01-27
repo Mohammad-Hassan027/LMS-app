@@ -9,7 +9,7 @@ import type { UserResource } from "@clerk/shared/types";
 import { SignInButton } from "@clerk/clerk-react";
 import { Button } from "./ui/button";
 import type { CartItem } from "@/contexts/student";
-import { useShoppingCart } from "@/contexts/student/hook"; // Import the hook
+import { useShoppingCart } from "@/contexts/student/hook";
 
 const PaypalPayment = ({
   user,
@@ -24,13 +24,18 @@ const PaypalPayment = ({
 
   const { clearCart } = useShoppingCart();
 
-  const handleCreateOrder = async () => {
-    if (!user || !user.primaryEmailAddress) {
-      toast.error("User details missing. Please sign in.");
-      throw new Error("User details missing");
-    }
+  const isBulk = Array.isArray(courses);
+  const totalPrice = isBulk
+    ? (courses as CartItem[]).reduce(
+        (acc, item) => acc + Number(item?.pricing || 0),
+        0,
+      )
+    : Number((courses as Course)?.pricing || 0);
 
-    const isBulk = Array.isArray(courses);
+  const getOrderPayload = () => {
+    if (!user || !user.primaryEmailAddress) {
+      return null;
+    }
 
     const baseOrderData = {
       userId: user.id,
@@ -46,13 +51,10 @@ const PaypalPayment = ({
       orderDate: new Date(),
     };
 
-    let payload;
-
     if (isBulk) {
-      // CART CHECKOUT PAYLOAD
-      payload = {
+      return {
         ...baseOrderData,
-        cartItems: courses.map((item) => ({
+        cartItems: (courses as CartItem[]).map((item) => ({
           id: item._id,
           title: item.title,
           image: item.image,
@@ -62,9 +64,8 @@ const PaypalPayment = ({
         })),
       };
     } else {
-      // SINGLE COURSE PAYLOAD
       const course = courses as Course;
-      payload = {
+      return {
         ...baseOrderData,
         instructorId: course.instructorId,
         instructorName: course.instructorName,
@@ -74,8 +75,17 @@ const PaypalPayment = ({
         coursePricing: course.pricing,
       };
     }
+  };
+
+  // Handle Paid Orders (PayPal)
+  const handlePaypalCreateOrder = async () => {
+    const payload = getOrderPayload();
+    if (!payload) {
+      throw new Error("User details missing");
+    }
 
     try {
+      // The backend returns a PayPal Order ID here
       const response = await createOrder(payload);
 
       if (response?.id) return response.id;
@@ -89,15 +99,12 @@ const PaypalPayment = ({
     }
   };
 
-  const handleApprove = async (data: { orderID: string }) => {
+  const handlePaypalApprove = async (data: { orderID: string }) => {
     try {
       await captureOrder({ paymentId: data.orderID });
-
       toast.success("Purchase successful! You are now enrolled.");
 
-      // CRITICAL: Clear the cart if this was a bulk purchase
-      // We do this BEFORE redirecting so localStorage is cleaned up
-      if (Array.isArray(courses)) {
+      if (isBulk) {
         clearCart();
       }
 
@@ -108,6 +115,35 @@ const PaypalPayment = ({
     }
   };
 
+  // 3. Handle Free Orders (Bypass PayPal)
+  const handleFreeEnrollment = async () => {
+    const payload = getOrderPayload();
+    if (!payload) return;
+
+    try {
+      // Backend detects $0 and returns success immediately
+      const response = await createOrder(payload);
+
+      if (
+        response?.success ||
+        response?.data?.success ||
+        response?.data?.isFree
+      ) {
+        toast.success("Enrollment successful!");
+        if (isBulk) clearCart();
+        window.location.href = "/my-courses";
+      } else {
+        // Fallback if backend doesn't explicitly flag success but returns 201
+        toast.success("Enrollment successful!");
+        if (isBulk) clearCart();
+        window.location.href = "/my-courses";
+      }
+    } catch (error) {
+      console.error("Free Enrollment Failed:", error);
+      toast.error("Failed to enroll. Please try again.");
+    }
+  };
+
   const hasValidData = Array.isArray(courses) ? courses.length > 0 : !!courses;
 
   if (!user || !user.primaryEmailAddress || !hasValidData) {
@@ -115,7 +151,7 @@ const PaypalPayment = ({
       <div className="p-4 border border-yellow-200 bg-yellow-50 text-yellow-800 rounded-md">
         {!user ? (
           <>
-            <p className="mb-2">Please sign in to proceed with payment.</p>
+            <p className="mb-2">Please sign in to proceed.</p>
             <SignInButton mode="modal">
               <Button>Sign In</Button>
             </SignInButton>
@@ -127,16 +163,28 @@ const PaypalPayment = ({
     );
   }
 
+  if (totalPrice === 0) {
+    return (
+      <div className="mt-4 w-full">
+        <Button
+          onClick={handleFreeEnrollment}
+          className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3"
+        >
+          Enroll for Free
+        </Button>
+      </div>
+    );
+  }
+
   return (
     <div className="mt-4 w-full">
       <PayPalButtons
-        key={Array.isArray(courses) ? "bulk-order" : (courses as Course)._id}
+        key={isBulk ? "bulk-order" : (courses as Course)._id}
         style={{ layout: "vertical" }}
-        createOrder={handleCreateOrder}
-        onApprove={handleApprove}
+        createOrder={handlePaypalCreateOrder}
+        onApprove={handlePaypalApprove}
         onError={(err) => {
           console.error("PayPal Error:", err);
-          toast.error("Something went wrong with PayPal");
         }}
       />
     </div>
