@@ -70,15 +70,15 @@ export function middleware(app) {
     }
   });
 
-  app.use((req, res, next) => {
-    Object.defineProperty(req, 'query', {
-      value: req.query,
-      writable: true,
-      configurable: true,
-      enumerable: true,
-    });
-    next();
-  });
+  // app.use((req, res, next) => {
+  //   Object.defineProperty(req, 'query', {
+  //     value: req.query,
+  //     writable: true,
+  //     configurable: true,
+  //     enumerable: true,
+  //   });
+  //   next();
+  // });
 
   app.use(
     clerkMiddleware({
