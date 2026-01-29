@@ -7,6 +7,55 @@ import connectDB from '../db/index.js';
 import mongoSanitize from 'express-mongo-sanitize';
 
 export function middleware(app) {
+  app.use(
+    cors({
+      origin: (origin, callback) => {
+        // Allow requests with no origin (like mobile apps or server-to-server calls)
+        if (!origin) return callback(null, true);
+
+        const allowedOrigins = [
+          process.env.CLIENT_URL,
+          'http://localhost:5173',
+        ];
+
+        // Allow allowed origins AND any Vercel preview deployment
+        if (allowedOrigins.includes(origin) || origin.endsWith('.vercel.app')) {
+          callback(null, true);
+        } else {
+          console.log('Blocked by CORS:', origin);
+          callback(new Error('Not allowed by CORS'));
+        }
+      },
+      credentials: true,
+      methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+      allowedHeaders: [
+        'Content-Type',
+        'Authorization',
+        'X-Requested-With',
+        'device-remember-token',
+        'Access-Control-Allow-Origin',
+        'Origin',
+        'Accept',
+      ],
+    })
+  );
+
+  // Helmet - configured to allow cross-origin media
+  // "crossOriginResourcePolicy: false" or "cross-origin" allows your frontend to load
+  // videos/images hosted on this backend.
+  app.use(
+    helmet({
+      crossOriginResourcePolicy: { policy: 'cross-origin' },
+    })
+  );
+
+  app.use(morgan('combined'));
+
+  app.use(express.json({ limit: '16kb' }));
+  app.use(express.urlencoded({ extended: true, limit: '16kb' }));
+
+  app.use(mongoSanitize());
+
   app.use(async (req, res, next) => {
     try {
       await connectDB();
@@ -20,34 +69,6 @@ export function middleware(app) {
       });
     }
   });
-  app.use(helmet());
-  app.use(morgan('combined'));
-  app.use(
-    cors({
-      origin: (origin, callback) => {
-        // Allow requests with no origin (like mobile apps or curl requests)
-        if (!origin) return callback(null, true);
-
-        const allowedOrigins = [
-          process.env.CLIENT_URL,
-          'http://localhost:5173',
-        ];
-
-        if (
-          allowedOrigins.includes(origin) ||
-          origin.endsWith('.vercel.app')
-        ) {
-          callback(null, true);
-        } else {
-          console.log('Blocked by CORS:', origin);
-          callback(new Error('Not allowed by CORS'));
-        }
-      },
-      credentials: true,
-    })
-  );
-  app.use(express.json({ limit: '16kb' }));
-  app.use(express.urlencoded({ extended: true, limit: '16kb' }));
 
   app.use((req, res, next) => {
     Object.defineProperty(req, 'query', {
@@ -59,11 +80,13 @@ export function middleware(app) {
     next();
   });
 
-  app.use(mongoSanitize());
-
   app.use(
     clerkMiddleware({
-      authorizedParties: [process.env.CLIENT_URL],
+      authorizedParties: [
+        process.env.CLIENT_URL,
+        'https://path-os.vercel.app',
+        'http://localhost:5173',
+      ],
       secretKey: process.env.CLERK_SECRET_KEY,
       publishableKey: process.env.CLERK_PUBLISHABLE_KEY,
     })
