@@ -1,9 +1,5 @@
 import { v2 as cloudinary } from 'cloudinary';
 import fs from 'fs';
-import path from 'path';
-import os from 'os';
-
-const UPLOAD_ROOT = fs.realpathSync(os.tmpdir());
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -17,40 +13,42 @@ const uploadMediaToCloudinary = async (filePath, options = {}) => {
     throw new Error('Invalid file path');
   }
 
-  // Resolve the path relative to the known upload root and normalize it
-  let resolvedPath = path.resolve(UPLOAD_ROOT, filePath);
-
-  try {
-    resolvedPath = fs.realpathSync(resolvedPath);
-  } catch (e) {
-    throw new Error('File path is invalid or file does not exist');
-  }
-  // Ensure the resolved path is contained within the upload root
-  if (!resolvedPath.startsWith(UPLOAD_ROOT + path.sep)) {
-    throw new Error('Access to the specified file path is not allowed');
-  }
-
-  if (!fs.existsSync(resolvedPath)) {
+  // Check if file exists before attempting upload
+  if (!fs.existsSync(filePath)) {
     throw new Error('File path is invalid or file does not exist');
   }
 
-
   try {
-    const result = await cloudinary.uploader.upload(resolvedPath, {
+    // 1. Attempt Upload
+    const result = await cloudinary.uploader.upload(filePath, {
       resource_type: 'auto',
       ...options,
     });
-    fs.unlinkSync(resolvedPath);
-    const data = {
+
+    // Successful Upload? Great! Now try to delete local file safely.
+    try {
+      fs.unlinkSync(filePath);
+    } catch (cleanupError) {
+      console.warn(
+        'Warning: Failed to delete temp file after upload:',
+        filePath
+      );
+    }
+
+    return {
       url: result.secure_url,
       public_id: result.public_id,
     };
-    return data;
   } catch (error) {
-    if (fs.existsSync(resolvedPath)) {
-      fs.unlinkSync(resolvedPath);
+    // Upload Failed? Try to delete local file and throw error.
+    try {
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+      }
+    } catch (cleanupError) {
     }
-    console.log('Error inside uploadMediaToCloudinary:', error);
+
+    console.error('Error inside uploadMediaToCloudinary:', error);
     throw new Error(`Cloudinary upload failed: ${error.message}`);
   }
 };
@@ -60,13 +58,12 @@ const deleteMediaFromCloudinary = async (publicId, resourceType = 'image') => {
     const result = await cloudinary.uploader.destroy(publicId, {
       resource_type: resourceType,
     });
-    const data = {
+    return {
       url: result.secure_url,
       public_id: result.public_id,
     };
-    return data;
   } catch (error) {
-    console.log('Error inside deleteMediaFromCloudinary:', error);
+    console.error('Error inside deleteMediaFromCloudinary:', error);
     throw new Error(`Cloudinary deletion failed: ${error.message}`);
   }
 };
