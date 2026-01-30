@@ -1,5 +1,5 @@
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { Clock, Users } from "lucide-react";
+import { BookOpen, Users } from "lucide-react"; // Changed Clock to BookOpen
 import { useNavigate } from "react-router-dom";
 import type { Course } from "@/@types/types";
 
@@ -27,11 +27,13 @@ function CourseCard({ course }: { course: Course }) {
         </h3>
         <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
           <span className="flex items-center gap-1">
-            <Users className="w-3 h-3" /> {course.students?.length || 10}
+            <Users className="w-3 h-3" /> {course.students?.length || 0}{" "}
+            Enrolled
           </span>
           <span>•</span>
           <span className="flex items-center gap-1">
-            <Clock className="w-3 h-3" /> 12h
+            <BookOpen className="w-3 h-3" /> {course.curriculum?.length || 0}{" "}
+            Lectures
           </span>
         </div>
       </CardContent>
