@@ -1,6 +1,12 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { CheckCircle2, ChevronLeft, ChevronRight, Lock } from "lucide-react";
+import {
+  CheckCircle2,
+  ChevronLeft,
+  ChevronRight,
+  Lock,
+  Star,
+} from "lucide-react";
 import {
   useGetStudentCourseProgressService,
   useMarkCurrentLectureAsViewedService,
@@ -27,6 +33,8 @@ import Player from "@/components/video-player";
 import Confetti from "react-confetti";
 import { useProtectedUser } from "@/hooks/useProtectedUser";
 import { Badge } from "@/components/ui/badge";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 
 export default function CourseProgressPage() {
   const navigate = useNavigate();
@@ -35,6 +43,11 @@ export default function CourseProgressPage() {
   const [showCourseCompleteDialog, setShowCourseCompleteDialog] =
     useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
+  const [isSideBarOpen, setIsSideBarOpen] = useState(true);
+
+  const [rating, setRating] = useState(0);
+  const [reviewMessage, setReviewMessage] = useState("");
+  const [hoveredStar, setHoveredStar] = useState(0);
 
   const { courseId } = useParams();
 
@@ -52,11 +65,8 @@ export default function CourseProgressPage() {
   );
   const [duration, setDuration] = useState<number>(0);
 
-  console.log(duration);
-
   const handleDuration = (videoDuration: number) => {
     setDuration(videoDuration);
-    console.log("Total video length:", videoDuration);
   };
 
   async function handleVideoEnded() {
@@ -74,6 +84,18 @@ export default function CourseProgressPage() {
       setShowCourseCompleteDialog(false);
       await refetch();
     }
+  }
+
+  async function handleSubmitReview() {
+    // TODO
+    console.log("Submitting Review:", {
+      courseId,
+      userId: user.id,
+      rating,
+      message: reviewMessage,
+    });
+
+    navigate("/my-courses");
   }
 
   useEffect(() => {
@@ -169,6 +191,8 @@ export default function CourseProgressPage() {
   return (
     <SidebarProvider
       defaultOpen={true}
+      open={isSideBarOpen}
+      onOpenChange={setIsSideBarOpen}
       className="flex flex-col md:flex-row h-screen overflow-hidden"
     >
       {showConfetti && (
@@ -179,8 +203,8 @@ export default function CourseProgressPage() {
             position: "fixed",
             top: 0,
             left: 0,
-            zIndex: 100, // High enough to see, but usually pointer-events-none helps
-            pointerEvents: "none", // Allows clicking through the confetti
+            zIndex: 100,
+            pointerEvents: "none",
           }}
           numberOfPieces={500}
           recycle={false}
@@ -323,34 +347,67 @@ export default function CourseProgressPage() {
         duration={duration}
       />
 
-      {/* COMPLETION DIALOG */}
       <Dialog
         open={showCourseCompleteDialog}
         onOpenChange={setShowCourseCompleteDialog}
       >
-        <DialogContent className="sm:max-w-md text-center">
-          <DialogHeader className="flex flex-col items-center gap-4">
-            <div className="text-6xl animate-bounce pt-4">🎓</div>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader className="flex flex-col items-center gap-2">
+            <div className="text-5xl animate-bounce pt-4">🎓</div>
             <DialogTitle className="text-2xl font-bold text-green-600">
-              Course Completed!
+              Congratulations!
             </DialogTitle>
-            <DialogDescription className="text-base">
-              You've successfully completed{" "}
-              <strong>{data.courseDetails?.title}</strong>. We are proud of your
-              achievement!
+            <DialogDescription className="text-center text-base">
+              You have completed <strong>{data.courseDetails?.title}</strong>
             </DialogDescription>
           </DialogHeader>
 
-          <DialogFooter className="flex flex-col sm:flex-row gap-2 mt-4 w-full">
+          {/* Review Section */}
+          <div className="flex flex-col items-center gap-4 py-4">
+            <Label className="text-sm font-medium text-muted-foreground">
+              Rate your experience
+            </Label>
+            <div className="flex gap-2">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <Star
+                  key={star}
+                  className={`w-8 h-8 cursor-pointer transition-colors ${
+                    (hoveredStar || rating) >= star
+                      ? "fill-yellow-400 text-yellow-400"
+                      : "text-gray-300"
+                  }`}
+                  onMouseEnter={() => setHoveredStar(star)}
+                  onMouseLeave={() => setHoveredStar(0)}
+                  onClick={() => setRating(star)}
+                />
+              ))}
+            </div>
+
+            <div className="w-full space-y-2">
+              <Label className="sr-only">Feedback</Label>
+              <Textarea
+                placeholder="Write a review... (Optional)"
+                value={reviewMessage}
+                onChange={(e) => setReviewMessage(e.target.value)}
+                className="resize-none"
+              />
+            </div>
+          </div>
+
+          <DialogFooter className="flex flex-col sm:flex-row gap-2 w-full">
             <Button
               className="flex-1"
               variant="outline"
-              onClick={() => navigate("/my-courses")}
+              onClick={handleRewatchCourse}
             >
-              Back to Dashboard
-            </Button>
-            <Button className="flex-1" onClick={handleRewatchCourse}>
               Restart Course
+            </Button>
+            <Button
+              className="flex-1"
+              onClick={handleSubmitReview} // Changed to submit review
+              disabled={rating === 0} // Optional: Force rating before submit
+            >
+              Submit & Finish
             </Button>
           </DialogFooter>
         </DialogContent>
