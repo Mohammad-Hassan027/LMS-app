@@ -66,12 +66,16 @@ function CourseCurriculum({
 
             <div className="flex-1 space-y-1">
               <h4
-                className={`text-sm font-medium leading-tight ${isCompleted ? "text-muted-foreground" : "text-foreground"}`}
+                className={`text-sm font-medium leading-tight ${
+                  isCompleted ? "text-muted-foreground" : "text-foreground"
+                }`}
               >
                 {item.title}
               </h4>
               <p className="text-xs text-muted-foreground">
-                Video • {Math.round(duration / 60)} mins{" "}
+                {isActive && duration > 0
+                  ? `Video • ${Math.max(1, Math.round(duration / 60))} mins`
+                  : "Video"}
               </p>
             </div>
           </div>
