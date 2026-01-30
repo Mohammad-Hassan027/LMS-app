@@ -20,6 +20,7 @@ type Props = {
   setActiveTab: Dispatch<SetStateAction<string>>;
   currentLecture: Lecture | null;
   setCurrentLecture: (lecture: Lecture) => void;
+  duration: number;
 };
 
 function CourseCurriculum({
@@ -27,7 +28,8 @@ function CourseCurriculum({
   progress,
   currentLecture,
   setCurrentLecture,
-}: Omit<Props, "setActiveTab" | "activeTab">) {
+  duration,
+}: Omit<Props, "setActiveTab" | "activeTab"> & { duration: number }) {
   return (
     <div className="flex flex-col w-full h-full">
       {courseDetails?.curriculum?.map((item, index) => {
@@ -69,7 +71,7 @@ function CourseCurriculum({
                 {item.title}
               </h4>
               <p className="text-xs text-muted-foreground">
-                Video • 10 mins {/* Placeholder duration */}
+                Video • {Math.round(duration / 60)} mins{" "}
               </p>
             </div>
           </div>
@@ -86,6 +88,7 @@ export default function CourseProgressSidebar({
   setActiveTab,
   currentLecture,
   setCurrentLecture,
+  duration,
 }: Props) {
   // Calculate Progress Percentage
   const completedCount = progress?.filter((p) => p.viewed).length || 0;
@@ -142,6 +145,7 @@ export default function CourseProgressSidebar({
               progress={progress}
               currentLecture={currentLecture}
               setCurrentLecture={setCurrentLecture}
+              duration={duration}
             />
           </TabsContent>
 

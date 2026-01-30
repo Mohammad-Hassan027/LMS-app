@@ -1,59 +1,55 @@
+import { useRef } from "react";
 import ReactPlayer from "react-player";
-// import {
-//   MediaController,
-//   MediaControlBar,
-//   MediaTimeRange,
-//   MediaTimeDisplay,
-//   MediaVolumeRange,
-//   MediaPlaybackRateButton,
-//   MediaPlayButton,
-//   MediaSeekBackwardButton,
-//   MediaSeekForwardButton,
-//   MediaMuteButton,
-//   MediaFullscreenButton,
-// } from "media-chrome/react";
 
 export default function Player({
   url,
   width = 320,
   height = 180,
-  onStart,
-  onEnded,
+  onStart: handleStart,
+  onEnded: handleEnded,
+  onDuration,
 }: {
   url: string;
   width?: number | string;
   height?: number | string;
   onStart?: () => void;
   onEnded?: () => void;
+  onDuration?: (duration: number) => void;
 }) {
+  const playerRef = useRef<any>(null);
+
   return (
-    // // <MediaController
-    // //   style={{
-    // //     width: "100%",
-    // //     aspectRatio: "16/9",
-    // //   }}
-    // // >
-    //   {/* https://stream.mux.com/maVbJv2GSYNRgS02kPXOOGdJMWGU1mkA019ZUjYE7VU7k */}
     <ReactPlayer
+      ref={playerRef}
       width={width}
       height={height}
       slot="media"
       src={url}
       controls
-      onStart={onStart}
-      onEnded={onEnded}
-    ></ReactPlayer>
-    //   {/* <MediaControlBar className="px-4">
-    //     <MediaPlayButton />
-    //     <MediaSeekBackwardButton seekOffset={10} />
-    //     <MediaSeekForwardButton seekOffset={10} />
-    //     <MediaTimeRange />
-    //     <MediaTimeDisplay showDuration />
-    //     <MediaMuteButton />
-    //     <MediaVolumeRange />
-    //     <MediaPlaybackRateButton />
-    //     <MediaFullscreenButton />
-    //   </MediaControlBar>
-    // </MediaController> */}
+      // We use onStart to fetch duration because onReady can sometimes be too early for the ref
+      onStart={() => {
+        if (handleStart) handleStart();
+
+        // Safety check: Ensure the player ref exists
+        if (playerRef.current) {
+          let duration = 0;
+
+          // Strategy A: Try the standard ReactPlayer method
+          if (typeof playerRef.current.getDuration === "function") {
+            duration = playerRef.current.getDuration();
+          }
+          // Strategy B: Fallback to HTML Media Element property
+          else if (playerRef.current.duration) {
+            duration = playerRef.current.duration;
+          }
+
+          // If we found a valid duration, update the parent
+          if (duration && onDuration) {
+            onDuration(duration);
+          }
+        }
+      }}
+      onEnded={handleEnded}
+    />
   );
 }

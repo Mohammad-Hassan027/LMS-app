@@ -50,6 +50,14 @@ export default function CourseProgressPage() {
     courseId || "",
     user.id,
   );
+  const [duration, setDuration] = useState<number>(0);
+
+  console.log(duration);
+
+  const handleDuration = (videoDuration: number) => {
+    setDuration(videoDuration);
+    console.log("Total video length:", videoDuration);
+  };
 
   async function handleVideoEnded() {
     if (currentLecture?._id) {
@@ -217,6 +225,7 @@ export default function CourseProgressPage() {
                     onEnded={handleVideoEnded}
                     width={"100%"}
                     height={"100%"}
+                    onDuration={handleDuration}
                   />
                 ) : (
                   <div className="flex flex-col items-center justify-center text-zinc-500">
@@ -311,6 +320,7 @@ export default function CourseProgressPage() {
         setActiveTab={setActiveTab}
         setCurrentLecture={setCurrentLecture}
         currentLecture={currentLecture}
+        duration={duration}
       />
 
       {/* COMPLETION DIALOG */}
