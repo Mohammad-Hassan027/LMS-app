@@ -56,7 +56,7 @@ PathOS is a modern, production-grade Learning Management System (LMS) designed t
 - **State Management:** TanStack Query + Context API
 - **Routing:** React Router DOM v7
 - **Authentication:** Clerk
-- **Media:** React Player + Media Chrome
+- **Media:** React Player
 
 ### Server (Backend)
 
