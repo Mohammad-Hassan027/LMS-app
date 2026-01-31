@@ -2,7 +2,7 @@
 
 PathOS is a modern, production-grade Learning Management System (LMS) designed to connect instructors and students. It is a full-stack web application built using the MERN stack (MongoDB, Express.js, React, Node.js) and TypeScript. It bridges the gap between instructors and students with a seamless, interactive educational environment powered by the latest web technologies.
 
-<!-- ![PathOS Banner](/client/public/Hero.png) -->
+![PathOS Banner](https://res.cloudinary.com/dopnsnxot/image/upload/v1769621689/path-os_oab3yg.png)
 
 ## Deployed working URL
 
