@@ -2,6 +2,7 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { BookOpen, Users } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import type { Course } from "@/@types/types";
+import { getOptimizedImageUrl } from "@/utils";
 
 function CourseCard({ course }: { course: Course }) {
   const navigate = useNavigate();
@@ -12,7 +13,7 @@ function CourseCard({ course }: { course: Course }) {
     >
       <div className="relative overflow-hidden aspect-video">
         <img
-          src={course.image}
+          src={getOptimizedImageUrl(course.image, 400)}
           alt={course.title}
           loading="lazy"
           width={300}

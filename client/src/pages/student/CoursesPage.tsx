@@ -22,6 +22,7 @@ import { sortOptions } from "@/config";
 import { useStudentAllCoursesService } from "@/service/studentQueries";
 import CoursesSidebar from "@/components/student-view/courses/CoursesSidebar";
 import { useFilters } from "@/hooks/use-filters";
+import { getOptimizedImageUrl } from "@/utils";
 
 function CoursesContent() {
   const { filters, setFilters } = useFilters();
@@ -96,7 +97,7 @@ function CoursesContent() {
                     <img
                       width={300}
                       height={150}
-                      src={course.image}
+                      src={getOptimizedImageUrl(course.image, 400)}
                       alt={`course-image`}
                       loading={index < 2 ? "eager" : "lazy"}
                       fetchPriority={index === 0 ? "high" : "auto"}

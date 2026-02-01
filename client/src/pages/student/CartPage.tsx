@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useShoppingCart } from "@/contexts/student/hook";
+import { getOptimizedImageUrl } from "@/utils";
 import { useUser } from "@clerk/clerk-react";
 import { Trash2, BookOpen, FilterX, CreditCard } from "lucide-react";
 import { lazy, Suspense, useState } from "react";
@@ -58,7 +59,7 @@ function CartPage() {
                 <CardContent className="p-4 sm:p-6 flex flex-col sm:flex-row gap-6">
                   <div className="w-full sm:w-48 h-32 shrink-0 rounded-lg overflow-hidden bg-gray-200">
                     <img
-                      src={item.image}
+                      src={getOptimizedImageUrl(item.image, 400)}
                       alt={item.title}
                       className="w-full h-full object-cover"
                       loading={index === 0 ? "eager" : "lazy"}
