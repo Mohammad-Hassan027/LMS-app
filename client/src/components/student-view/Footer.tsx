@@ -1,6 +1,5 @@
 import { GithubIcon, LinkedinIcon, TwitterIcon } from "lucide-react";
 import { Link } from "react-router-dom";
-// Make sure this path matches your project structure
 import { courseCategories } from "@/config";
 
 function Footer() {
@@ -12,7 +11,7 @@ function Footer() {
     },
     {
       icon: <TwitterIcon className="w-5 h-5" />,
-      url: "https://twitter.com",
+      url: "https://x.com",
       label: "Twitter",
     },
     {
