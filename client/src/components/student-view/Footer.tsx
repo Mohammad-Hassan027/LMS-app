@@ -30,11 +30,11 @@ function Footer() {
           <div className="space-y-6">
             <Link to="/" className="inline-block">
               <div className="h-10 w-auto flex items-center">
-                {/* Ensure logo exists in public folder */}
                 <img
                   src="/logo.png"
                   alt="PathOS Logo"
                   className="h-full w-auto object-contain"
+                  loading="lazy"
                 />
               </div>
             </Link>
@@ -69,7 +69,7 @@ function Footer() {
                 ["About Us", "/about"],
                 ["Contact", "/contact"],
                 ["Explore Courses", "/courses"],
-                ["Become an Instructor", "/become-instructor"], // Added this
+                ["Become an Instructor", "/become-instructor"],
               ].map((item) => (
                 <li key={item[0]}>
                   <Link

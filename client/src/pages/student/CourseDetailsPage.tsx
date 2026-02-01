@@ -470,6 +470,7 @@ function CourseDetailsContent({
                         src={studentViewCourseDetails.image}
                         alt="Course Preview"
                         className="w-full h-full object-cover opacity-60 group-hover:opacity-40 transition-opacity"
+                        loading="lazy"
                       />
                       <PlayCircle className="absolute w-12 h-12 text-white opacity-90 group-hover:scale-110 transition-transform drop-shadow-lg" />
                       <div className="absolute bottom-4 text-white font-bold text-sm tracking-wide bg-black/50 px-3 py-1 rounded-full backdrop-blur-sm">
@@ -480,6 +481,7 @@ function CourseDetailsContent({
                     <img
                       src={studentViewCourseDetails?.image}
                       className="w-full h-full object-cover"
+                      loading="lazy"
                     />
                   )}
                 </div>

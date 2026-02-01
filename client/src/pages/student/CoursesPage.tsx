@@ -85,10 +85,10 @@ function CoursesContent() {
       <main className="flex-1 p-4 overflow-y-auto">
         <div className="space-y-4">
           {studentViewCoursesList && studentViewCoursesList.length > 0 ? (
-            studentViewCoursesList.map((course) => (
+            studentViewCoursesList.map((course, index) => (
               <Card
                 className="cursor-pointer hover:shadow-lg transition-shadow"
-                key={`course-id-${course._id}`}
+                key={course._id}
                 onClick={() => navigate(`/course/details/${course._id}`)}
               >
                 <CardContent className="flex flex-col sm:flex-row gap-4 p-4">
@@ -98,6 +98,8 @@ function CoursesContent() {
                       height={150}
                       src={course.image}
                       alt={`course-image`}
+                      loading={index < 2 ? "eager" : "lazy"}
+                      fetchPriority={index === 0 ? "high" : "auto"}
                       className="w-full h-full object-cover"
                     />
                   </picture>

@@ -14,7 +14,7 @@ function FeaturedCoursesSection() {
         <div className="grid lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-6">
           {studentViewCoursesList && studentViewCoursesList.length > 0 ? (
             studentViewCoursesList.map((course) => (
-              <CourseCard course={course} key={`course-id-${course._id}`} />
+              <CourseCard course={course} key={course._id} />
             ))
           ) : (
             <div className="col-span-full text-center py-20">

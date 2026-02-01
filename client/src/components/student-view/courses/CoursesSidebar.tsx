@@ -16,14 +16,14 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { useFilters, type FilterState } from "@/hooks/use-filters";
 import { Badge } from "@/components/ui/badge";
+import { useMemo } from "react";
 
 export default function CoursesSidebar() {
   const { filters, setFilters } = useFilters();
 
-  // Calculate total active filters for a badge (optional UX improvement)
-  const totalActiveFilters = Object.values(filters)
-    .flat()
-    .filter(Boolean).length;
+  const totalActiveFilters = useMemo(() => {
+    return Object.values(filters).flat().filter(Boolean).length;
+  }, [filters]);
 
   function handleFilterOnChange(
     sectionId: keyof FilterState,

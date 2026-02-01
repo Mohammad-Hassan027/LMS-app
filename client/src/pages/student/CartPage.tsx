@@ -58,6 +58,7 @@ function CartPage() {
                       src={item.image}
                       alt={item.title}
                       className="w-full h-full object-cover"
+                      loading="lazy"
                     />
                   </div>
 

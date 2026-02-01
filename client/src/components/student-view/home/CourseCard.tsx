@@ -1,5 +1,5 @@
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { BookOpen, Users } from "lucide-react"; // Changed Clock to BookOpen
+import { BookOpen, Users } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import type { Course } from "@/@types/types";
 
@@ -14,6 +14,9 @@ function CourseCard({ course }: { course: Course }) {
         <img
           src={course.image}
           alt={course.title}
+          loading="lazy"
+          width={300}
+          height={170}
           className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
         />
         <div className="absolute top-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded capitalize">
