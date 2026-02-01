@@ -1,3 +1,4 @@
+import { lazy, Suspense, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useStudentViewCourseDetailsService } from "@/service/studentQueries";
 import Loader from "@/components/Loader";
@@ -19,7 +20,6 @@ import {
   CardTitle,
   // CardDescription,
 } from "@/components/ui/card";
-import Player from "@/components/video-player";
 import {
   Dialog,
   DialogContent,
@@ -27,7 +27,6 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { Suspense, useEffect, useState } from "react";
 import PaypalPayment from "@/components/PaypalPayment";
 import { useUser } from "@clerk/clerk-react";
 import { checkIsStudentEnrolledService } from "@/service";
@@ -38,6 +37,7 @@ import { useShoppingCart } from "@/contexts/student/hook";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+const Player = lazy(() => import("@/components/video-player"));
 
 function CourseDetailsContent({
   courseId,
@@ -468,9 +468,11 @@ function CourseDetailsContent({
                     <>
                       <img
                         src={studentViewCourseDetails.image}
-                        alt="Course Preview"
-                        className="w-full h-full object-cover opacity-60 group-hover:opacity-40 transition-opacity"
+                        alt={studentViewCourseDetails?.title}
+                        width={400}
+                        height={225}
                         loading="lazy"
+                        className="w-full h-full object-cover opacity-60 group-hover:opacity-40 transition-opacity"
                       />
                       <PlayCircle className="absolute w-12 h-12 text-white opacity-90 group-hover:scale-110 transition-transform drop-shadow-lg" />
                       <div className="absolute bottom-4 text-white font-bold text-sm tracking-wide bg-black/50 px-3 py-1 rounded-full backdrop-blur-sm">
@@ -480,8 +482,11 @@ function CourseDetailsContent({
                   ) : (
                     <img
                       src={studentViewCourseDetails?.image}
-                      className="w-full h-full object-cover"
+                      alt={studentViewCourseDetails?.title}
                       loading="lazy"
+                      width={400}
+                      height={225}
+                      className="w-full h-full object-cover"
                     />
                   )}
                 </div>
@@ -563,11 +568,19 @@ function CourseDetailsContent({
           </DialogHeader>
 
           <div className="aspect-video w-full">
-            <Player
-              url={freePreviewLectureVideoUrl}
-              width="100%"
-              height="100%"
-            />
+            <Suspense
+              fallback={
+                <div className="w-full h-full flex items-center justify-center text-white">
+                  Loading Player...
+                </div>
+              }
+            >
+              <Player
+                url={freePreviewLectureVideoUrl}
+                width="100%"
+                height="100%"
+              />
+            </Suspense>
           </div>
         </DialogContent>
       </Dialog>
