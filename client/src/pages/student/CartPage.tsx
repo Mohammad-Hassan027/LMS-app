@@ -1,15 +1,18 @@
-import PaypalPayment from "@/components/PaypalPayment";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useShoppingCart } from "@/contexts/student/hook";
 import { useUser } from "@clerk/clerk-react";
-import { Trash2, BookOpen, FilterX } from "lucide-react";
+import { Trash2, BookOpen, FilterX, CreditCard } from "lucide-react";
+import { lazy, Suspense, useState } from "react";
 import { useNavigate } from "react-router-dom";
+const PaypalPayment = lazy(() => import("@/components/PaypalPayment"));
 
 function CartPage() {
   const navigate = useNavigate();
   const { cartItems, removeFromCart, cartTotal, clearCart } = useShoppingCart();
   const { user } = useUser();
+
+  const [isCheckoutInitiated, setIsCheckoutInitiated] = useState(false);
 
   if (cartItems.length === 0) {
     return (
@@ -47,7 +50,7 @@ function CartPage() {
 
         <div className="grid lg:grid-cols-3 gap-10">
           <div className="lg:col-span-2 space-y-6">
-            {cartItems.map((item) => (
+            {cartItems.map((item, index) => (
               <Card
                 key={item._id}
                 className="shadow-sm border border-gray-100 hover:shadow-md transition-shadow"
@@ -58,7 +61,7 @@ function CartPage() {
                       src={item.image}
                       alt={item.title}
                       className="w-full h-full object-cover"
-                      loading="lazy"
+                      loading={index === 0 ? "eager" : "lazy"}
                     />
                   </div>
 
@@ -111,7 +114,27 @@ function CartPage() {
                   </div>
                 </div>
 
-                <PaypalPayment user={user} courses={cartItems} />
+                {!isCheckoutInitiated ? (
+                  <Button
+                    className="w-full py-6 text-lg"
+                    onClick={() => setIsCheckoutInitiated(true)}
+                  >
+                    <CreditCard className="w-5 h-5 mr-2" />
+                    Proceed to Checkout
+                  </Button>
+                ) : (
+                  <Suspense
+                    fallback={
+                      <div className="w-full h-40 flex items-center justify-center bg-white rounded border">
+                        <span className="animate-pulse text-muted-foreground">
+                          Loading Secure Payment...
+                        </span>
+                      </div>
+                    }
+                  >
+                    <PaypalPayment user={user} courses={cartItems} />
+                  </Suspense>
+                )}
 
                 <p className="text-xs text-center text-muted-foreground mt-4">
                   30-Day Money-Back Guarantee

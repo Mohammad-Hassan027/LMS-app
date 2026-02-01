@@ -11,6 +11,7 @@ import {
   AlertCircle,
   Star,
   User,
+  CreditCard,
   // MessageCircle,
 } from "lucide-react";
 import {
@@ -27,7 +28,6 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import PaypalPayment from "@/components/PaypalPayment";
 import { useUser } from "@clerk/clerk-react";
 import { checkIsStudentEnrolledService } from "@/service";
 import type { UserResource } from "@clerk/shared/types";
@@ -38,6 +38,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 const Player = lazy(() => import("@/components/video-player"));
+const PaypalPayment = lazy(() => import("@/components/PaypalPayment"));
 
 function CourseDetailsContent({
   courseId,
@@ -57,6 +58,8 @@ function CourseDetailsContent({
 
   const { data: studentViewCourseDetails, isLoading } =
     useStudentViewCourseDetailsService(courseId);
+
+  const [isCheckoutInitiated, setIsCheckoutInitiated] = useState(false);
 
   useEffect(() => {
     if (!courseId) return;
@@ -519,10 +522,30 @@ function CourseDetailsContent({
                       Add to Cart
                     </Button>
                     <div className="w-full">
-                      <PaypalPayment
-                        user={user}
-                        courses={studentViewCourseDetails}
-                      />
+                      {!isCheckoutInitiated ? (
+                        <Button
+                          className="w-full py-6 text-lg"
+                          onClick={() => setIsCheckoutInitiated(true)}
+                        >
+                          <CreditCard className="w-5 h-5 mr-2" />
+                          Proceed to Checkout
+                        </Button>
+                      ) : (
+                        <Suspense
+                          fallback={
+                            <div className="w-full h-40 flex items-center justify-center bg-white rounded border">
+                              <span className="animate-pulse text-muted-foreground">
+                                Loading Secure Payment...
+                              </span>
+                            </div>
+                          }
+                        >
+                          <PaypalPayment
+                            user={user}
+                            courses={studentViewCourseDetails}
+                          />
+                        </Suspense>
+                      )}
                     </div>
                   </div>
 
