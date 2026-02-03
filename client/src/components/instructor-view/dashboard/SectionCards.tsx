@@ -17,6 +17,7 @@ import {
   BarChart,
 } from "lucide-react";
 import type { Student } from "@/@types/types";
+// import { Badge } from "@/components/ui/badge";
 
 type SingleCardProps = {
   title: string;
@@ -43,7 +44,9 @@ function SingleCard({
         <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
           {value}
         </CardTitle>
-        <CardAction>{/*Badge*/}</CardAction>
+        <CardAction>
+          {/* <Badge className="bg-primary/10 text-primary"></Badge> */}
+        </CardAction>
       </CardHeader>
       <CardFooter className="flex-col items-start gap-1.5 text-sm">
         <div className="line-clamp-1 flex items-center gap-2 font-medium">
@@ -78,7 +81,7 @@ export default function SectionCards() {
         students += course.students.length;
         const courseRevenue = course.students.reduce(
           (acc, student: Student) => acc + (Number(student.paidAmount) || 0),
-          0
+          0,
         );
         revenue += courseRevenue;
       });

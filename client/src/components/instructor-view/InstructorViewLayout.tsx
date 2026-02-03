@@ -51,11 +51,12 @@ function InstructorViewLayout() {
     isMobile?: boolean;
   }) => (
     <Button
-      variant={activeTab === item.value ? "secondary" : "ghost"}
-      className={`w-full justify-start mb-2 ${
+      key={item.value}
+      variant="ghost"
+      className={`w-full justify-start h-12 px-4 rounded-xl transition-all duration-200 ${
         activeTab === item.value
-          ? "bg-muted font-bold"
-          : "text-muted-foreground"
+          ? "bg-primary/5 text-primary font-bold shadow-sm ring-1 ring-primary/10"
+          : "text-gray-500 hover:text-gray-900 hover:bg-gray-50"
       }`}
       onClick={() => {
         navigate("/instructor");
@@ -64,29 +65,36 @@ function InstructorViewLayout() {
       }}
     >
       {item.icon}
-      {item.label}
+      <span className="ml-3">{item.label}</span>
     </Button>
   );
 
   return (
-    <div className="flex h-screen bg-gray-50">
-      <aside className="hidden md:flex w-64 flex-col border-r bg-white shadow-sm">
-        <div className="p-4 border-b h-16 flex items-center">
-          <Link to={"/"} className="flex items-center gap-2">
-            <GraduationCap className="h-8 w-8 text-primary" />
-            <span className="font-extrabold text-xl">PathOS Instructor</span>
+    <div className="flex h-screen bg-[#F8F9FA]">
+      <aside className="hidden md:flex w-72 flex-col border-r border-gray-100 bg-white shadow-[1px_0_20px_0_rgba(0,0,0,0.02)] z-20">
+        <div className="p-6 h-20 flex items-center border-b border-gray-50">
+          <Link to={"/"} className="flex items-center gap-3">
+            <div className="h-10 w-10 bg-primary/10 text-primary rounded-xl flex items-center justify-center">
+              <GraduationCap className="h-6 w-6" />
+            </div>
+            <span className="font-extrabold text-xl tracking-tight text-gray-900">
+              PathOS Instructor
+            </span>
           </Link>
         </div>
-        <nav className="flex-1 p-4">
+        <nav className="flex-1 p-4 space-y-2">
+          <div className="px-4 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">
+            Main Menu
+          </div>
           {menuItems.map((item) => (
             <NavItem key={item.value} item={item} />
           ))}
         </nav>
       </aside>
 
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex-1 flex flex-col overflow-hidden relative">
         {/* HEADER */}
-        <header className="h-16 border-b bg-white flex items-center justify-between px-4 lg:px-6">
+        <header className="h-20 border-b border-gray-100 bg-white/80 backdrop-blur-md flex items-center justify-between px-8 sticky top-0 z-10">
           {/* Mobile Menu Button & Logo */}
           <div className="flex items-center gap-4">
             <Button
@@ -105,9 +113,15 @@ function InstructorViewLayout() {
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-4">
             <SignedIn>
-              <UserButton />
+              <UserButton
+                appearance={{
+                  elements: {
+                    avatarBox: "w-10 h-10 border-2 border-white shadow-sm",
+                  },
+                }}
+              />
             </SignedIn>
             <SignedOut>
               <SignInButton />
@@ -116,16 +130,18 @@ function InstructorViewLayout() {
         </header>
 
         {/* SCROLLABLE BODY CONTENT */}
-        <main className="flex-1 overflow-y-auto p-4 md:p-6 bg-gray-50">
-          {isRootInstructorPath ? (
-            menuItems.map((item) =>
-              item.value === activeTab ? (
-                <div key={item.value}>{item.component}</div>
-              ) : null
-            )
-          ) : (
-            <Outlet />
-          )}
+        <main className="flex-1 overflow-y-auto p-8">
+          <div className="max-w-7xl mx-auto space-y-8 animate-in fade-in-50 duration-500 slide-in-from-bottom-5">
+            {isRootInstructorPath ? (
+              menuItems.map((item) =>
+                item.value === activeTab ? (
+                  <div key={item.value}>{item.component}</div>
+                ) : null,
+              )
+            ) : (
+              <Outlet />
+            )}
+          </div>
         </main>
       </div>
 
