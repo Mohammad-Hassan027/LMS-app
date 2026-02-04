@@ -26,15 +26,15 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import CourseProgressSidebar from "@/components/student-view/progress/CourseProgressSidebar";
 import type { Lecture } from "@/@types/types";
-import Player from "@/components/video-player";
 import Confetti from "react-confetti";
 import { useProtectedUser } from "@/hooks/useProtectedUser";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+const Player = lazy(() => import("@/components/video-player"));
 
 export default function CourseProgressPage() {
   const navigate = useNavigate();
@@ -244,13 +244,25 @@ export default function CourseProgressPage() {
             <div className="rounded-xl overflow-hidden shadow-2xl bg-black border border-zinc-800 relative group">
               <div className="aspect-video w-full flex items-center justify-center">
                 {currentLecture ? (
-                  <Player
-                    url={currentLecture?.videoUrl}
-                    onEnded={handleVideoEnded}
-                    width={"100%"}
-                    height={"100%"}
-                    onDuration={handleDuration}
-                  />
+                  <Suspense
+                    fallback={
+                      <div className="h-96 w-full bg-gray-200 animate-pulse" />
+                    }
+                  >
+                    <Suspense
+                      fallback={
+                        <div className="h-96 w-full bg-gray-200 animate-pulse" />
+                      }
+                    >
+                      <Player
+                        url={currentLecture?.videoUrl}
+                        onEnded={handleVideoEnded}
+                        width={"100%"}
+                        height={"100%"}
+                        onDuration={handleDuration}
+                      />
+                    </Suspense>
+                  </Suspense>
                 ) : (
                   <div className="flex flex-col items-center justify-center text-zinc-500">
                     <Loader />

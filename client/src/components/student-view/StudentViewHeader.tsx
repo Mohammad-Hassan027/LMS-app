@@ -65,6 +65,8 @@ function StudentViewHeader() {
               <img
                 src="/logo.png"
                 alt="PathOS Logo"
+                width={110}
+                height={36}
                 className="h-full w-full object-contain"
                 loading="eager"
               />
