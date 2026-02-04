@@ -1,4 +1,4 @@
-import { PayPalButtons } from "@paypal/react-paypal-js";
+import { PayPalButtons, PayPalScriptProvider } from "@paypal/react-paypal-js";
 import {
   useCapturePaymentAndFinalizeOrderService,
   useCreateOrderService,
@@ -18,6 +18,12 @@ const PaypalPayment = ({
   user: UserResource | null | undefined;
   courses: Course | CartItem[];
 }) => {
+  const PAYPAL_CLIENT_ID = import.meta.env.VITE_PAYPAL_CLIENT_ID;
+
+  if (!PAYPAL_CLIENT_ID) {
+    throw new Error("Missing PayPal Client ID");
+  }
+
   const { mutateAsync: createOrder } = useCreateOrderService();
   const { mutateAsync: captureOrder } =
     useCapturePaymentAndFinalizeOrderService();
@@ -178,15 +184,23 @@ const PaypalPayment = ({
 
   return (
     <div className="mt-4 w-full">
-      <PayPalButtons
-        key={isBulk ? "bulk-order" : (courses as Course)._id}
-        style={{ layout: "vertical" }}
-        createOrder={handlePaypalCreateOrder}
-        onApprove={handlePaypalApprove}
-        onError={(err) => {
-          console.error("PayPal Error:", err);
+      <PayPalScriptProvider
+        options={{
+          clientId: PAYPAL_CLIENT_ID,
+          currency: "USD",
+          intent: "capture",
         }}
-      />
+      >
+        <PayPalButtons
+          key={isBulk ? "bulk-order" : (courses as Course)._id}
+          style={{ layout: "vertical" }}
+          createOrder={handlePaypalCreateOrder}
+          onApprove={handlePaypalApprove}
+          onError={(err) => {
+            console.error("PayPal Error:", err);
+          }}
+        />
+      </PayPalScriptProvider>
     </div>
   );
 };
