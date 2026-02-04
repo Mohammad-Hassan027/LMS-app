@@ -46,7 +46,6 @@ export default defineConfig({
             // 4. UI Libraries (Radix, Lucide, Tailwind utils)
             if (
               id.includes("@radix-ui") ||
-              id.includes("lucide-react") ||
               id.includes("class-variance-authority") ||
               id.includes("clsx") ||
               id.includes("tailwind-merge")
