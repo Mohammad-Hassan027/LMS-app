@@ -45,6 +45,22 @@ export default defineConfig({
             purpose: "any maskable",
           },
         ],
+        screenshots: [
+          {
+            src: "/screenshot-desktop.png",
+            sizes: "1280x720",
+            type: "image/png",
+            form_factor: "wide",
+            label: "Desktop Dashboard",
+          },
+          {
+            src: "/screenshot-mobile.png",
+            sizes: "750x1334",
+            type: "image/png",
+            form_factor: "narrow",
+            label: "Mobile Course View",
+          },
+        ],
       },
     }),
   ],
