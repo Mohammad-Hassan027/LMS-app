@@ -42,20 +42,20 @@ export default defineConfig({
             src: "/icon-512.png",
             sizes: "512x512",
             type: "image/png",
-            purpose: "any maskable",
+            purpose: "maskable",
           },
         ],
         screenshots: [
           {
             src: "/screenshot-desktop.png",
-            sizes: "1280x720",
+            sizes: "1900x907",
             type: "image/png",
             form_factor: "wide",
             label: "Desktop Dashboard",
           },
           {
             src: "/screenshot-mobile.png",
-            sizes: "750x1334",
+            sizes: "529x802",
             type: "image/png",
             form_factor: "narrow",
             label: "Mobile Course View",
