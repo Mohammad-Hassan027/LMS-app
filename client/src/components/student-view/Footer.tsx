@@ -1,6 +1,7 @@
 import { GithubIcon, LinkedinIcon, TwitterIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 import { courseCategories } from "@/config";
+import { InstallPrompt } from "@/components/InstallPrompt";
 
 function Footer() {
   const socialLinks = [
@@ -82,6 +83,11 @@ function Footer() {
                   </Link>
                 </li>
               ))}
+              <li>
+                <div className="inline-block transform transition-all duration-200 hover:translate-x-1">
+                  <InstallPrompt />
+                </div>
+              </li>
             </ul>
           </div>
 
