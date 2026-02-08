@@ -1,0 +1,41 @@
+name: Deploy Node.js Backend to Azure
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'server/**' # This ensures the action only runs when you touch backend code
+
+env:
+  AZURE_WEBAPP_NAME: pathos-api
+  NODE_VERSION: '20.x'
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: server/package-lock.json
+
+      - name: Install dependencies and build
+        run: |
+          cd server
+          npm ci
+          npm run build --if-present
+          # Clean up dev dependencies to make the deployment lighter
+          npm prune --production
+
+      - name: 'Deploy to Azure Web App'
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ env.AZURE_WEBAPP_NAME }}
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: ./server # Explicitly deploys only the server folder
