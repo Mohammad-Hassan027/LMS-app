@@ -29,6 +29,7 @@ import studentViewOrderRoutes from './routes/student-routes/order-routes.js';
 import studentViewMyCourseRoutes from './routes/student-routes/student-courses-routes.js';
 import studentViewCourseProgressRoutes from './routes/student-routes/course-progress-routes.js';
 import adminRoutes from './routes/admin-routes.js';
+import reviewRoutes from './routes/student-routes/review-routes.js';
 
 app.get('/api/v1/health', (req, res) => res.status(200).json({ status: 'ok' }));
 app.use('/api/v1/media', requireAuth(), mediaRoutes);
@@ -58,6 +59,7 @@ app.use(
   requireAuth(),
   studentViewCourseProgressRoutes
 );
+app.use('/api/v1/student/review', requireAuth(), reviewRoutes);
 
 // If user isn't authenticated, requireAuth() will redirect back to the homepage
 app.get('/api/v1/protected', requireAuth(), async (req, res) => {
