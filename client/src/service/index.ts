@@ -519,3 +519,50 @@ export async function checkIsInstructorService({ userId }: { userId: string }) {
     throw error;
   }
 }
+
+// ==========================================
+// Course review SERVICES
+// ==========================================
+
+export async function submitCourseReviewService({
+  courseId,
+  userId,
+  rating,
+  reviewText,
+}: {
+  courseId: string;
+  userId: string;
+  rating: number;
+  reviewText: string;
+}) {
+  try {
+    const { data: response } = await axiosInstance.post("/student/review", {
+      courseId,
+      userId,
+      rating,
+      reviewText,
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error("submitCourseReviewService Error:", error);
+    throw error;
+  }
+}
+
+export async function getCourseReviewService({
+  courseId,
+}: {
+  courseId: string;
+}) {
+  try {
+    const { data: response } = await axiosInstance.get(
+      `/student/review/${courseId}`,
+    );
+
+    return response.data;
+  } catch (error) {
+    console.error("getCourseReviewService Error:", error);
+    throw error;
+  }
+}
