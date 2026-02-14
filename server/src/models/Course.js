@@ -34,6 +34,14 @@ const CourseSchema = new mongoose.Schema(
     ],
     curriculum: [LectureSchema],
     isPublished: Boolean,
+    averageRating: {
+      type: Number,
+      default: 0,
+    },
+    totalReviews: {
+      type: Number,
+      default: 0,
+    },
   },
   { timestamps: true }
 );
