@@ -550,11 +550,7 @@ export async function submitCourseReviewService({
   }
 }
 
-export async function getCourseReviewService({
-  courseId,
-}: {
-  courseId: string;
-}) {
+export async function getCourseReviewService(courseId: string) {
   try {
     const { data: response } = await axiosInstance.get(
       `/student/review/${courseId}`,

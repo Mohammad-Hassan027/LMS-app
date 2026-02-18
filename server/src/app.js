@@ -59,7 +59,7 @@ app.use(
   requireAuth(),
   studentViewCourseProgressRoutes
 );
-app.use('/api/v1/student/review', requireAuth(), reviewRoutes);
+app.use('/api/v1/student/review', reviewRoutes);
 
 // If user isn't authenticated, requireAuth() will redirect back to the homepage
 app.get('/api/v1/protected', requireAuth(), async (req, res) => {
