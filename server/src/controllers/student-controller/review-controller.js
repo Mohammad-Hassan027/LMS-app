@@ -31,7 +31,10 @@ export const createReview = asyncHandler(async (req, res) => {
   }
 
   // Prevention: Check if the user has already reviewed this course
-  const existingReview = await Review.findOne({ courseId, studentId: userId });
+  const existingReview = await Review.findOne({
+    courseId: { $eq: courseId },
+    studentId: userId,
+  });
   if (existingReview) {
     throw new ApiError(400, 'You have already reviewed this course.');
   }
@@ -49,7 +52,7 @@ export const createReview = asyncHandler(async (req, res) => {
   });
 
   // Recalculate and update the Course's average rating
-  const allReviews = await Review.find({ courseId });
+  const allReviews = await Review.find({ courseId: { $eq: courseId } });
   const totalReviews = allReviews.length;
 
   const averageRating =
