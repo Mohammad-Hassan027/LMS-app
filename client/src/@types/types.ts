@@ -21,6 +21,8 @@ export interface Course {
   students: Student[];
   curriculum: Lecture[];
   isPublished: boolean;
+  totalReviews: number;
+  averageRating: number;
 }
 
 export type UpdateCourse = Omit<

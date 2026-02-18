@@ -34,6 +34,9 @@ import { useProtectedUser } from "@/hooks/useProtectedUser";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { useCreateCourseReviewsService } from "@/service/courseReviewQueries";
+import { toast } from "sonner";
+
 const Player = lazy(() => import("@/components/video-player"));
 
 export default function CourseProgressPage() {
@@ -63,6 +66,10 @@ export default function CourseProgressPage() {
     courseId || "",
     user.id,
   );
+
+  // Initialize the review mutation
+  const { mutateAsync: createReview } = useCreateCourseReviewsService();
+
   const [duration, setDuration] = useState<number>(0);
 
   const handleDuration = (videoDuration: number) => {
@@ -87,15 +94,31 @@ export default function CourseProgressPage() {
   }
 
   async function handleSubmitReview() {
-    // TODO
-    console.log("Submitting Review:", {
-      courseId,
-      userId: user.id,
-      rating,
-      message: reviewMessage,
-    });
+    if (rating === 0) {
+      toast.error("Please select a star rating");
+      return;
+    }
 
-    navigate("/my-courses");
+    try {
+      await createReview({
+        courseId: courseId!,
+        userId: user.id,
+        rating,
+        reviewText: reviewMessage,
+      });
+
+      toast.success("Review submitted successfully!");
+      setShowCourseCompleteDialog(false);
+      navigate("/my-courses");
+    } catch (error: any) {
+      console.error(error);
+      // Check if it's the specific "already reviewed" error from backend
+      if (error?.response?.status === 400) {
+        toast.error("You have already reviewed this course.");
+      } else {
+        toast.error("Failed to submit review. Please try again.");
+      }
+    }
   }
 
   useEffect(() => {
@@ -416,8 +439,8 @@ export default function CourseProgressPage() {
             </Button>
             <Button
               className="flex-1"
-              onClick={handleSubmitReview} // Changed to submit review
-              disabled={rating === 0} // Optional: Force rating before submit
+              onClick={handleSubmitReview}
+              disabled={rating === 0}
             >
               Submit & Finish
             </Button>

@@ -1,6 +1,7 @@
 import { lazy, Suspense, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useStudentViewCourseDetailsService } from "@/service/studentQueries";
+import { useCourseReviewsService } from "@/service/courseReviewQueries";
 import Loader from "@/components/Loader";
 import {
   CheckCircle,
@@ -12,15 +13,8 @@ import {
   Star,
   User,
   CreditCard,
-  // MessageCircle,
 } from "lucide-react";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  // CardDescription,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -37,8 +31,24 @@ import { useShoppingCart } from "@/contexts/student/hook";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+
 const Player = lazy(() => import("@/components/video-player"));
 const PaypalPayment = lazy(() => import("@/components/PaypalPayment"));
+
+function StarRating({ rating }: { rating: number }) {
+  return (
+    <div className="flex gap-0.5">
+      {[1, 2, 3, 4, 5].map((star) => (
+        <Star
+          key={star}
+          className={`w-4 h-4 ${
+            star <= rating ? "text-yellow-400 fill-current" : "text-gray-300"
+          }`}
+        />
+      ))}
+    </div>
+  );
+}
 
 function CourseDetailsContent({
   courseId,
@@ -56,8 +66,12 @@ function CourseDetailsContent({
 
   const { addToCart } = useShoppingCart();
 
+  // Fetch Course Details
   const { data: studentViewCourseDetails, isLoading } =
     useStudentViewCourseDetailsService(courseId);
+
+  // Fetch Course Reviews (Suspense enabled via hook)
+  const { data: reviews } = useCourseReviewsService(courseId);
 
   const [isCheckoutInitiated, setIsCheckoutInitiated] = useState(false);
 
@@ -104,7 +118,6 @@ function CourseDetailsContent({
     return str.charAt(0).toUpperCase() + str.slice(1);
   };
 
-  // Smooth scroll handler
   const scrollToSection = (
     e: React.MouseEvent<HTMLAnchorElement>,
     id: string,
@@ -113,7 +126,7 @@ function CourseDetailsContent({
     setActiveSection(id);
     const element = document.getElementById(id);
     if (element) {
-      const offset = 100; // Adjust for sticky header
+      const offset = 100;
       const bodyRect = document.body.getBoundingClientRect().top;
       const elementRect = element.getBoundingClientRect().top;
       const elementPosition = elementRect - bodyRect;
@@ -154,6 +167,10 @@ function CourseDetailsContent({
     { id: "instructor", label: "Instructor" },
     { id: "reviews", label: "Reviews" },
   ];
+
+  // Calculate rating stats
+  const averageRating = studentViewCourseDetails?.averageRating || 0;
+  const totalReviews = studentViewCourseDetails?.totalReviews || 0;
 
   return (
     <div className="min-h-screen bg-gray-50/50 pb-20">
@@ -203,8 +220,10 @@ function CourseDetailsContent({
               </div>
               <div className="flex items-center gap-1 text-yellow-400 text-sm">
                 <Star className="w-4 h-4 fill-current" />
-                <span className="font-bold">4.8</span>
-                <span className="text-gray-400 ml-1">(120 ratings)</span>
+                <span className="font-bold">{averageRating.toFixed(1)}</span>
+                <span className="text-gray-400 ml-1">
+                  ({totalReviews} ratings)
+                </span>
               </div>
             </div>
           </div>
@@ -300,7 +319,11 @@ function CourseDetailsContent({
                         >
                           <div className="flex items-center gap-4">
                             <div
-                              className={`p-2 rounded-full ${lecture.isFreePreview ? "bg-blue-100 text-blue-600 group-hover:bg-blue-200" : "bg-gray-100 text-gray-500"}`}
+                              className={`p-2 rounded-full ${
+                                lecture.isFreePreview
+                                  ? "bg-blue-100 text-blue-600 group-hover:bg-blue-200"
+                                  : "bg-gray-100 text-gray-500"
+                              }`}
                             >
                               <Video className="w-4 h-4" />
                             </div>
@@ -392,58 +415,50 @@ function CourseDetailsContent({
                     {/* Rating Summary */}
                     <div className="flex flex-col items-center justify-center p-6 bg-gray-50 rounded-xl min-w-50">
                       <span className="text-5xl font-extrabold text-gray-900">
-                        4.8
+                        {averageRating.toFixed(1)}
                       </span>
                       <div className="flex gap-1 my-2">
-                        {[1, 2, 3, 4, 5].map((star) => (
-                          <Star
-                            key={star}
-                            className="w-5 h-5 text-yellow-400 fill-current"
-                          />
-                        ))}
+                        <StarRating rating={averageRating} />
                       </div>
                       <span className="text-sm text-gray-500">
                         Course Rating
                       </span>
                     </div>
 
-                    {/* Placeholder Reviews List */}
+                    {/* Reviews List */}
                     <div className="flex-1 space-y-6">
-                      {[1, 2].map((review) => (
-                        <div key={review} className="space-y-2">
-                          <div className="flex items-center gap-3">
-                            <Avatar className="h-10 w-10">
-                              <AvatarFallback>S{review}</AvatarFallback>
-                            </Avatar>
-                            <div>
-                              <h4 className="font-semibold text-sm">
-                                Student {review}
-                              </h4>
-                              <div className="flex gap-0.5">
-                                {[1, 2, 3, 4, 5].map((star) => (
-                                  <Star
-                                    key={star}
-                                    className="w-3 h-3 text-yellow-400 fill-current"
-                                  />
-                                ))}
+                      {reviews && reviews.length > 0 ? (
+                        reviews.map((review: any) => (
+                          <div key={review._id} className="space-y-2">
+                            <div className="flex items-center gap-3">
+                              <Avatar className="h-10 w-10">
+                                <AvatarFallback>
+                                  {review.studentName?.charAt(0) || "S"}
+                                </AvatarFallback>
+                              </Avatar>
+                              <div>
+                                <h4 className="font-semibold text-sm">
+                                  {review.studentName}
+                                </h4>
+                                <StarRating rating={review.rating} />
                               </div>
+                              <span className="text-xs text-muted-foreground ml-auto">
+                                {new Date(
+                                  review.createdAt,
+                                ).toLocaleDateString()}
+                              </span>
                             </div>
-                            <span className="text-xs text-muted-foreground ml-auto">
-                              2 weeks ago
-                            </span>
+                            <p className="text-sm text-gray-600 leading-relaxed">
+                              {review.reviewText}
+                            </p>
+                            <Separator />
                           </div>
-                          <p className="text-sm text-gray-600 leading-relaxed">
-                            This course was fantastic! The explanations were
-                            clear, and the projects really helped solidify my
-                            understanding. Highly recommended for anyone looking
-                            to learn this skill.
-                          </p>
-                          <Separator />
+                        ))
+                      ) : (
+                        <div className="text-center text-gray-500 py-10">
+                          No reviews yet. Be the first to enroll!
                         </div>
-                      ))}
-                      <Button variant="outline" className="w-full">
-                        Load More Reviews
-                      </Button>
+                      )}
                     </div>
                   </div>
                 </CardContent>
