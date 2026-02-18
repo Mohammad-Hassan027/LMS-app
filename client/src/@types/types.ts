@@ -27,12 +27,21 @@ export interface Course {
 
 export type UpdateCourse = Omit<
   Course,
-  "students" | "curriculum" | "_id" | "instructorId" | "instructorName"
+  | "students"
+  | "curriculum"
+  | "_id"
+  | "instructorId"
+  | "instructorName"
+  | "totalReviews"
+  | "averageRating"
 > & {
   curriculum: (Omit<Lecture, "_id"> & { _id?: string })[];
 };
 
-export type CreateCourse = Omit<Course, "students" | "curriculum" | "_id"> & {
+export type CreateCourse = Omit<
+  Course,
+  "students" | "curriculum" | "_id" | "totalReviews" | "averageRating"
+> & {
   students: Omit<Student, "_id">[];
   curriculum: Omit<Lecture, "_id">[];
 };
