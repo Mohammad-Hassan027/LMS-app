@@ -25,6 +25,7 @@ const CourseProgressPage = lazy(
 );
 const BecomeInstructor = lazy(() => import("@/pages/student/BecomeInstructor"));
 const NotFoundPage = lazy(() => import("@/pages/NotFoundPage"));
+const UnauthorizedPage = lazy(() => import("@/pages/UnauthorizedPage"));
 const AboutPage = lazy(() => import("@/pages/student/AboutPage"));
 const ContactPage = lazy(() => import("@/pages/student/ContactPage"));
 const CartPage = lazy(() => import("@/pages/student/CartPage"));
@@ -137,11 +138,7 @@ export default function Routes() {
     },
     {
       path: "/unauthorized",
-      element: (
-        <div className="flex justify-center items-center h-screen">
-          <h1 className="text-3xl font-bold">Unauthorized Access</h1>
-        </div>
-      ),
+      element: <UnauthorizedPage />,
     },
     {
       path: "*",
