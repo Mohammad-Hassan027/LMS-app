@@ -11,6 +11,7 @@ export function middleware(app: Application) {
 
   const allowedOrigins = [
     CLIENT_URL,
+    'https://path-os.vercel.app',
     'http://localhost:5173',
     'http://localhost:4173',
   ].filter((origin): origin is string => Boolean(origin));
