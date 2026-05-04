@@ -1,7 +1,8 @@
 import { Webhook } from 'svix';
 import { clerkClient } from '@clerk/express';
+import type { Request, Response } from 'express';
 
-export const handleClerkWebhook = async (req, res) => {
+export const handleClerkWebhook = async (req: Request, res: Response) => {
   const SIGNING_SECRET = process.env.CLERK_WEBHOOK_SECRET;
 
   if (!SIGNING_SECRET) {
@@ -18,9 +19,9 @@ export const handleClerkWebhook = async (req, res) => {
   const payload = req.body.toString(); // Convert the raw buffer to a string for verification
 
   // Verify payload
-  let evt;
+  let evt: any;
   try {
-    evt = wh.verify(payload, headers);
+    evt = wh.verify(payload, headers as any);
   } catch (err) {
     return res.status(400).json({
       success: false,

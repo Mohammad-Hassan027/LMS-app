@@ -19,8 +19,8 @@ export const createReview = asyncHandler(async (req, res) => {
 
   // Validation: Check if the student is actually enrolled in this course
   const studentCourses = await StudentCourses.findOne({ userId });
-  const isEnrolled = studentCourses?.courses.some(
-    (course) => course.courseId === courseId
+  const isEnrolled = (studentCourses?.courses ?? []).some(
+    (course: any) => course.courseId === courseId
   );
 
   if (!isEnrolled) {
@@ -57,7 +57,8 @@ export const createReview = asyncHandler(async (req, res) => {
 
   const averageRating =
     totalReviews > 0
-      ? allReviews.reduce((sum, r) => sum + r.rating, 0) / totalReviews
+      ? allReviews.reduce((sum: any, r: any) => sum + r.rating, 0) /
+        totalReviews
       : 0;
 
   // Update the parent course document

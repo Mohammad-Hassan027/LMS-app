@@ -25,7 +25,7 @@ export const getStudentCourseProgress = asyncHandler(async (req, res) => {
   const isCurrentCoursePurchasedByCurrentUserOrNot =
     studentPurchasedCourses?.courses
       ? studentPurchasedCourses?.courses?.findIndex(
-          (item) => item.courseId === courseId
+          (item: any) => item.courseId === courseId
         ) > -1
       : false;
 
@@ -112,15 +112,18 @@ export const markCurrentLectureAsViewed = asyncHandler(async (req, res) => {
     });
     await courseProgress.save();
   } else {
-    const lectureProgress = courseProgress.lecturesProgress.find(
-      (item) => item.lectureId === lectureId
+    const lectureProgress = courseProgress.lecturesProgress?.find(
+      (item: any) => item.lectureId === lectureId
     );
+
+    if (!courseProgress.lecturesProgress)
+      courseProgress.lecturesProgress = [] as any;
 
     if (lectureProgress) {
       lectureProgress.viewed = true;
       lectureProgress.dateViewed = new Date();
     } else {
-      courseProgress.lecturesProgress.push({
+      courseProgress.lecturesProgress!.push({
         lectureId,
         viewed: true,
         dateViewed: new Date(),
@@ -137,8 +140,9 @@ export const markCurrentLectureAsViewed = asyncHandler(async (req, res) => {
 
   if (
     course &&
-    course.curriculum.length === courseProgress.lecturesProgress.length &&
-    courseProgress.lecturesProgress.every((lec) => lec.viewed)
+    course.curriculum.length ===
+      (courseProgress.lecturesProgress?.length ?? 0) &&
+    (courseProgress.lecturesProgress ?? []).every((lec: any) => lec.viewed)
   ) {
     courseProgress.completed = true;
     courseProgress.completionDate = new Date();
@@ -178,7 +182,7 @@ export const resetCurrentCourseProgress = asyncHandler(async (req, res) => {
 
   progress.lecturesProgress = [] as any;
   progress.completed = false;
-  progress.completionDate = null;
+  progress.completionDate = undefined as any;
 
   await progress.save();
 
