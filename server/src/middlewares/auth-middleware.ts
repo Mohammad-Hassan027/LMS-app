@@ -2,7 +2,7 @@ import type { Request, Response, NextFunction } from 'express';
 import { getAuth, clerkClient } from '@clerk/express';
 import { ApiError } from '../utils/ApiError.js';
 
-export const requireRole = (requiredRole = []) => {
+export const requireRole = (requiredRole: string[] = []) => {
   return async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { userId } = getAuth(req);
