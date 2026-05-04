@@ -30,7 +30,7 @@ type InstructorContextType = {
 };
 
 export const InstructorContext = createContext<InstructorContextType | null>(
-  null
+  null,
 );
 
 export const useInstructorContext = () => {

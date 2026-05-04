@@ -76,7 +76,7 @@ function InstructorCoursesList({ instructorId }: { instructorId: string }) {
                       {course.students
                         .reduce(
                           (total, s) => total + Number(s.paidAmount || 0),
-                          0
+                          0,
                         )
                         .toLocaleString()}
                     </TableCell>

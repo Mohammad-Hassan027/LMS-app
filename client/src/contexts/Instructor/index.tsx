@@ -13,16 +13,16 @@ export default function InstructorProvider({
 }) {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [courseLandingFormData, setCourseLandingFormData] = useState(
-    courseLandingInitialFormData
+    courseLandingInitialFormData,
   );
   const [courseCurriculumFormData, setCourseCurriculumFormData] = useState(
-    courseCurriculumInitialFormData
+    courseCurriculumInitialFormData,
   );
   const [mediaUploadProgress, setMediaUploadProgress] = useState(false);
   const [mediaUploadProgressPercent, setMediaUploadProgressPercent] =
     useState(0);
   const [currentEditedCourseId, setCurrentEditedCourseId] = useState<string>(
-    null as unknown as string
+    null as unknown as string,
   );
 
   return (

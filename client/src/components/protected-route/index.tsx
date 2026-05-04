@@ -34,8 +34,8 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     const userRoles = Array.isArray(rawRoles)
       ? rawRoles
       : typeof rawRoles === "string"
-      ? [rawRoles]
-      : [];
+        ? [rawRoles]
+        : [];
 
     const hasPermission = allowedRoles.some((role) => userRoles.includes(role));
 
