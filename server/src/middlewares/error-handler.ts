@@ -1,6 +1,6 @@
 import { ApiError } from '../utils/ApiError.js';
 
-export const globalErrorHandler = (err, req, res, next) => {
+export const globalErrorHandler = (err: any, req: any, res: any, next: any) => {
   let error = err;
 
   // 1. Handle Mongoose "CastError" (Invalid ID format)
@@ -21,7 +21,7 @@ export const globalErrorHandler = (err, req, res, next) => {
   if (error.name === 'ValidationError') {
     // Combine all validation error messages into one string
     const message = Object.values(error.errors)
-      .map((val) => val.message)
+      .map((val: any) => val.message)
       .join(', ');
     error = new ApiError(400, message);
   }
