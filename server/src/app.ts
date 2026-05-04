@@ -67,7 +67,7 @@ app.get('/api/v1/protected', requireAuth(), async (req, res) => {
   const { userId } = getAuth(req);
 
   // Use Clerk's JS Backend SDK to get the user's User object
-  const user = await clerkClient.users.getUser(userId);
+  const user = await clerkClient.users.getUser(userId as string);
 
   return res.json({ user });
 });

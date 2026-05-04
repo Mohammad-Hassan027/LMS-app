@@ -5,7 +5,6 @@ import { ApiError } from '../../utils/ApiError.js';
 import { ApiResponse } from '../../utils/ApiResponse.js';
 import { asyncHandler } from '../../utils/asyncHandler.js';
 import { validateId } from '../../utils/validateId.js';
-import { log } from 'console';
 
 export const getStudentViewAllCourses = asyncHandler(async (req, res) => {
   const {
@@ -15,7 +14,7 @@ export const getStudentViewAllCourses = asyncHandler(async (req, res) => {
     sort: sortBy = 'price-lowtohigh',
   } = req.query;
 
-  let filters = {};
+  let filters: any = {};
 
   if (category.length) {
     // Handle both single string "react" and array ["react", "node"]
@@ -28,7 +27,7 @@ export const getStudentViewAllCourses = asyncHandler(async (req, res) => {
     filters.primaryLanguage = { $in: primaryLanguage.toString().split(',') };
   }
 
-  let sortParam = {};
+  let sortParam: any = {};
   switch (sortBy) {
     case 'price-lowtohigh':
       sortParam.pricing = 1;

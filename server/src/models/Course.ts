@@ -1,13 +1,17 @@
-import mongoose from 'mongoose';
+import { Schema, model, type Model, type Document } from 'mongoose';
+import type { ICourse, Lecture } from '../@types/course.types.js';
 
-const LectureSchema = new mongoose.Schema({
+interface ICourseDocument extends ICourse, Document {}
+interface ILectureDocument extends Lecture, Document {}
+
+const LectureSchema: Schema<ILectureDocument> = new Schema({
   title: String,
   videoUrl: String,
   public_id: String,
   isFreePreview: Boolean,
 });
 
-const CourseSchema = new mongoose.Schema(
+const CourseSchema: Schema<ICourseDocument> = new Schema(
   {
     instructorId: {
       type: String,
@@ -46,4 +50,9 @@ const CourseSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export default mongoose.model('Course', CourseSchema);
+// export default model('Course', CourseSchema);
+const Course: Model<ICourseDocument> = model<ICourseDocument>(
+  'Course',
+  CourseSchema
+);
+export default Course;

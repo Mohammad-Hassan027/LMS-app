@@ -1,11 +1,12 @@
 import mongoose from 'mongoose';
-import { DB_NAME } from './../constants.js';
+import { DB_NAME } from '../constants.js';
 
 // Initialize a global cache so connection survives "hot reloads" and function invocations
-let cached = global.mongoose;
+const g = global as any;
+let cached = g.mongoose;
 
 if (!cached) {
-  cached = global.mongoose = { conn: null, promise: null };
+  cached = g.mongoose = { conn: null, promise: null };
 }
 
 async function connectDB() {

@@ -36,7 +36,7 @@ const client = new Client({
 
 const ordersController = new OrdersController(client);
 
-const createPayPalOrder = async (orderData) => {
+const createPayPalOrder = async (orderData: any) => {
   const collect = {
     body: {
       intent: CheckoutPaymentIntent.Capture,
@@ -64,7 +64,7 @@ const createPayPalOrder = async (orderData) => {
     const { body, ...httpResponse } =
       await ordersController.createOrder(collect);
     return {
-      jsonResponse: JSON.parse(body),
+      jsonResponse: JSON.parse(body as string),
       httpStatusCode: httpResponse.statusCode,
     };
   } catch (error) {
@@ -75,7 +75,7 @@ const createPayPalOrder = async (orderData) => {
   }
 };
 
-const capturePayPalOrder = async (orderID) => {
+const capturePayPalOrder = async (orderID: string) => {
   const collect = {
     id: orderID,
     prefer: 'return=minimal',
@@ -85,7 +85,7 @@ const capturePayPalOrder = async (orderID) => {
     const { body, ...httpResponse } =
       await ordersController.captureOrder(collect);
     return {
-      jsonResponse: JSON.parse(body),
+      jsonResponse: JSON.parse(body as string),
       httpStatusCode: httpResponse.statusCode,
     };
   } catch (error) {

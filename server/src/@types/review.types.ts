@@ -1,5 +1,7 @@
+import type { Types } from 'mongoose';
+
 interface IReview {
-  courseId: string;
+  courseId: Types.ObjectId | string;
   studentId: string;
   studentName: string;
   rating: number;

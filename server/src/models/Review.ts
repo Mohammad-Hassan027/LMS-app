@@ -1,9 +1,12 @@
-import mongoose from 'mongoose';
+import { Schema, model, type Model, type Document } from 'mongoose';
+import type { IReview } from '../@types/review.types.js';
 
-const ReviewSchema = new mongoose.Schema(
+interface IReviewDocument extends IReview, Document {}
+
+const ReviewSchema: Schema<IReviewDocument> = new Schema(
   {
     courseId: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: 'Course',
       required: true,
     },
@@ -29,4 +32,8 @@ const ReviewSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export default mongoose.model('Review', ReviewSchema);
+const Review: Model<IReviewDocument> = model<IReviewDocument>(
+  'Review',
+  ReviewSchema
+);
+export default Review;

@@ -9,7 +9,8 @@
   "scripts": {
     "start": "node --env-file=.env dist/index.js",
     "build": "tsc",
-    "dev": "tsx --watch --env-file=.env src/index.ts"
+    "dev": "tsx --watch --env-file=.env src/index.ts",
+    "prettier:fix": "prettier --write ."
   },
   "dependencies": {
     "@clerk/express": "^1.7.48",
