@@ -1,6 +1,14 @@
+interface ApiError {
+  statusCode: number;
+  success: boolean;
+  message: string;
+  data: any;
+  errors: any[];
+}
+
 class ApiError extends Error {
   constructor(
-    statusCode,
+    statusCode: number,
     message = 'Something went wrong',
     errors = [],
     stack = ''

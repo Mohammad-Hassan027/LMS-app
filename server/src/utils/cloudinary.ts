@@ -2,13 +2,13 @@ import { v2 as cloudinary } from 'cloudinary';
 import fs from 'fs';
 
 cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME!,
+  api_key: process.env.CLOUDINARY_API_KEY!,
+  api_secret: process.env.CLOUDINARY_API_SECRET!,
   secure: true,
 });
 
-const uploadMediaToCloudinary = async (filePath, options = {}) => {
+const uploadMediaToCloudinary = async (filePath: string, options = {}) => {
   if (typeof filePath !== 'string') {
     throw new Error('Invalid file path');
   }
@@ -28,7 +28,7 @@ const uploadMediaToCloudinary = async (filePath, options = {}) => {
     // Successful Upload? Great! Now try to delete local file safely.
     try {
       fs.unlinkSync(filePath);
-    } catch (cleanupError) {
+    } catch (cleanupError: any) {
       console.warn(
         'Warning: Failed to delete temp file after upload:',
         filePath
@@ -39,21 +39,23 @@ const uploadMediaToCloudinary = async (filePath, options = {}) => {
       url: result.secure_url,
       public_id: result.public_id,
     };
-  } catch (error) {
+  } catch (error: any) {
     // Upload Failed? Try to delete local file and throw error.
     try {
       if (fs.existsSync(filePath)) {
         fs.unlinkSync(filePath);
       }
-    } catch (cleanupError) {
-    }
+    } catch (cleanupError) {}
 
     console.error('Error inside uploadMediaToCloudinary:', error);
     throw new Error(`Cloudinary upload failed: ${error.message}`);
   }
 };
 
-const deleteMediaFromCloudinary = async (publicId, resourceType = 'image') => {
+const deleteMediaFromCloudinary = async (
+  publicId: string,
+  resourceType = 'image'
+) => {
   try {
     const result = await cloudinary.uploader.destroy(publicId, {
       resource_type: resourceType,
@@ -62,7 +64,7 @@ const deleteMediaFromCloudinary = async (publicId, resourceType = 'image') => {
       url: result.secure_url,
       public_id: result.public_id,
     };
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error inside deleteMediaFromCloudinary:', error);
     throw new Error(`Cloudinary deletion failed: ${error.message}`);
   }

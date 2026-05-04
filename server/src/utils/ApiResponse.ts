@@ -1,5 +1,12 @@
+interface ApiResponse {
+  statusCode: number;
+  success: boolean;
+  message: string;
+  data: any;
+}
+
 class ApiResponse {
-  constructor(statusCode, data, message = 'Success') {
+  constructor(statusCode:number, data: any, message = 'Success') {
     this.statusCode = statusCode;
     this.data = data;
     this.message = message;
