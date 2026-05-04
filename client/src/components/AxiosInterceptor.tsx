@@ -17,7 +17,7 @@ function AxiosInterceptor({ children }: { children: React.ReactNode }) {
         }
         return config;
       },
-      (error) => Promise.reject(error)
+      (error) => Promise.reject(error),
     );
 
     // Cleanup when component unmounts

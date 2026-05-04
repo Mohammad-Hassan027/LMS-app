@@ -48,10 +48,7 @@ export function AlertDialogDestructive({
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel variant="outline">Cancel</AlertDialogCancel>
-          <AlertDialogAction
-            variant="destructive"
-            onClick={onConfirm}
-          >
+          <AlertDialogAction variant="destructive" onClick={onConfirm}>
             {isDelete ? "Delete" : "Replace"}
           </AlertDialogAction>
         </AlertDialogFooter>
