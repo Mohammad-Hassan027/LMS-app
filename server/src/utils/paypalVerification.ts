@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-export const verifyPayPalSignature = async (req) => {
+export const verifyPayPalSignature = async (req: any) => {
   try {
     const { PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET, PAYPAL_WEBHOOK_ID } =
       process.env;
@@ -47,7 +47,7 @@ export const verifyPayPalSignature = async (req) => {
 
     // 4. Return True if PayPal says "SUCCESS"
     return response.data.verification_status === 'SUCCESS';
-  } catch (error) {
+  } catch (error: any) {
     console.error(
       'PayPal Signature Verification Failed:',
       error.response ? error.response.data : error.message
