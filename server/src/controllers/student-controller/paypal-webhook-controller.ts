@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import type { Request, Response } from 'express';
 import Order from '../../models/Order.js';
 import StudentCourses from '../../models/StudentCourses.js';
 import Course from '../../models/Course.js';
@@ -7,7 +8,12 @@ import { transporter } from '../../utils/emailTransporter.js';
 
 const { GMAIL_USER } = process.env;
 
-const finalizeEnrollment = async (orderId, paymentId, payerId, session) => {
+const finalizeEnrollment = async (
+  orderId: any,
+  paymentId: any,
+  payerId: any,
+  session: any
+) => {
   const order = await Order.findById(orderId).session(session);
 
   if (!order) throw new Error('Order not found');
@@ -58,7 +64,7 @@ const finalizeEnrollment = async (orderId, paymentId, payerId, session) => {
   return true;
 };
 
-export const handlePayPalWebhook = async (req, res) => {
+export const handlePayPalWebhook = async (req: Request, res: Response) => {
   const isValid = await verifyPayPalSignature(req);
 
   if (!isValid) {
@@ -105,8 +111,8 @@ export const handlePayPalWebhook = async (req, res) => {
         if (newlyEnrolledOrders.length > 0) {
           try {
             const isBulk = newlyEnrolledOrders.length > 1;
-            const userEmail = newlyEnrolledOrders[0].userEmail;
-            const userName = newlyEnrolledOrders[0].userName;
+            const userEmail = newlyEnrolledOrders[0]?.userEmail;
+            const userName = newlyEnrolledOrders[0]?.userName;
             const totalPaid = newlyEnrolledOrders
               .reduce((sum, o) => sum + Number(o.coursePricing), 0)
               .toFixed(2);
@@ -125,9 +131,9 @@ export const handlePayPalWebhook = async (req, res) => {
             } else {
               const order = newlyEnrolledOrders[0];
               emailHtml += `
-                  <p>You have successfully enrolled in <strong>${order.courseTitle}</strong>.</p>
-                  <p><strong>Order ID:</strong> ${order._id}</p>
-                  <p><strong>Amount Paid:</strong> $${order.coursePricing}</p>
+                  <p>You have successfully enrolled in <strong>${order?.courseTitle}</strong>.</p>
+                  <p><strong>Order ID:</strong> ${order?._id}</p>
+                  <p><strong>Amount Paid:</strong> $${order?.coursePricing}</p>
               `;
             }
 

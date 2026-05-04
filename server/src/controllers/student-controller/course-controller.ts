@@ -87,8 +87,10 @@ export const checkIsStudentEnrolled = asyncHandler(async (req, res) => {
     userId: paramUserId,
   });
 
-  const isEnrolled = studentCourses
-    ? studentCourses.courses.some((item) => item.courseId === courseId)
+  const isEnrolled = studentCourses?.courses?.some(
+    (item: any) => item.courseId === courseId
+  )
+    ? true
     : false;
 
   res

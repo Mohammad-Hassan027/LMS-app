@@ -22,8 +22,8 @@ const { PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET, GMAIL_USER } = process.env;
 
 const client = new Client({
   clientCredentialsAuthCredentials: {
-    oAuthClientId: PAYPAL_CLIENT_ID,
-    oAuthClientSecret: PAYPAL_CLIENT_SECRET,
+    oAuthClientId: PAYPAL_CLIENT_ID || '',
+    oAuthClientSecret: PAYPAL_CLIENT_SECRET || '',
   },
   timeout: 0,
   environment: Environment.Sandbox,
@@ -142,7 +142,7 @@ export const createOrder = asyncHandler(async (req, res) => {
   // Debug Log to ensure price is calculated
   console.log('Creating Order. Total Amount:', totalAmount);
 
-  let jsonResponse = {};
+  let jsonResponse: any = {};
 
   // 2. Call PayPal ONLY if price > 0
   if (totalAmount > 0) {
@@ -172,7 +172,7 @@ export const createOrder = asyncHandler(async (req, res) => {
   const initialPaymentStatus = totalAmount > 0 ? 'pending' : 'paid';
 
   if (isBulkOrder) {
-    cartItems.forEach((item) => {
+    cartItems.forEach((item: any) => {
       orderDocuments.push({
         userId,
         userName,
@@ -210,7 +210,7 @@ export const createOrder = asyncHandler(async (req, res) => {
   }
 
   // Save to DB
-  const savedOrders = await Order.insertMany(orderDocuments);
+  const savedOrders = await Order.insertMany(orderDocuments as any[]);
 
   // 4. Handle Immediate Enrollment for Free Courses
   if (totalAmount === 0) {
@@ -291,7 +291,7 @@ export const captureOrder = asyncHandler(async (req, res) => {
   }
 
   // Idempotency check: if the first order is already paid, assume all are
-  if (orders[0].paymentStatus === 'paid') {
+  if (orders.length > 0 && orders[0]?.paymentStatus === 'paid') {
     return res
       .status(200)
       .json(new ApiResponse(200, { success: true }, 'Order already confirmed'));
@@ -362,20 +362,20 @@ export const captureOrder = asyncHandler(async (req, res) => {
       await session.commitTransaction();
 
       const coursesListHtml = currentOrders
-        .map((o) => `<li>${o.courseTitle} - $${o.coursePricing}</li>`)
+        .map((o: any) => `<li>${o.courseTitle} - $${o.coursePricing}</li>`)
         .join('');
 
       const totalPaid = currentOrders
-        .reduce((acc, o) => acc + Number(o.coursePricing), 0)
+        .reduce((acc: any, o: any) => acc + Number(o.coursePricing), 0)
         .toFixed(2);
 
       try {
         await transporter.sendMail({
           from: '"PathOS Team" <' + GMAIL_USER + '>',
-          to: currentOrders[0].userEmail,
+          to: currentOrders[0]?.userEmail,
           subject: 'Order Confirmation - PathOS',
           html: `
-            <h1>Thank you for your purchase, ${currentOrders[0].userName}!</h1>
+            <h1>Thank you for your purchase, ${currentOrders[0]?.userName}!</h1>
             <p>You have successfully enrolled in the following courses:</p>
             <ul>${coursesListHtml}</ul>
             <p><strong>Total Paid:</strong> $${totalPaid}</p>
