@@ -3,6 +3,7 @@ import InstructorRequest from '../../models/InstructorRequest.js';
 import { asyncHandler } from '../../utils/asyncHandler.js';
 import { ApiResponse } from '../../utils/ApiResponse.js';
 import { transporter } from '../../utils/emailTransporter.js';
+import { ApiError } from '../../utils/ApiError.js';
 
 const { GMAIL_USER } = process.env;
 

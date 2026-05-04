@@ -1,6 +1,9 @@
-import mongoose from 'mongoose';
+import { Schema, model, type Model, type Document } from 'mongoose';
+import type { IOrder } from '../@types/order.types.js';
 
-const OrderSchema = new mongoose.Schema({
+interface IOrderDocument extends IOrder, Document {}
+
+const OrderSchema: Schema<IOrderDocument> = new Schema({
   userId: String,
   userName: String,
   userEmail: String,
@@ -18,4 +21,8 @@ const OrderSchema = new mongoose.Schema({
   coursePricing: String,
 });
 
-export default mongoose.model('Order', OrderSchema);
+const Order: Model<IOrderDocument> = model<IOrderDocument>(
+  'Order',
+  OrderSchema
+);
+export default Order;

@@ -1,6 +1,9 @@
-import mongoose from 'mongoose';
+import { Schema, model, type Model, type Document } from 'mongoose';
+import type { IInstructorRequest } from '../@types/instructorRequest.types.js';
 
-const InstructorRequestSchema = new mongoose.Schema(
+interface IInstructorRequestDocument extends IInstructorRequest, Document {}
+
+const InstructorRequestSchema: Schema<IInstructorRequestDocument> = new Schema(
   {
     userId: { type: String, required: true, unique: true },
     email: { type: String, required: true },
@@ -15,4 +18,9 @@ const InstructorRequestSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export default mongoose.model('InstructorRequest', InstructorRequestSchema);
+const InstructorRequest: Model<IInstructorRequestDocument> =
+  model<IInstructorRequestDocument>(
+    'InstructorRequest',
+    InstructorRequestSchema
+  );
+export default InstructorRequest;

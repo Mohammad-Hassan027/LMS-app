@@ -26,7 +26,7 @@ router.post('/upload', upload.single('file'), async (req, res) => {
       data: result,
       message: 'Media uploaded successfully',
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error(error);
     res.status(500).json({ success: false, message: error.message });
   }
@@ -35,7 +35,7 @@ router.post('/upload', upload.single('file'), async (req, res) => {
 router.delete('/delete/:publicId', async (req, res) => {
   try {
     const publicId = req.params.publicId;
-    const { type } = req.query;
+    const { type }: { type?: string } = req.query;
 
     if (!publicId) {
       return res
@@ -48,7 +48,7 @@ router.delete('/delete/:publicId', async (req, res) => {
       data: result,
       message: 'Media deleted successfully',
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error(error);
     res.status(500).json({ success: false, message: error.message });
   }
@@ -63,7 +63,7 @@ router.post('/bulk-upload', upload.array('files', 10), async (req, res) => {
   }
 
   try {
-    const uploadPromises = req.files.map((file) =>
+    const uploadPromises = req.files.map((file: any) =>
       uploadMediaToCloudinary(file.path)
     );
     const result = await Promise.all(uploadPromises);
@@ -72,7 +72,7 @@ router.post('/bulk-upload', upload.array('files', 10), async (req, res) => {
       data: result,
       message: 'Media uploaded successfully',
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error(error);
     res.status(500).json({ success: false, message: error.message });
   }

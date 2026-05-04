@@ -23,9 +23,11 @@ export const getStudentCourseProgress = asyncHandler(async (req, res) => {
   });
 
   const isCurrentCoursePurchasedByCurrentUserOrNot =
-    studentPurchasedCourses?.courses?.findIndex(
-      (item) => item.courseId === courseId
-    ) > -1;
+    studentPurchasedCourses?.courses
+      ? studentPurchasedCourses?.courses?.findIndex(
+          (item) => item.courseId === courseId
+        ) > -1
+      : false;
 
   if (!isCurrentCoursePurchasedByCurrentUserOrNot) {
     return res.status(200).json(
@@ -134,6 +136,7 @@ export const markCurrentLectureAsViewed = asyncHandler(async (req, res) => {
   }
 
   if (
+    course &&
     course.curriculum.length === courseProgress.lecturesProgress.length &&
     courseProgress.lecturesProgress.every((lec) => lec.viewed)
   ) {
@@ -173,7 +176,7 @@ export const resetCurrentCourseProgress = asyncHandler(async (req, res) => {
     throw new ApiError(404, 'Course progress not found');
   }
 
-  progress.lecturesProgress = [];
+  progress.lecturesProgress = [] as any;
   progress.completed = false;
   progress.completionDate = null;
 

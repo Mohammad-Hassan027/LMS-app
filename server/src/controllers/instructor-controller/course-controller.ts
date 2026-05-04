@@ -79,7 +79,7 @@ export const addNewCourse = asyncHandler(async (req, res) => {
     'isPublished',
   ];
 
-  const createFields = {};
+  const createFields: any = {};
   for (const field of allowedFields) {
     if (courseData[field] !== undefined) {
       if (field === 'pricing') {
@@ -125,7 +125,7 @@ export const updateCourse = asyncHandler(async (req, res) => {
     'isPublished',
   ];
 
-  const updateFields = {};
+  const updateFields: any = {};
   for (const field of allowedFields) {
     if (courseData[field] !== undefined) {
       if (field === 'pricing') {
