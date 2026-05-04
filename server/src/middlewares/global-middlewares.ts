@@ -52,7 +52,7 @@ export function middleware(app: Application) {
   // 2. Helmet - configured to allow cross-origin media
   // This allows your frontend to display images/videos hosted on this backend.
   app.use(
-    helmet({
+    (helmet as any)({
       crossOriginResourcePolicy: { policy: 'cross-origin' },
     })
   );
