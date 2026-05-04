@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { type Application } from 'express';
 import cors from 'cors';
 import { clerkMiddleware } from '@clerk/express';
 import helmet from 'helmet';
@@ -6,7 +6,19 @@ import morgan from 'morgan';
 import connectDB from '../db/index.js';
 import mongoSanitize from 'express-mongo-sanitize';
 
-export function middleware(app) {
+export function middleware(app: Application) {
+  const { CLIENT_URL, CLERK_SECRET_KEY, CLERK_PUBLISHABLE_KEY } = process.env;
+
+  const allowedOrigins = [
+    CLIENT_URL,
+    'http://localhost:5173',
+    'http://localhost:4173',
+  ].filter((origin): origin is string => Boolean(origin));
+
+  if (!CLERK_SECRET_KEY || !CLERK_PUBLISHABLE_KEY) {
+    throw new Error('Missing Clerk Environment Variables');
+  }
+
   // 1. CORS - MUST be the first middleware
   // This ensures the browser receives permission headers before any DB connection or logic occurs.
   app.use(
@@ -14,11 +26,6 @@ export function middleware(app) {
       origin: (origin, callback) => {
         // Allow requests with no origin (like mobile apps, curl, or server-to-server)
         if (!origin) return callback(null, true);
-
-        const allowedOrigins = [
-          process.env.CLIENT_URL, // e.g. https://path-os.vercel.app
-          'http://localhost:5173',
-        ];
 
         // Allow allowed origins AND any Vercel preview URL
         if (allowedOrigins.includes(origin) || origin.endsWith('.vercel.app')) {
@@ -55,7 +62,6 @@ export function middleware(app) {
   app.use(express.json({ limit: '16kb' }));
   app.use(express.urlencoded({ extended: true, limit: '16kb' }));
 
-
   // 4. Sanitize Input
   // app.use(mongoSanitize());
 
@@ -64,7 +70,7 @@ export function middleware(app) {
     try {
       await connectDB();
       next();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Database connection failed:', error);
       res.status(500).json({
         success: false,
@@ -76,13 +82,9 @@ export function middleware(app) {
 
   app.use(
     clerkMiddleware({
-      authorizedParties: [
-        process.env.CLIENT_URL,
-        'https://path-os.vercel.app',
-        'http://localhost:5173',
-      ],
-      secretKey: process.env.CLERK_SECRET_KEY,
-      publishableKey: process.env.CLERK_PUBLISHABLE_KEY,
+      authorizedParties: allowedOrigins,
+      secretKey: CLERK_SECRET_KEY,
+      publishableKey: CLERK_PUBLISHABLE_KEY,
     })
   );
 }

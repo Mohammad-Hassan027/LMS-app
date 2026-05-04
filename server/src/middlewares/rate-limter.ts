@@ -1,6 +1,15 @@
 import rateLimit from 'express-rate-limit';
 
-const createRateLimiter = (options) => {
+type RateLimiterOptions = {
+  windowMs: number;
+  max: number;
+  message: {
+    error: string;
+    retryAfter: string;
+  };
+};
+
+const createRateLimiter = (options: RateLimiterOptions) => {
   return rateLimit({
     windowMs: options.windowMs,
     max: options.max,

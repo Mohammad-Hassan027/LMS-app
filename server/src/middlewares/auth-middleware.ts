@@ -1,8 +1,9 @@
+import type { Request, Response, NextFunction } from 'express';
 import { getAuth, clerkClient } from '@clerk/express';
 import { ApiError } from '../utils/ApiError.js';
 
 export const requireRole = (requiredRole = []) => {
-  return async (req, res, next) => {
+  return async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { userId } = getAuth(req);
 
@@ -33,7 +34,7 @@ export const requireRole = (requiredRole = []) => {
       }
 
       next();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Role verification failed:', error);
       throw new ApiError(
         500,
