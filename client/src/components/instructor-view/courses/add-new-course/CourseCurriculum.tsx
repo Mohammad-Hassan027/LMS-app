@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef, useState, lazy, Suspense } from "react";
 import { toast } from "sonner";
 import { Upload } from "lucide-react";
 import { useInstructorContext } from "@/contexts/Instructor/hook";
@@ -13,7 +13,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import Player from "@/components/video-player";
+import Loader from "@/components/Loader";
+const Player = lazy(() => import("@/components/video-player"));
 import { AlertDialogDestructive } from "./AlertDialogDestructive";
 
 function CourseCurriculum() {
@@ -283,7 +284,9 @@ function CourseCurriculum() {
               <div className="mt-4">
                 {curriculumItem.videoUrl ? (
                   <div className="flex flex-col md:flex-row gap-3">
-                    <Player url={curriculumItem.videoUrl} />
+                    <Suspense fallback={<Loader />}>
+                      <Player url={curriculumItem.videoUrl} />
+                    </Suspense>
                     <div className="flex flex-col sm:flex-row gap-3">
                       <Button
                         variant="destructive"

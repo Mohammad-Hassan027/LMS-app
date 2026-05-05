@@ -1,7 +1,10 @@
 import { GithubIcon, LinkedinIcon, TwitterIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 import { courseCategories } from "@/config";
-import { InstallPrompt } from "@/components/InstallPrompt";
+import { Suspense, lazy } from "react";
+const InstallPrompt = lazy(() =>
+  import("@/components/InstallPrompt").then((m) => ({ default: m.InstallPrompt })),
+);
 
 function Footer() {
   const socialLinks = [
@@ -85,7 +88,9 @@ function Footer() {
               ))}
               <li>
                 <div className="inline-block transform transition-all duration-200 hover:translate-x-1">
-                  <InstallPrompt />
+                  <Suspense fallback={null}>
+                    <InstallPrompt />
+                  </Suspense>
                 </div>
               </li>
             </ul>

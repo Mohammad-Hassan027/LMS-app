@@ -1,7 +1,8 @@
 import { PlayCircle, Users, Trophy, Target, Heart, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import Footer from "@/components/student-view/Footer";
+import { Suspense, lazy } from "react";
+const Footer = lazy(() => import("@/components/student-view/Footer"));
 
 function AboutPage() {
   const navigate = useNavigate();
@@ -126,7 +127,9 @@ function AboutPage() {
           </div>
         </div>
       </section>
-      <Footer />
+      <Suspense fallback={null}>
+        <Footer />
+      </Suspense>
     </div>
   );
 }

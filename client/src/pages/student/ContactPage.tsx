@@ -6,7 +6,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Mail, Phone, MapPin, Send } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-import Footer from "@/components/student-view/Footer";
+import { Suspense, lazy } from "react";
+const Footer = lazy(() => import("@/components/student-view/Footer"));
 
 function ContactPage() {
   const [formData, setFormData] = useState({
@@ -156,7 +157,9 @@ function ContactPage() {
           </Card>
         </div>
       </div>
-      <Footer />
+      <Suspense fallback={null}>
+        <Footer />
+      </Suspense>
     </div>
   );
 }

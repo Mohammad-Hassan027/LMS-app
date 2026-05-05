@@ -10,12 +10,16 @@ import {
   Trophy,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import Footer from "@/components/student-view/Footer";
+import { Suspense, lazy } from "react";
+const Footer = lazy(() => import("@/components/student-view/Footer"));
+const BackgroundRippleEffect = lazy(() =>
+  import("@/components/GridBackground").then((m) => ({
+    default: m.BackgroundRippleEffect,
+  })),
+);
 import FeaturedCoursesSection from "@/components/student-view/home/FeaturedCoursesSection";
-import { Suspense } from "react";
 import { CourseSkeletonCard } from "@/components/student-view/home/CourseSkeletonCard";
 import { Skeleton } from "@/components/ui/skeleton";
-import { BackgroundRippleEffect } from "@/components/GridBackground";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 function HomePage() {
@@ -26,11 +30,13 @@ function HomePage() {
   return (
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
       <section className="relative w-full border-b border-gray-100">
-        <BackgroundRippleEffect
+        <Suspense fallback={null}>
+          <BackgroundRippleEffect
           rows={isMobile ? 5 : 10}
           cols={isMobile ? 8 : 50}
           cellSize={isMobile ? 45 : 52}
-        />
+          />
+        </Suspense>
         <div className="min-h-[85vh] md:min-h-200 py-20">
           <div className="container mx-auto px-6 flex flex-col items-center text-center relative z-10">
             <div className="mb-8 animate-fade-in-up">
@@ -302,7 +308,9 @@ function HomePage() {
         </div>
       </section>
 
-      <Footer />
+      <Suspense fallback={null}>
+        <Footer />
+      </Suspense>
     </div>
   );
 }
