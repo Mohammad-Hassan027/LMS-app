@@ -10,6 +10,11 @@ import { handleClerkWebhook } from './controllers/student-controller/clerk-webho
 
 const app = express();
 
+app.use(async (req, res, next) => {
+  await connectDB(); // This uses your cached connection logic, so it's fast
+  next();
+});
+
 app.set('trust proxy', 1); // real user IP ,not vercel
 app.use(globalRateLimiter);
 
@@ -30,6 +35,7 @@ import studentViewMyCourseRoutes from './routes/student-routes/student-courses-r
 import studentViewCourseProgressRoutes from './routes/student-routes/course-progress-routes.js';
 import adminRoutes from './routes/admin-routes.js';
 import reviewRoutes from './routes/student-routes/review-routes.js';
+import connectDB from './db/index.js';
 
 app.get('/api/v1/health', (req, res) => res.status(200).json({ status: 'ok' }));
 app.use('/api/v1/media', requireAuth(), mediaRoutes);
@@ -75,3 +81,4 @@ app.get('/api/v1/protected', requireAuth(), async (req, res) => {
 app.use(globalErrorHandler);
 
 export { app };
+export default app;
