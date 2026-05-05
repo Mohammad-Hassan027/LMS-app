@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import {
   SignedIn,
@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import InstructorCourses from "@/components/instructor-view/courses";
 import InstructorDashboard from "@/components/instructor-view/dashboard";
+import Loader from "@/components/Loader";
 import { Button } from "@/components/ui/button";
 import { useInstructorContext } from "@/contexts/Instructor/hook";
 
@@ -139,7 +140,9 @@ function InstructorViewLayout() {
                 ) : null,
               )
             ) : (
-              <Outlet />
+              <Suspense fallback={<Loader height="h-screen" />}>
+                <Outlet />
+              </Suspense>
             )}
           </div>
         </main>

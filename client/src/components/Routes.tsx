@@ -1,7 +1,8 @@
 import { SignedOut } from "@clerk/clerk-react";
 import ProtectedRoute from "@/components/protected-route";
 import { Outlet, useRoutes } from "react-router-dom";
-import { lazy } from "react";
+import { lazy, Suspense } from "react";
+import Loader from "@/components/Loader";
 
 const AdminDashboard = lazy(() => import("@/pages/admin/AdminDashboard"));
 const SignInPage = lazy(() => import("@/pages/auth/SignInPage"));
@@ -43,18 +44,30 @@ export default function Routes() {
       children: [
         {
           path: "login",
-          element: <SignInPage />,
+          element: (
+            <Suspense fallback={<Loader height="h-screen" />}>
+              <SignInPage />
+            </Suspense>
+          ),
         },
         {
           path: "register",
-          element: <SignUpPage />,
+          element: (
+            <Suspense fallback={<Loader height="h-screen" />}>
+              <SignUpPage />
+            </Suspense>
+          ),
         },
       ],
     },
     //free
     {
       path: "/",
-      element: <StudentViewLayout />,
+      element: (
+        <Suspense fallback={<Loader height="h-screen" />}>
+          <StudentViewLayout />
+        </Suspense>
+      ),
       children: [
         {
           index: true,
@@ -87,7 +100,9 @@ export default function Routes() {
       path: "/",
       element: (
         <ProtectedRoute>
-          <StudentViewLayout />
+          <Suspense fallback={<Loader height="h-screen" />}>
+            <StudentViewLayout />
+          </Suspense>
         </ProtectedRoute>
       ),
       children: [
@@ -110,7 +125,9 @@ export default function Routes() {
       path: "/instructor",
       element: (
         <ProtectedRoute allowedRoles={["instructor"]}>
-          <InstructorViewLayout />
+          <Suspense fallback={<Loader height="h-screen" />}>
+            <InstructorViewLayout />
+          </Suspense>
         </ProtectedRoute>
       ),
       children: [
@@ -132,17 +149,27 @@ export default function Routes() {
       path: "admin",
       element: (
         <ProtectedRoute allowedRoles={["admin"]}>
-          <AdminDashboard />
+          <Suspense fallback={<Loader height="h-screen" />}>
+            <AdminDashboard />
+          </Suspense>
         </ProtectedRoute>
       ),
     },
     {
       path: "/unauthorized",
-      element: <UnauthorizedPage />,
+      element: (
+        <Suspense fallback={<Loader height="h-screen" />}>
+          <UnauthorizedPage />
+        </Suspense>
+      ),
     },
     {
       path: "*",
-      element: <NotFoundPage />,
+      element: (
+        <Suspense fallback={<Loader height="h-screen" />}>
+          <NotFoundPage />
+        </Suspense>
+      ),
     },
   ]);
   return element;
