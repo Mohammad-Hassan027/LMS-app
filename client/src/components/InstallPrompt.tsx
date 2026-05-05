@@ -1,16 +1,23 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 
+type BeforeInstallPromptEvent = Event & {
+  prompt: () => Promise<void> | void;
+  userChoice: Promise<{ outcome: "accepted" | "dismissed"; platform?: string }>;
+};
+
 export function InstallPrompt({ className }: { className?: string }) {
-  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [deferredPrompt, setDeferredPrompt] =
+    useState<BeforeInstallPromptEvent | null>(null);
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    const handleBeforeInstallPrompt = (e: any) => {
+    const handleBeforeInstallPrompt = (e: Event) => {
+      const ev = e as BeforeInstallPromptEvent;
       // Prevent the mini-infobar from appearing on mobile
-      e.preventDefault();
+      ev.preventDefault();
       // Stash the event so it can be triggered later.
-      setDeferredPrompt(e);
+      setDeferredPrompt(ev);
       // Show the button ONLY when this event fires
       setIsVisible(true);
     };

@@ -16,7 +16,7 @@ export default function Player({
   onEnded?: () => void;
   onDuration?: (duration: number) => void;
 }) {
-  const playerRef = useRef<any>(null);
+  const playerRef = useRef<HTMLVideoElement | null>(null);
 
   return (
     <ReactPlayer
@@ -30,20 +30,9 @@ export default function Player({
       onStart={() => {
         if (handleStart) handleStart();
 
-        // Safety check: Ensure the player ref exists
+        // Safety check: Ensure the player ref exists and use HTML media duration
         if (playerRef.current) {
-          let duration = 0;
-
-          // Strategy A: Try the standard ReactPlayer method
-          if (typeof playerRef.current.getDuration === "function") {
-            duration = playerRef.current.getDuration();
-          }
-          // Strategy B: Fallback to HTML Media Element property
-          else if (playerRef.current.duration) {
-            duration = playerRef.current.duration;
-          }
-
-          // If we found a valid duration, update the parent
+          const duration = playerRef.current.duration || 0;
           if (duration && onDuration) {
             onDuration(duration);
           }

@@ -110,10 +110,11 @@ export default function CourseProgressPage() {
       toast.success("Review submitted successfully!");
       setShowCourseCompleteDialog(false);
       navigate("/my-courses");
-    } catch (error: any) {
-      console.error(error);
+    } catch (errUnknown) {
+      console.error(errUnknown);
+      const err = errUnknown as { response?: { status?: number } };
       // Check if it's the specific "already reviewed" error from backend
-      if (error?.response?.status === 400) {
+      if (err.response?.status === 400) {
         toast.error("You have already reviewed this course.");
       } else {
         toast.error("Failed to submit review. Please try again.");

@@ -33,7 +33,8 @@ export function middleware(app: Application) {
           callback(null, true);
         } else {
           console.log('Blocked by CORS:', origin);
-          callback(new Error('Not allowed by CORS'));
+          callback(null, false);
+          // callback(new Error('Not allowed by CORS'));
         }
       },
       credentials: true,
@@ -67,19 +68,19 @@ export function middleware(app: Application) {
   // app.use(mongoSanitize());
 
   // Database Connection
-  app.use(async (req, res, next) => {
-    try {
-      await connectDB();
-      next();
-    } catch (error: any) {
-      console.error('Database connection failed:', error);
-      res.status(500).json({
-        success: false,
-        message: 'Database connection failed',
-        error: error.message,
-      });
-    }
-  });
+  // app.use(async (req, res, next) => {
+  //   try {
+  //     await connectDB();
+  //     next();
+  //   } catch (error: any) {
+  //     console.error('Database connection failed:', error);
+  //     res.status(500).json({
+  //       success: false,
+  //       message: 'Database connection failed',
+  //       error: error.message,
+  //     });
+  //   }
+  // });
 
   app.use(
     clerkMiddleware({

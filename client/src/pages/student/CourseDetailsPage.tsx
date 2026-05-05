@@ -428,32 +428,40 @@ function CourseDetailsContent({
                     {/* Reviews List */}
                     <div className="flex-1 space-y-6">
                       {reviews && reviews.length > 0 ? (
-                        reviews.map((review: any) => (
-                          <div key={review._id} className="space-y-2">
-                            <div className="flex items-center gap-3">
-                              <Avatar className="h-10 w-10">
-                                <AvatarFallback>
-                                  {review.studentName?.charAt(0) || "S"}
-                                </AvatarFallback>
-                              </Avatar>
-                              <div>
-                                <h4 className="font-semibold text-sm">
-                                  {review.studentName}
-                                </h4>
-                                <StarRating rating={review.rating} />
+                        reviews.map(
+                          (review: {
+                            _id: string;
+                            studentName?: string;
+                            rating: number;
+                            createdAt: string;
+                            reviewText?: string;
+                          }) => (
+                            <div key={review._id} className="space-y-2">
+                              <div className="flex items-center gap-3">
+                                <Avatar className="h-10 w-10">
+                                  <AvatarFallback>
+                                    {review.studentName?.charAt(0) || "S"}
+                                  </AvatarFallback>
+                                </Avatar>
+                                <div>
+                                  <h4 className="font-semibold text-sm">
+                                    {review.studentName}
+                                  </h4>
+                                  <StarRating rating={review.rating} />
+                                </div>
+                                <span className="text-xs text-muted-foreground ml-auto">
+                                  {new Date(
+                                    review.createdAt,
+                                  ).toLocaleDateString()}
+                                </span>
                               </div>
-                              <span className="text-xs text-muted-foreground ml-auto">
-                                {new Date(
-                                  review.createdAt,
-                                ).toLocaleDateString()}
-                              </span>
+                              <p className="text-sm text-gray-600 leading-relaxed">
+                                {review.reviewText}
+                              </p>
+                              <Separator />
                             </div>
-                            <p className="text-sm text-gray-600 leading-relaxed">
-                              {review.reviewText}
-                            </p>
-                            <Separator />
-                          </div>
-                        ))
+                          ),
+                        )
                       ) : (
                         <div className="text-center text-gray-500 py-10">
                           No reviews yet. Be the first to enroll!

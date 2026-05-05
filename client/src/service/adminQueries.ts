@@ -42,9 +42,10 @@ export function useRequestToBeInstructorService() {
     onSuccess: () => {
       toast.success("Application submitted! An admin will review it shortly.");
     },
-    onError: (error: any) => {
+    onError: (errUnknown: unknown) => {
+      const err = errUnknown as { response?: { data?: { message?: string } } };
       toast.error(
-        error?.response?.data?.message || "Failed to submit application",
+        err.response?.data?.message || "Failed to submit application",
       );
     },
   });
