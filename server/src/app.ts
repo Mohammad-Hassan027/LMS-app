@@ -75,4 +75,3 @@ app.get('/api/v1/protected', requireAuth(), async (req, res) => {
 app.use(globalErrorHandler);
 
 export { app };
-export default app;

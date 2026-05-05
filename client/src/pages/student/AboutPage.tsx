@@ -8,7 +8,7 @@ function AboutPage() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <section className="relative w-full border-b bg-linear-to-b from-gray-50 to-white py-20 md:py-32">
+      <section className="relative w-full border-b bg-linear-to-b from-primary/5 via-background to-background py-20 md:py-32">
         <div className="container mx-auto px-6 flex flex-col items-center text-center">
           <h1 className="text-4xl font-extrabold tracking-tight text-gray-900 sm:text-5xl md:text-6xl mb-6">
             Empowering the World to <span className="text-primary">Learn</span>
@@ -21,7 +21,7 @@ function AboutPage() {
         </div>
       </section>
 
-      <section className="py-20 bg-white">
+      <section className="px-6 py-20 bg-white">
         <div className="container mx-auto px-6">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
