@@ -3,7 +3,9 @@ import { Link } from "react-router-dom";
 import { courseCategories } from "@/config";
 import { Suspense, lazy } from "react";
 const InstallPrompt = lazy(() =>
-  import("@/components/InstallPrompt").then((m) => ({ default: m.InstallPrompt })),
+  import("@/components/InstallPrompt").then((m) => ({
+    default: m.InstallPrompt,
+  })),
 );
 
 function Footer() {

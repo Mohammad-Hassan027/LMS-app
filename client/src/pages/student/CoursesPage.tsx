@@ -96,7 +96,7 @@ function CoursesContent() {
                       width={300}
                       height={150}
                       src={getOptimizedImageUrl(course.image, 400)}
-                      alt={`course-image`}
+                      alt={course.title || "Course image"}
                       loading={index < 2 ? "eager" : "lazy"}
                       fetchPriority={index === 0 ? "high" : "auto"}
                       className="w-full h-full object-cover"

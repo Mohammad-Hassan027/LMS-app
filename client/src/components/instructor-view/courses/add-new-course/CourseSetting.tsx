@@ -55,7 +55,11 @@ function CourseSetting() {
       {mediaUploadProgress && (
         <div className="mt-4 px-3">
           <Suspense
-            fallback={<div className="mt-2"><Loader /></div>}
+            fallback={
+              <div className="mt-2">
+                <Loader />
+              </div>
+            }
           >
             <MediaProgressBar
               isMediaUploading={mediaUploadProgress}
@@ -66,7 +70,7 @@ function CourseSetting() {
       )}
       <CardContent>
         <div className="flex flex-col gap-3">
-          <Label>Upload Course Image</Label>
+          <Label htmlFor="course-image">Upload Course Image</Label>
           {courseLandingFormData.image ? (
             <div className="relative aspect-video w-full max-w-md overflow-hidden rounded-md border bg-muted">
               <img
@@ -81,13 +85,18 @@ function CourseSetting() {
             </div>
           )}
           <Input
+            id="course-image"
             type="file"
             accept="image/*"
+            aria-describedby="course-image-desc"
             onChange={(e) => {
               handleImageUpload(e);
             }}
             className="mb-4"
           />
+          <div id="course-image-desc" className="sr-only">
+            Upload a course cover image. Accepted formats: JPG, PNG, GIF.
+          </div>
         </div>
       </CardContent>
     </Card>

@@ -46,14 +46,11 @@ function CourseCurriculum() {
     ]);
   }
 
-  function handleCourseTitleChange(
-    event: React.ChangeEvent<HTMLInputElement>,
-    index: number,
-  ) {
+  function handleCourseTitleChange(value: string, index: number) {
     const updatedCurriculum = [...courseCurriculumFormData];
     updatedCurriculum[index] = {
       ...updatedCurriculum[index],
-      [event.currentTarget.id]: event.target.value,
+      title: value,
     };
     setCourseCurriculumFormData(updatedCurriculum);
   }
@@ -264,10 +261,13 @@ function CourseCurriculum() {
                 <Input
                   type="text"
                   value={curriculumItem.title}
-                  id="title"
+                  id={`title-${index}`}
+                  name={`title-${index}`}
                   placeholder="Lecture Title"
                   className="w-full sm:max-w-96"
-                  onChange={(e) => handleCourseTitleChange(e, index)}
+                  onChange={(e) =>
+                    handleCourseTitleChange(e.target.value, index)
+                  }
                 />
                 <div className="flex items-center space-x-2">
                   <Switch

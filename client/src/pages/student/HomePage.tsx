@@ -17,7 +17,9 @@ const BackgroundRippleEffect = lazy(() =>
     default: m.BackgroundRippleEffect,
   })),
 );
-const FeaturedCoursesSection = lazy(() => import("@/components/student-view/home/FeaturedCoursesSection"));
+const FeaturedCoursesSection = lazy(
+  () => import("@/components/student-view/home/FeaturedCoursesSection"),
+);
 import { CourseSkeletonCard } from "@/components/student-view/home/CourseSkeletonCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -32,9 +34,9 @@ function HomePage() {
       <section className="relative w-full border-b border-gray-100">
         <Suspense fallback={null}>
           <BackgroundRippleEffect
-          rows={isMobile ? 5 : 10}
-          cols={isMobile ? 8 : 50}
-          cellSize={isMobile ? 45 : 52}
+            rows={isMobile ? 5 : 10}
+            cols={isMobile ? 8 : 50}
+            cellSize={isMobile ? 45 : 52}
           />
         </Suspense>
         <div className="min-h-[85vh] md:min-h-200 py-20">
