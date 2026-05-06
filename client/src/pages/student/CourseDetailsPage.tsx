@@ -70,8 +70,9 @@ function CourseDetailsContent({
   const { data: studentViewCourseDetails, isLoading } =
     useStudentViewCourseDetailsService(courseId);
 
-  // Fetch Course Reviews (Suspense enabled via hook)
-  const { data: reviews } = useCourseReviewsService(courseId);
+  // NOTE: Reviews are rendered in a separate Suspense-wrapped child
+  // using `ReviewsSection` so a slow reviews fetch won't block the
+  // rest of the page. See `ReviewsSection` below.
 
   const [isCheckoutInitiated, setIsCheckoutInitiated] = useState(false);
 
@@ -425,48 +426,19 @@ function CourseDetailsContent({
                       </span>
                     </div>
 
-                    {/* Reviews List */}
+                    {/* Reviews List (loaded in its own Suspense boundary) */}
                     <div className="flex-1 space-y-6">
-                      {reviews && reviews.length > 0 ? (
-                        reviews.map(
-                          (review: {
-                            _id: string;
-                            studentName?: string;
-                            rating: number;
-                            createdAt: string;
-                            reviewText?: string;
-                          }) => (
-                            <div key={review._id} className="space-y-2">
-                              <div className="flex items-center gap-3">
-                                <Avatar className="h-10 w-10">
-                                  <AvatarFallback>
-                                    {review.studentName?.charAt(0) || "S"}
-                                  </AvatarFallback>
-                                </Avatar>
-                                <div>
-                                  <h4 className="font-semibold text-sm">
-                                    {review.studentName}
-                                  </h4>
-                                  <StarRating rating={review.rating} />
-                                </div>
-                                <span className="text-xs text-muted-foreground ml-auto">
-                                  {new Date(
-                                    review.createdAt,
-                                  ).toLocaleDateString()}
-                                </span>
-                              </div>
-                              <p className="text-sm text-gray-600 leading-relaxed">
-                                {review.reviewText}
-                              </p>
-                              <Separator />
-                            </div>
-                          ),
-                        )
-                      ) : (
-                        <div className="text-center text-gray-500 py-10">
-                          No reviews yet. Be the first to enroll!
-                        </div>
-                      )}
+                      <Suspense
+                        fallback={
+                          <div className="text-center py-10">
+                            <span className="animate-pulse text-muted-foreground">
+                              Loading reviews...
+                            </span>
+                          </div>
+                        }
+                      >
+                        <ReviewsSection courseId={courseId} />
+                      </Suspense>
                     </div>
                   </div>
                 </CardContent>
@@ -634,17 +606,60 @@ function CourseDetailsContent({
   );
 }
 
+function ReviewsSection({ courseId }: { courseId: string }) {
+  const { data: reviews } = useCourseReviewsService(courseId);
+
+  if (!reviews || reviews.length === 0) {
+    return (
+      <div className="text-center text-gray-500 py-10">
+        No reviews yet. Be the first to enroll!
+      </div>
+    );
+  }
+
+  return (
+    <>
+      {reviews.map(
+        (review: {
+          _id: string;
+          studentName?: string;
+          rating: number;
+          createdAt: string;
+          reviewText?: string;
+        }) => (
+          <div key={review._id} className="space-y-2">
+            <div className="flex items-center gap-3">
+              <Avatar className="h-10 w-10">
+                <AvatarFallback>
+                  {review.studentName?.charAt(0) || "S"}
+                </AvatarFallback>
+              </Avatar>
+              <div>
+                <h4 className="font-semibold text-sm">{review.studentName}</h4>
+                <StarRating rating={review.rating} />
+              </div>
+              <span className="text-xs text-muted-foreground ml-auto">
+                {new Date(review.createdAt).toLocaleDateString()}
+              </span>
+            </div>
+            <p className="text-sm text-gray-600 leading-relaxed">
+              {review.reviewText}
+            </p>
+            <Separator />
+          </div>
+        ),
+      )}
+    </>
+  );
+}
+
 function CourseDetails() {
   const { courseId } = useParams();
   const { user } = useUser();
 
   if (!courseId) return <div>Invalid Course ID</div>;
 
-  return (
-    <Suspense fallback={<Loader height="h-screen" />}>
-      <CourseDetailsContent courseId={courseId} user={user} />
-    </Suspense>
-  );
+  return <CourseDetailsContent courseId={courseId} user={user} />;
 }
 
 export default CourseDetails;

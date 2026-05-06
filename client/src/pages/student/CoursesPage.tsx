@@ -1,9 +1,7 @@
-import { Suspense } from "react";
 import { ArrowUpDownIcon, SearchX, SlidersHorizontal } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useQueryState } from "nuqs";
 
-import Loader from "@/components/Loader";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import {
@@ -158,9 +156,7 @@ export default function CoursesPage() {
         <CoursesSidebar />
 
         <SidebarInset className="flex flex-col overflow-hidden">
-          <Suspense fallback={<Loader height="h-screen" />}>
-            <CoursesContent />
-          </Suspense>
+          <CoursesContent />
         </SidebarInset>
       </SidebarProvider>
     </div>

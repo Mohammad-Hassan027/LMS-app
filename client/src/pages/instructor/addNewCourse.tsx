@@ -1,4 +1,4 @@
-import { useEffect, Suspense } from "react";
+import { useEffect, Suspense, lazy } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   useAddNewCourseService,
@@ -11,13 +11,22 @@ import {
   courseLandingInitialFormData,
 } from "@/config";
 import { isEmpty } from "@/utils";
-import Loader from "@/components/Loader";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import CourseCurriculum from "@/components/instructor-view/courses/add-new-course/CourseCurriculum";
-import CourseLanding from "@/components/instructor-view/courses/add-new-course/CourseLanding";
-import CourseSetting from "@/components/instructor-view/courses/add-new-course/CourseSetting";
+import Loader from "@/components/Loader";
+const CourseCurriculum = lazy(
+  () =>
+    import("@/components/instructor-view/courses/add-new-course/CourseCurriculum"),
+);
+const CourseLanding = lazy(
+  () =>
+    import("@/components/instructor-view/courses/add-new-course/CourseLanding"),
+);
+const CourseSetting = lazy(
+  () =>
+    import("@/components/instructor-view/courses/add-new-course/CourseSetting"),
+);
 import { useProtectedUser } from "@/hooks/useProtectedUser";
 
 function InstructorCourseForm({
@@ -138,13 +147,19 @@ function InstructorCourseForm({
               </TabsList>
               <div className="mt-4">
                 <TabsContent value="course-curriculum">
-                  <CourseCurriculum />
+                  <Suspense fallback={<Loader height="h-48" />}>
+                    <CourseCurriculum />
+                  </Suspense>
                 </TabsContent>
                 <TabsContent value="course-landing-page">
-                  <CourseLanding />
+                  <Suspense fallback={<Loader height="h-48" />}>
+                    <CourseLanding />
+                  </Suspense>
                 </TabsContent>
                 <TabsContent value="course-setting">
-                  <CourseSetting />
+                  <Suspense fallback={<Loader height="h-48" />}>
+                    <CourseSetting />
+                  </Suspense>
                 </TabsContent>
               </div>
             </Tabs>
@@ -217,14 +232,10 @@ function AddNewCoursePage() {
 
   const isEdit = !!params.courseId;
 
-  return (
-    <Suspense fallback={<Loader />}>
-      {isEdit ? (
-        <EditCourseEntry courseId={params.courseId!} />
-      ) : (
-        <CreateCourseEntry />
-      )}
-    </Suspense>
+  return isEdit ? (
+    <EditCourseEntry courseId={params.courseId!} />
+  ) : (
+    <CreateCourseEntry />
   );
 }
 

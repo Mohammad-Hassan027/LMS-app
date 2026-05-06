@@ -7,13 +7,13 @@ import {
   UploadBulkMediaService,
   UploadMediaService,
 } from "@/service";
-import MediaProgressBar from "@/components/media-progress-bar";
+const MediaProgressBar = lazy(() => import("@/components/media-progress-bar"));
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import Loader from "@/components/Loader";
+import { Skeleton } from "@/components/ui/skeleton";
 const Player = lazy(() => import("@/components/video-player"));
 import { AlertDialogDestructive } from "./AlertDialogDestructive";
 
@@ -242,10 +242,12 @@ function CourseCurriculum() {
 
         {mediaUploadProgress && (
           <div className="mt-4">
-            <MediaProgressBar
-              isMediaUploading={mediaUploadProgress}
-              progress={mediaUploadProgressPercent}
-            />
+            <Suspense fallback={<Skeleton className="h-8 w-full" />}>
+              <MediaProgressBar
+                isMediaUploading={mediaUploadProgress}
+                progress={mediaUploadProgressPercent}
+              />
+            </Suspense>
           </div>
         )}
 
@@ -284,7 +286,7 @@ function CourseCurriculum() {
               <div className="mt-4">
                 {curriculumItem.videoUrl ? (
                   <div className="flex flex-col md:flex-row gap-3">
-                    <Suspense fallback={<Loader />}>
+                    <Suspense fallback={<Skeleton className="h-36 w-full" />}>
                       <Player url={curriculumItem.videoUrl} />
                     </Suspense>
                     <div className="flex flex-col sm:flex-row gap-3">

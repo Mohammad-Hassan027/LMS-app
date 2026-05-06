@@ -1,6 +1,8 @@
 import { useInstructorContext } from "@/contexts/Instructor/hook";
 import { UploadMediaService } from "@/service";
-import MediaProgressBar from "@/components/media-progress-bar";
+import { lazy, Suspense } from "react";
+import Loader from "@/components/Loader";
+const MediaProgressBar = lazy(() => import("@/components/media-progress-bar"));
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -52,10 +54,14 @@ function CourseSetting() {
       </CardHeader>
       {mediaUploadProgress && (
         <div className="mt-4 px-3">
-          <MediaProgressBar
-            isMediaUploading={mediaUploadProgress}
-            progress={mediaUploadProgressPercent}
-          />
+          <Suspense
+            fallback={<div className="mt-2"><Loader /></div>}
+          >
+            <MediaProgressBar
+              isMediaUploading={mediaUploadProgress}
+              progress={mediaUploadProgressPercent}
+            />
+          </Suspense>
         </div>
       )}
       <CardContent>

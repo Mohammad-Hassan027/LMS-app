@@ -1,6 +1,8 @@
 import { BarChart, Book, LogOut } from "lucide-react";
-import InstructorDashboard from "@/components/instructor-view/dashboard";
-import InstructorCourses from "@/components/instructor-view/courses";
+import { lazy, Suspense } from "react";
+import Loader from "@/components/Loader";
+const InstructorDashboard = lazy(() => import("@/components/instructor-view/dashboard"));
+const InstructorCourses = lazy(() => import("@/components/instructor-view/courses"));
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { useClerk } from "@clerk/clerk-react";
@@ -14,13 +16,13 @@ function InstructorDashboardPage() {
       icon: BarChart,
       label: "Dashboard",
       value: "dashboard",
-      component: <InstructorDashboard />,
+      component: InstructorDashboard,
     },
     {
       icon: Book,
       label: "Courses",
       value: "courses",
-      component: <InstructorCourses />,
+      component: InstructorCourses,
     },
     {
       icon: LogOut,
@@ -66,9 +68,13 @@ function InstructorDashboardPage() {
           <h1 className="text-3xl font-bold mb-8">Dashboard</h1>
           <Tabs value={activeTab} onValueChange={setActiveTab}>
             {menuItems.map((menuItem) => (
-              <TabsContent value={menuItem.value} key={menuItem.value}>
-                {menuItem.component !== null ? menuItem.component : null}
-              </TabsContent>
+                  <TabsContent value={menuItem.value} key={menuItem.value}>
+                    {menuItem.component !== null ? (
+                      <Suspense fallback={<Loader height="h-48" />}>
+                        <menuItem.component />
+                      </Suspense>
+                    ) : null}
+                  </TabsContent>
             ))}
           </Tabs>
         </div>

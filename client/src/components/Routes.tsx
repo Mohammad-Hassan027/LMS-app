@@ -64,7 +64,7 @@ export default function Routes() {
     {
       path: "/",
       element: (
-        <Suspense fallback={<Loader height="h-screen" />}>
+        <Suspense fallback={<Loader height="h-48" />}>
           <StudentViewLayout />
         </Suspense>
       ),
@@ -100,7 +100,7 @@ export default function Routes() {
       path: "/",
       element: (
         <ProtectedRoute>
-          <Suspense fallback={<Loader height="h-screen" />}>
+          <Suspense fallback={<Loader height="h-48" />}>
             <StudentViewLayout />
           </Suspense>
         </ProtectedRoute>
@@ -125,7 +125,7 @@ export default function Routes() {
       path: "/instructor",
       element: (
         <ProtectedRoute allowedRoles={["instructor"]}>
-          <Suspense fallback={<Loader height="h-screen" />}>
+          <Suspense fallback={<Loader height="h-48" />}>
             <InstructorViewLayout />
           </Suspense>
         </ProtectedRoute>
@@ -149,7 +149,7 @@ export default function Routes() {
       path: "admin",
       element: (
         <ProtectedRoute allowedRoles={["admin"]}>
-          <Suspense fallback={<Loader height="h-screen" />}>
+          <Suspense fallback={<Loader height="h-48" />}>
             <AdminDashboard />
           </Suspense>
         </ProtectedRoute>

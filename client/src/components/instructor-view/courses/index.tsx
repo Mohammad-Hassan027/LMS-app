@@ -119,7 +119,7 @@ function InstructorCourses() {
   const user = useProtectedUser();
 
   return (
-    <Suspense fallback={<Loader height="h-15 ml-5" />}>
+    <Suspense fallback={<Loader height="h-48" />}>
       <InstructorCoursesList instructorId={user.id} />
     </Suspense>
   );

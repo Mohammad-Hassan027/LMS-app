@@ -8,7 +8,7 @@ function StudentViewLayout() {
     <div className="flex flex-col min-h-screen bg-background">
       <StudentViewHeader />
       <main className="grow">
-        <Suspense fallback={<Loader height="h-screen" />}>
+        <Suspense fallback={<Loader height="h-48" />}>
           <Outlet />
         </Suspense>
       </main>

@@ -4,7 +4,6 @@ import Loader from "@/components/Loader";
 import { Button } from "@/components/ui/button";
 import { WatchIcon, PlayCircle, BookOpen } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { Suspense } from "react";
 import { useProtectedUser } from "@/hooks/useProtectedUser";
 import { getOptimizedImageUrl } from "@/utils";
 
@@ -95,9 +94,7 @@ function MyCourses() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Suspense fallback={<Loader height="h-screen" />}>
-        <MyCoursesList userId={user.id} />
-      </Suspense>
+      <MyCoursesList userId={user.id} />
     </div>
   );
 }

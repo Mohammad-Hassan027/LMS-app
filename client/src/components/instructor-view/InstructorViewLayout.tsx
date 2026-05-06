@@ -1,4 +1,4 @@
-import { useState, Suspense } from "react";
+import { useState, Suspense, lazy } from "react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import {
   SignedIn,
@@ -14,9 +14,13 @@ import {
   X,
   LogOut,
 } from "lucide-react";
-import InstructorCourses from "@/components/instructor-view/courses";
-import InstructorDashboard from "@/components/instructor-view/dashboard";
 import Loader from "@/components/Loader";
+const InstructorCourses = lazy(
+  () => import("@/components/instructor-view/courses"),
+);
+const InstructorDashboard = lazy(
+  () => import("@/components/instructor-view/dashboard"),
+);
 import { Button } from "@/components/ui/button";
 import { useInstructorContext } from "@/contexts/Instructor/hook";
 
@@ -33,13 +37,13 @@ function InstructorViewLayout() {
     {
       label: "Dashboard",
       value: "dashboard",
-      component: <InstructorDashboard />,
+      component: InstructorDashboard,
       icon: <LayoutDashboard className="h-5 w-5 mr-2" />,
     },
     {
       label: "Courses",
       value: "courses",
-      component: <InstructorCourses />,
+      component: InstructorCourses,
       icon: <BookOpen className="h-5 w-5 mr-2" />,
     },
   ];
@@ -136,11 +140,15 @@ function InstructorViewLayout() {
             {isRootInstructorPath ? (
               menuItems.map((item) =>
                 item.value === activeTab ? (
-                  <div key={item.value}>{item.component}</div>
+                  <div key={item.value}>
+                    <Suspense fallback={<Loader height="h-48" />}>
+                      <item.component />
+                    </Suspense>
+                  </div>
                 ) : null,
               )
             ) : (
-              <Suspense fallback={<Loader height="h-screen" />}>
+              <Suspense fallback={<Loader height="h-48" />}>
                 <Outlet />
               </Suspense>
             )}

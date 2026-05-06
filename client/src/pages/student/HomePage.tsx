@@ -17,7 +17,7 @@ const BackgroundRippleEffect = lazy(() =>
     default: m.BackgroundRippleEffect,
   })),
 );
-import FeaturedCoursesSection from "@/components/student-view/home/FeaturedCoursesSection";
+const FeaturedCoursesSection = lazy(() => import("@/components/student-view/home/FeaturedCoursesSection"));
 import { CourseSkeletonCard } from "@/components/student-view/home/CourseSkeletonCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useIsMobile } from "@/hooks/use-mobile";
