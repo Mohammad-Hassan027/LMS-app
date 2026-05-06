@@ -136,6 +136,9 @@ function StudentViewHeader() {
             size="icon"
             className="md:hidden text-muted-foreground"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
+            aria-expanded={isMenuOpen}
+            aria-controls="mobile-navigation"
+            aria-label={isMenuOpen ? "Close menu" : "Open menu"}
           >
             {isMenuOpen ? (
               <X className="h-6 w-6" />
@@ -148,11 +151,18 @@ function StudentViewHeader() {
 
       {/* --- MOBILE MENU DROPDOWN --- */}
       {isMenuOpen && (
-        <div className="absolute top-16 left-0 w-full bg-background/95 backdrop-blur-xl border-b shadow-lg md:hidden animate-in slide-in-from-top-5 duration-200 z-40">
-          <nav className="p-4 flex flex-col gap-1">
+        <div
+          id="mobile-navigation"
+          className="absolute top-16 left-0 w-full bg-background/95 backdrop-blur-xl border-b shadow-lg md:hidden animate-in slide-in-from-top-5 duration-200 z-40"
+          role="navigation"
+          aria-label="Mobile menu"
+          aria-hidden={!isMenuOpen}
+        >
+          <nav className="p-4 flex flex-col gap-1" role="menu">
             <button
               onClick={handleExploreCourses}
               className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/5 hover:text-primary text-sm font-medium transition-colors text-left text-foreground/80"
+              role="menuitem"
             >
               <CodeSquareIcon className="h-5 w-5" />
               Explore Courses
@@ -163,6 +173,7 @@ function StudentViewHeader() {
                 to="/my-courses"
                 onClick={() => setIsMenuOpen(false)}
                 className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-primary/5 hover:text-primary text-sm font-medium transition-colors text-foreground/80"
+                role="menuitem"
               >
                 <PlaySquareIcon className="h-5 w-5" />
                 My Learning

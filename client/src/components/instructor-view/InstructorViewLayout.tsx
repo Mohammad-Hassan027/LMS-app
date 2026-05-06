@@ -107,6 +107,13 @@ function InstructorViewLayout() {
               size="icon"
               className="md:hidden"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              aria-expanded={isMobileMenuOpen}
+              aria-controls="instructor-mobile-menu"
+              aria-label={
+                isMobileMenuOpen
+                  ? "Close instructor menu"
+                  : "Open instructor menu"
+              }
             >
               <Menu className="h-6 w-6" />
             </Button>
@@ -157,15 +164,25 @@ function InstructorViewLayout() {
       </div>
 
       {isMobileMenuOpen && (
-        <div className="fixed inset-0 z-50 flex md:hidden">
+        <div
+          className="fixed inset-0 z-50 flex md:hidden"
+          aria-hidden={!isMobileMenuOpen}
+        >
           {/* Backdrop */}
           <div
             className="fixed inset-0 bg-black/50"
             onClick={() => setIsMobileMenuOpen(false)}
+            role="presentation"
           />
 
           {/* Sidebar Panel */}
-          <div className="relative flex-1 w-3/4 max-w-xs bg-white h-full shadow-xl flex flex-col animate-in slide-in-from-left duration-200">
+          <div
+            id="instructor-mobile-menu"
+            className="relative flex-1 w-3/4 max-w-xs bg-white h-full shadow-xl flex flex-col animate-in slide-in-from-left duration-200"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Instructor menu"
+          >
             <div className="p-4 border-b flex items-center justify-between h-16">
               <span className="font-bold text-lg flex items-center gap-2">
                 <GraduationCap className="h-6 w-6" />
@@ -175,12 +192,13 @@ function InstructorViewLayout() {
                 variant="ghost"
                 size="icon"
                 onClick={() => setIsMobileMenuOpen(false)}
+                aria-label="Close menu"
               >
                 <X className="h-5 w-5" />
               </Button>
             </div>
 
-            <nav className="p-4 space-y-2">
+            <nav className="p-4 space-y-2" aria-label="Instructor navigation">
               {menuItems.map((item) => (
                 <NavItem key={item.value} item={item} isMobile={true} />
               ))}
