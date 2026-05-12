@@ -11,8 +11,13 @@ import { handleClerkWebhook } from './controllers/student-controller/clerk-webho
 const app = express();
 
 app.use(async (req, res, next) => {
-  await connectDB(); // This uses your cached connection logic, so it's fast
-  next();
+  try {
+    await connectDB(); // This uses your cached connection logic, so it's fast
+    next();
+  } catch (err) {
+    console.error('Database connection error:', err);
+    next(err);
+  }
 });
 
 app.set('trust proxy', 1); // real user IP ,not vercel
