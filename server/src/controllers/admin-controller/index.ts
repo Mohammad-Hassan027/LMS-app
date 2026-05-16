@@ -208,7 +208,9 @@ export const sendWarningToInstructor = asyncHandler(async (req, res) => {
 export const isInstructor = asyncHandler(async (req, res) => {
   const { userId } = req.params;
   const user = await clerkClient.users.getUser(userId);
-  const isInstructor = user.publicMetadata?.role === 'instructor';
+  const isInstructor: boolean = (user.publicMetadata as any)?.role?.includes(
+    'instructor'
+  );
   res
     .status(200)
     .json(
